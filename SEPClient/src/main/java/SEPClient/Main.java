@@ -7,5 +7,7 @@ public class Main {
 		UIHandler.main(args);
 		client = new Client();
 		client.start();
+		
+		//test
 	}
 }
