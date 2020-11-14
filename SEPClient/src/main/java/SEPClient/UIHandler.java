@@ -3,13 +3,20 @@ package SEPClient;
 import java.io.IOException;
 
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.*;
 import javafx.scene.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.*;
 
 public class UIHandler extends Application {
-	public Scene scene;
-	public Stage stage;
+	private Scene scene;
+	private Stage stage;
+	private Client client;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -17,9 +24,21 @@ public class UIHandler extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) {
-		//Start-Szene öffnen
+		//Zeige Start-Szene
 		stage = new Stage();
 		OpenScene("Start", "Super-E-commerce-Platform");
+		
+		client = new Client();
+		if(client.start())
+		{
+			//Client hat erfolgreich Verbindung zum Server hergestellt
+		}
+		else
+		{
+			//Fehler bei Verbindungsherstellung zum Server, zeige Fehlermeldung
+			
+			ShowMessageBox("Es konnte keine Verbindung zum Server hergestellt werden. Das Programm wird beendet.", "Fehler bei Verbindung zum Server", "Fehler bei Verbindung zum Server", AlertType.ERROR, true, true);
+		}
 	}
 	
 	public void OpenScene(String sceneName, String sceneTitle)
@@ -32,6 +51,26 @@ public class UIHandler extends Application {
 			stage.show();
 		} catch(Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	public static void ShowMessageBox(String message, String title, String header, AlertType type, boolean wait, boolean exitAfter)
+	{
+		Alert alert = new Alert(type);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(message);
+		if(wait)
+		{
+			alert.showAndWait();
+			if(exitAfter)
+			{
+				System.exit(0);
+			}
+		}
+		else
+		{
+			alert.show();
 		}
 	}
 	
