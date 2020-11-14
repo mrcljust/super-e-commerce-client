@@ -8,12 +8,5 @@ public class Main {
 		client = new Client();
 		client.start();
 		
-		//test
-		//test2
-		//test3
-		// testyannis
-		// testmarcel
-		//testdenis
-		
 	}
 }
