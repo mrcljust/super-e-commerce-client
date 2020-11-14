@@ -9,17 +9,18 @@ repositories {
 }
 
 dependencies {
-    // Use JUnit test framework
+    //JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-    //Add MySQL Connector/J Dependency
+    //MySQL Connector/J einbinden
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
     
-    //Add Dependency to SEPCommon Project
+    //SEPCommon einbinden
     compile project(':SEPCommon')
 }
 
 jar {
+	//Build manifest
 	from {
 		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 	}

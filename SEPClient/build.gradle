@@ -5,26 +5,27 @@ plugins {
 }
 
 repositories {
-    // Use maven for resolving dependencies.
+    //Use maven for resolving dependencies.
     mavenCentral()
 }
 
 dependencies {
-    // Use JUnit test framework
+    //JUnit test framework
     testImplementation 'junit:junit:4.12'
     
-	//Add Dependency to SEPCommon Project
+	//SEPCommon einbinden
     compile project(':SEPCommon')
     
 }
 
-//Add JavaFX support
 javafx {
+	//JavaFX
 	modules = [ 'javafx.controls', 'javafx.fxml' ]
 	version = '15.0.1'
 }
 
 jar {
+	//Build manifest
 	from {
 		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
 	}
