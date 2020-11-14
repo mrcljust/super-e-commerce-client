@@ -1,0 +1,22 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories {
+    // Use maven for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+    
+    //Add MySQL Connector/J Dependency
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.22'
+    
+    //Add Dependency to SEPCommon Project
+    compile project(':SEPCommon')
+}
+
+mainClassName = 'SEPServer.Main'

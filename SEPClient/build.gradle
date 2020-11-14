@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.0.9'
+}
+
+repositories {
+    // Use maven for resolving dependencies.
+    mavenCentral()
+}
+
+dependencies {
+    // Use JUnit test framework
+    testImplementation 'junit:junit:4.12'
+    
+	//Add Dependency to SEPCommon Project
+    compile project(':SEPCommon')
+}
+
+//Add JavaFX support
+javafx {
+	modules = [ 'javafx.controls', 'javafx.fxml' ]
+	version = '15.0.1'
+}
+
+mainClassName = 'SEPClient.Main'
