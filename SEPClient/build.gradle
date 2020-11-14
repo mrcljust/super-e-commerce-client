@@ -15,12 +15,25 @@ dependencies {
     
 	//Add Dependency to SEPCommon Project
     compile project(':SEPCommon')
+    
 }
 
 //Add JavaFX support
 javafx {
 	modules = [ 'javafx.controls', 'javafx.fxml' ]
 	version = '15.0.1'
+}
+
+jar {
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+    manifest {
+        attributes(
+        		'Implementation-Title':  'Super-E-commerce-Platform Client',
+                'Main-Class': 'SEPClient.Main'
+        )
+    }
 }
 
 mainClassName = 'SEPClient.Main'

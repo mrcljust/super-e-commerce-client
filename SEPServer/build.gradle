@@ -19,4 +19,16 @@ dependencies {
     compile project(':SEPCommon')
 }
 
+jar {
+	from {
+		configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+	}
+    manifest {
+        attributes(
+        		'Implementation-Title':  'Super-E-commerce-Platform Server',
+                'Main-Class': 'SEPServer.Main'
+        )
+    }
+}
+
 mainClassName = 'SEPServer.Main'
