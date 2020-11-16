@@ -10,7 +10,8 @@ import java.net.Socket;
 public class Server {
 	private ServerSocket serverSocket;
 	private Socket socket;
-
+	private DataInputStream dis; // Daten empfangen
+	private DataOutputStream dos; // Daten schicken
 	public void start() {
 
 		try {
@@ -46,6 +47,10 @@ public class Server {
 		} catch (IOException e) {
 			System.out.println("Fehler beim Schlieﬂen des Server-Sockets: " + e.getMessage());
 		}
+	}
+	
+	public void receiveRequest() {
+		
 	}
 
 }

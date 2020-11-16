@@ -6,15 +6,15 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Client {
-	private Socket ClientSocket;
-	private DataInputStream Din; // Daten empfangen
-	private DataOutputStream Dos; // Daten schicken
+	private Socket clientSocket;
+	private DataInputStream dis; // Daten empfangen
+	private DataOutputStream dos; // Daten schicken
 
 	public boolean start() {
 		// Socket-Verbindung zum Server herstellen
 		try {
 			// Client Socket erstellen
-			ClientSocket = new Socket("localhost", 40001);
+			clientSocket = new Socket("localhost", 40001);
 			System.out.println("Verbindung zum Server hergestellt");
 			return true;
 		} catch (IOException e) {
@@ -23,20 +23,24 @@ public class Client {
 		}
 	}
 
-	public void SendRequestToServer() {
+	public void sendClientRequest() {
+
+	}
+
+	public void handleServerRequest() {
 
 	}
 
 	public void stop() {
 		try {
-			if (Din != null)
-				Din.close();
+			if (dis != null)
+				dis.close();
 
-			if (Dos != null)
-				Dos.close();
+			if (dos != null)
+				dos.close();
 
-			if (ClientSocket != null)
-				ClientSocket.close();
+			if (clientSocket != null)
+				clientSocket.close();
 		} catch (IOException e) {
 			// Beim schlieﬂen Problem aufgetreten
 			e.printStackTrace();
