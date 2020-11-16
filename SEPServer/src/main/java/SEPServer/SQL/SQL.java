@@ -46,27 +46,27 @@ public class SQL{
 		return Response.Success;
 	}
 
-	public Response fetchProducts() {
-		return Response.Success;
+	public Product[] fetchProducts() {
+		return null;
 	}
 
-	public Response fetchProductsByCategory(String category) {
-		return Response.Success;
+	public Product[] fetchProductsByCategory(String category) {
+		return null;
 	}
 
-	public Response fetchProductsByString(String searchString) {
-		return Response.Success;
+	public Product[] fetchProductsByString(String searchString) {
+		return null;
 	}
 
-	public Response fetchLastViewedProducts(User user) {
-		return Response.Success;
+	public Product[] fetchLastViewedProducts(User user) {
+		return null;
 	}
 
 	public Response addItem(User seller, Product product) {
 		return Response.Success;
 	}
 
-	public Response addItem(User seller, Product[] products) {
+	public Response addItems(User seller, Product[] products) {
 		return Response.Success;
 	}
 
