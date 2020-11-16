@@ -75,10 +75,10 @@ public class SQL{
 	}
 
 	public User getUserDataByEmail(String email) {
-		//
+		return null;
 	}
 
 	public User getUserDataByUsername(String username) {
-		//
+		return null;
 	}
 }
