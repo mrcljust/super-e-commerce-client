@@ -13,7 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.*;
 
-public class UIHandler extends Application {
+public class UIHandler extends Application   {
 	private Scene scene;
 	private Stage stage;
 	private Client client;
@@ -73,6 +73,7 @@ public class UIHandler extends Application {
 			alert.show();
 		}
 	}
+	// Idee: Je nach Button -> Klasse Eventhandler die je nach Button etwas macht
 	
 	private Parent CreateParent(String sceneName) throws IOException
 	{
