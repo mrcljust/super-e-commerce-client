@@ -18,8 +18,8 @@ public class SQL{
 
 	private boolean isConnected;
 
-	public void connect() {
-
+	public boolean connect() {
+		return true;
 	}
 
 	public Response registerUser(User user) {
