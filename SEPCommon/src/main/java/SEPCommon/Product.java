@@ -9,10 +9,21 @@ public class Product {
 	private String category;
 	private String description;
 	 
-	public Product (String name, double price, String seller, String category, String description) {
-		
+	public Product (String _name, double _price, String _seller, String _category, String _description)
+	{
+		name=_name;
+		price=_price;
+		seller=_seller;
+		category=_category;
+		description=_description;
 	}
-	public Product (int id,String name, double price, String seller, String category, String description ) {
-		
+	public Product (int _id, String _name, double _price, String _seller, String _category, String _description )
+	{
+		id=_id;
+		name=_name;
+		price=_price;
+		seller=_seller;
+		category=_category;
+		description=_description;
 	}
 }
