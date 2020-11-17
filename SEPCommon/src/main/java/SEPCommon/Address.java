@@ -8,7 +8,12 @@ public class Address {
 	private String street;
 	private String number;
 
-	public Address(String country, int zipcode, String city, String street, String number) {
-
+	public Address(String _country, int _zipcode, String _city, String _street, String _number)
+	{
+		country=_country;
+		zipcode=_zipcode;
+		city=_city;
+		street=_street;
+		number=_number;
 	}
 }

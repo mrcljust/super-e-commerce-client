@@ -1,6 +1,6 @@
 package SEPClient;
 
-public class FXMLEVENTHandler {
+public class FXMLEventHandler {
 
 	public void Start_LoginClick() {
 

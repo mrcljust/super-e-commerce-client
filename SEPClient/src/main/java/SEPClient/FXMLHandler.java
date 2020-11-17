@@ -13,7 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.*;
 
-public class UIHandler extends Application {
+public class FXMLHandler extends Application {
 	private Scene scene;
 	private Stage stage;
 	private Client client;
