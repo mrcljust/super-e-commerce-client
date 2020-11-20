@@ -2,11 +2,11 @@ package SEPCommon;
 
 public class User {
 
-	protected int id;
-	protected String username;
-	protected String email;
-	protected String password;
-	protected byte[] picture;
-	protected double wallet;
-	protected Address address;
+	public int id;
+	public String username;
+	public String email;
+	public String password;
+	public byte[] picture;
+	public double wallet;
+	public Address address;
 }

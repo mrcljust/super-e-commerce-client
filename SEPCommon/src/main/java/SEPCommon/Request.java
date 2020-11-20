@@ -1,7 +1,6 @@
 package SEPCommon;
 
 public enum Request {
-
 	RegisterUser,
 	LoginUser,
 	EditUser,

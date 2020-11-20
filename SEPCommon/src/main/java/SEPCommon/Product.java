@@ -2,12 +2,12 @@ package SEPCommon;
 
 public class Product {
 
-	private int id;
-	private String name;
-	private double price;
-	private String seller;
-	private String category;
-	private String description;
+	public int id;
+	public String name;
+	public double price;
+	public String seller;
+	public String category;
+	public String description;
 	 
 	public Product (String _name, double _price, String _seller, String _category, String _description)
 	{

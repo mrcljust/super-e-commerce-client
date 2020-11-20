@@ -2,11 +2,11 @@ package SEPCommon;
 
 public class Address {
 
-	private String country;
-	private int zipcode;
-	private String city;
-	private String street;
-	private String number;
+	public String country;
+	public int zipcode;
+	public String city;
+	public String street;
+	public String number;
 
 	public Address(String _country, int _zipcode, String _city, String _street, String _number)
 	{
