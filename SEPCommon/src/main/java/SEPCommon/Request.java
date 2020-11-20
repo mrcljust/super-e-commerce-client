@@ -12,5 +12,6 @@ public enum Request {
 	AddItem,
 	AddItems,
 	BuyItem,
-	DeleteUser
+	DeleteUser,
+	GetUserData
 }

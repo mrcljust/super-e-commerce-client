@@ -15,4 +15,14 @@ public class ClientRequest {
 		requestType=res;
 		requestMap=reqMap;
 	}
+	
+	public Request getRequestType()
+	{
+		return requestType;
+	}
+	
+	public Map<String, Object> getRequestMap()
+	{
+		return requestMap;
+	}
 }

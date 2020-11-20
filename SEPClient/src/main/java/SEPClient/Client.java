@@ -14,7 +14,7 @@ public class Client {
 		// Socket-Verbindung zum Server herstellen
 		try {
 			// Client Socket erstellen
-			clientSocket = new Socket("localhost", 40001);
+			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT);
 			System.out.println("Verbindung zum Server hergestellt");
 			return true;
 		} catch (IOException e) {
