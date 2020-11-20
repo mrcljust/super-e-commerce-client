@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 18. Nov 2020 um 22:05
+-- Erstellungszeit: 20. Nov 2020 um 02:41
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -76,7 +76,8 @@ CREATE TABLE `users` (
   `adress` varchar(255) NOT NULL,
   `image` blob NOT NULL,
   `wallet` decimal(10,0) NOT NULL,
-  `companyname` varchar(255) NOT NULL
+  `companyname` varchar(255) NOT NULL,
+  `lastviewed` varchar(255) NOT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
