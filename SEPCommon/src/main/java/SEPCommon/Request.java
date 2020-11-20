@@ -1,7 +1,6 @@
 package SEPCommon;
 
 public enum Request {
-
 	RegisterUser,
 	LoginUser,
 	EditUser,
@@ -12,5 +11,6 @@ public enum Request {
 	AddItem,
 	AddItems,
 	BuyItem,
-	DeleteUser
+	DeleteUser,
+	GetUserData
 }

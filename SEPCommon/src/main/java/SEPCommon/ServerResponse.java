@@ -6,7 +6,7 @@ import java.util.Map;
 public class ServerResponse {
 
 	private Response responseType;
-	Map<String, Object> responseMap = new HashMap<String, Object>();
+	HashMap<String, Object> responseMap = new HashMap<String, Object>();
 
 	public ServerResponse(Response res, HashMap<String,Object> resMap)
 	{
@@ -14,4 +14,13 @@ public class ServerResponse {
 		responseMap=resMap;
 	}
 	
+	public Response getResponseType()
+	{
+		return responseType;
+	}
+	
+	public Map<String, Object> getResponseMap()
+	{
+		return responseMap;
+	}
 }

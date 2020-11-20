@@ -12,6 +12,9 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.*;
+import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.event.ActionEvent;
 
 public class FXMLHandler extends Application {
 	private Scene scene;
@@ -24,9 +27,8 @@ public class FXMLHandler extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		// Zeige Start-Szene
-		stage = new Stage();
-		OpenScene("Start", "Super-E-commerce-Platform");
+		// Zeige Start-Szene in neuem Fenster
+		OpenSceneAndStage("Start", "Super-E-commerce-Platform");
 
 		client = new Client();
 		if (client.start()) {
@@ -40,10 +42,25 @@ public class FXMLHandler extends Application {
 		}
 	}
 
-	public void OpenScene(String sceneName, String sceneTitle) {
+	public void OpenSceneAndStage(String sceneName, String sceneTitle) {
 		// Die Methode öffnet eine Szene aus dem UI Package und vergibt den Titel
 		try {
 			scene = new Scene(CreateParent(sceneName));
+			if(stage==null)
+				stage = new Stage();
+			stage.setScene(scene);
+			stage.setTitle(sceneTitle);
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void OpenSceneInStage(Stage _stage, String sceneName, String sceneTitle) {
+		// Die Methode öffnet eine Szene aus dem UI Package und vergibt den Titel
+		try {
+			scene = new Scene(CreateParent(sceneName));
+			stage=_stage;
 			stage.setScene(scene);
 			stage.setTitle(sceneTitle);
 			stage.show();
@@ -73,5 +90,120 @@ public class FXMLHandler extends Application {
 		// Die Methode übergibt einen Parent aus einer fxml-Datei, welcher benötigt
 		// wird, um eine Szene zu öffnen
 		return FXMLLoader.load(getClass().getResource("/SEPClient/UI/" + sceneName + ".fxml"));
+	}
+	
+	//FXML OBJEKTE
+	
+    @FXML
+    private Button Start_LoginButton;
+
+    @FXML
+    private Button Start_RegisterButton;
+    
+    //FXML EVENTS
+	
+    @FXML
+    void Start_LoginClick(ActionEvent event) {
+		OpenSceneInStage((Stage) Start_LoginButton.getScene().getWindow(), "Login", "Anmeldung");
+	}
+
+    @FXML
+    void Start_RegisterClick(ActionEvent event) {
+    	OpenSceneInStage((Stage) Start_RegisterButton.getScene().getWindow(), "Register", "Registrierung");
+	}
+
+    @FXML
+	void Register_OKClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Register_ReturnClick(ActionEvent event) {
+		
+	}
+
+    @FXML
+	void Login_OKClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Login_ReturnClick(ActionEvent event) {
+		
+	}
+
+    @FXML
+	void Register_OpenPictureClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void EditUser_OkClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void EditUser_ReturnClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void EdiutUser_OopenPicutre(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Wallet_IncreaseClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Wallet_ReturnClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void ReturnClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void EdituUser_Click(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Searchbar_GoClick(ActionEvent event) {
+
+	}
+
+    @FXML
+	void BuyButton_Click(ActionEvent event) {
+
+	}
+
+    @FXML
+	void SellButton_Click(ActionEvent event) {
+
+	}
+
+    @FXML
+	void Sell_OpenCSV(ActionEvent event) {
+
+	}
+
+    @FXML
+	void SellConfirmButton_Click(ActionEvent event) {
+
+	}
+
+    @FXML
+	void CategoryDropDown_Change(ActionEvent event) {
+
+	}
+
+    @FXML
+	void PriceDropDown_Change(ActionEvent event) {
+
 	}
 }
