@@ -13,9 +13,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 	private ServerSocket listener;
-	private Socket socket;
-	private DataInputStream dis; // Daten empfangen
-	private DataOutputStream dos; // Daten schicken
 	private static ArrayList<ClientHandler> clients = new ArrayList<>();
 	//ExecutorService zum Ausführen der Client-Threads. 999 maximale Threads gleichzeitig.
 	private static ExecutorService pool = Executors.newFixedThreadPool(999);
@@ -78,9 +75,4 @@ public class Server {
 			System.out.println("Fehler beim Schließen der Client-Sockets: " + e.getMessage());
 		}
 	}
-	
-	public void receiveRequest() {
-		
-	}
-
 }

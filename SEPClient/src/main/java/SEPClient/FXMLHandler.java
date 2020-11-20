@@ -112,79 +112,98 @@ public class FXMLHandler extends Application {
     	OpenSceneInStage((Stage) Start_RegisterButton.getScene().getWindow(), "Register", "Registrierung");
 	}
 
-	public void Register_OKClick(ActionEvent event) {
+    @FXML
+	void Register_OKClick(ActionEvent event) {
 
 	}
 
-	public void Register_ReturnClick(ActionEvent event) {
+    @FXML
+	void Register_ReturnClick(ActionEvent event) {
 		
 	}
 
-	public void Login_OKClick(ActionEvent event) {
+    @FXML
+	void Login_OKClick(ActionEvent event) {
 
 	}
 
-	public void Login_ReturnClick(ActionEvent event) {
+    @FXML
+	void Login_ReturnClick(ActionEvent event) {
 		
 	}
 
-	public void Register_OpenPictureClick(ActionEvent event) {
+    @FXML
+	void Register_OpenPictureClick(ActionEvent event) {
 
 	}
 
-	public void EditUser_OkClick(ActionEvent event) {
+    @FXML
+	void EditUser_OkClick(ActionEvent event) {
 
 	}
 
-	public void EditUser_ReturnClick(ActionEvent event) {
+    @FXML
+	void EditUser_ReturnClick(ActionEvent event) {
 
 	}
 
-	public void EdiutUser_OopenPicutre(ActionEvent event) {
+    @FXML
+	void EdiutUser_OopenPicutre(ActionEvent event) {
 
 	}
 
-	public void Wallet_IncreaseClick(ActionEvent event) {
+    @FXML
+	void Wallet_IncreaseClick(ActionEvent event) {
 
 	}
 
-	public void Wallet_ReturnClick(ActionEvent event) {
+    @FXML
+	void Wallet_ReturnClick(ActionEvent event) {
 
 	}
 
-	public void ReturnClick(ActionEvent event) {
+    @FXML
+	void ReturnClick(ActionEvent event) {
 
 	}
 
-	public void EdituUser_Click(ActionEvent event) {
+    @FXML
+	void EdituUser_Click(ActionEvent event) {
 
 	}
 
-	public void Searchbar_GoClick(ActionEvent event) {
+    @FXML
+	void Searchbar_GoClick(ActionEvent event) {
 
 	}
 
-	public void BuyButton_Click(ActionEvent event) {
+    @FXML
+	void BuyButton_Click(ActionEvent event) {
 
 	}
 
-	public void SellButton_Click(ActionEvent event) {
+    @FXML
+	void SellButton_Click(ActionEvent event) {
 
 	}
 
-	public void Sell_OpenCSV(ActionEvent event) {
+    @FXML
+	void Sell_OpenCSV(ActionEvent event) {
 
 	}
 
-	public void SellConfirmButton_Click(ActionEvent event) {
+    @FXML
+	void SellConfirmButton_Click(ActionEvent event) {
 
 	}
 
-	public void CategoryDropDown_Change(ActionEvent event) {
+    @FXML
+	void CategoryDropDown_Change(ActionEvent event) {
 
 	}
 
-	public void PriceDropDown_Change(ActionEvent event) {
+    @FXML
+	void PriceDropDown_Change(ActionEvent event) {
 
 	}
 }

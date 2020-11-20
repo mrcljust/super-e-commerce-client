@@ -17,7 +17,7 @@ import java.sql.Date;
 public class SQL{
 
 	private boolean isConnected;
-
+	
 	public boolean connect() {
 		isConnected=true;
 		return true;
