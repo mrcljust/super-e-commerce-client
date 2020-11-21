@@ -1,25 +1,17 @@
 package SEPClient;
 
 import java.io.IOException;
-
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Label;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.*;
-import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.event.ActionEvent;
+import javafx.geometry.Rectangle2D;
 
 public class FXMLHandler extends Application {
-	private Scene scene;
-	private Stage stage;
-	private Client client;
+	private static Scene scene;
+	private static Stage stage;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -28,10 +20,12 @@ public class FXMLHandler extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Zeige Start-Szene in neuem Fenster
-		OpenSceneAndStage("Start", "Super-E-commerce-Platform");
+		OpenSceneAndStage("Start", "Super-E-commerce-Platform", false, true);
 
-		client = new Client();
-		if (client.start()) {
+		Client client = new Client();
+		client.start();
+		if (client.isStarted)
+		{
 			// Client hat erfolgreich Verbindung zum Server hergestellt
 		} else {
 			// Fehler bei Verbindungsherstellung zum Server, zeige Fehlermeldung
@@ -41,8 +35,25 @@ public class FXMLHandler extends Application {
 					true);
 		}
 	}
+	
+	public static Stage getStage()
+	{
+		return stage;
+	}
 
-	public void OpenSceneAndStage(String sceneName, String sceneTitle) {
+	private static Parent CreateParent(String sceneName) {
+		// Die Methode übergibt einen Parent aus einer fxml-Datei, welcher benötigt
+		// wird, um eine Szene zu öffnen
+		try {
+			return FXMLLoader.load(FXMLHandler.class.getResource("/SEPClient/UI/" + sceneName + ".fxml"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public void OpenSceneAndStage(String sceneName, String sceneTitle, boolean resizable, boolean startCentered) {
 		// Die Methode öffnet eine Szene aus dem UI Package und vergibt den Titel
 		try {
 			scene = new Scene(CreateParent(sceneName));
@@ -50,20 +61,36 @@ public class FXMLHandler extends Application {
 				stage = new Stage();
 			stage.setScene(scene);
 			stage.setTitle(sceneTitle);
+			stage.setResizable(resizable);
 			stage.show();
+			
+			if(startCentered)
+			{
+				Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+				stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
+				stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	public void OpenSceneInStage(Stage _stage, String sceneName, String sceneTitle) {
+	public static void OpenSceneInStage(Stage _stage, String sceneName, String sceneTitle, boolean resizable, boolean startCentered) {
 		// Die Methode öffnet eine Szene aus dem UI Package und vergibt den Titel
 		try {
 			scene = new Scene(CreateParent(sceneName));
 			stage=_stage;
 			stage.setScene(scene);
 			stage.setTitle(sceneTitle);
+			stage.setResizable(resizable);
 			stage.show();
+			
+			if(startCentered)
+			{
+				Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
+				stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
+				stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -83,127 +110,5 @@ public class FXMLHandler extends Application {
 		} else {
 			alert.show();
 		}
-	}
-	// Idee: Je nach Button -> Klasse Eventhandler die je nach Button etwas macht
-
-	private Parent CreateParent(String sceneName) throws IOException {
-		// Die Methode übergibt einen Parent aus einer fxml-Datei, welcher benötigt
-		// wird, um eine Szene zu öffnen
-		return FXMLLoader.load(getClass().getResource("/SEPClient/UI/" + sceneName + ".fxml"));
-	}
-	
-	//FXML OBJEKTE
-	
-    @FXML
-    private Button Start_LoginButton;
-
-    @FXML
-    private Button Start_RegisterButton;
-    
-    //FXML EVENTS
-	
-    @FXML
-    void Start_LoginClick(ActionEvent event) {
-		OpenSceneInStage((Stage) Start_LoginButton.getScene().getWindow(), "Login", "Anmeldung");
-	}
-
-    @FXML
-    void Start_RegisterClick(ActionEvent event) {
-    	OpenSceneInStage((Stage) Start_RegisterButton.getScene().getWindow(), "Register", "Registrierung");
-	}
-
-    @FXML
-	void Register_OKClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Register_ReturnClick(ActionEvent event) {
-		
-	}
-
-    @FXML
-	void Login_OKClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Login_ReturnClick(ActionEvent event) {
-		
-	}
-
-    @FXML
-	void Register_OpenPictureClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void EditUser_OkClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void EditUser_ReturnClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void EdiutUser_OopenPicutre(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Wallet_IncreaseClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Wallet_ReturnClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void ReturnClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void EdituUser_Click(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Searchbar_GoClick(ActionEvent event) {
-
-	}
-
-    @FXML
-	void BuyButton_Click(ActionEvent event) {
-
-	}
-
-    @FXML
-	void SellButton_Click(ActionEvent event) {
-
-	}
-
-    @FXML
-	void Sell_OpenCSV(ActionEvent event) {
-
-	}
-
-    @FXML
-	void SellConfirmButton_Click(ActionEvent event) {
-
-	}
-
-    @FXML
-	void CategoryDropDown_Change(ActionEvent event) {
-
-	}
-
-    @FXML
-	void PriceDropDown_Change(ActionEvent event) {
-
 	}
 }

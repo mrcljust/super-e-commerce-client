@@ -1,9 +1,10 @@
 package SEPCommon;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerResponse {
+public class ServerResponse implements Serializable {
 
 	private Response responseType;
 	HashMap<String, Object> responseMap = new HashMap<String, Object>();
