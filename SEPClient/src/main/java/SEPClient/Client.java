@@ -63,8 +63,8 @@ public class Client {
 			}
 			else
 			{
-				ServerResponse serverres = (ServerResponse)serverResponse;
-				return serverres;
+				ServerResponse serverRes = (ServerResponse)serverResponse;
+				return serverRes;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
