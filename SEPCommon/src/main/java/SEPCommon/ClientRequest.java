@@ -2,11 +2,10 @@
 package SEPCommon;
 
 import java.io.Serializable;
-import java.net.Authenticator.RequestorType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClientRequest {
+public class ClientRequest implements Serializable {
 	private Request requestType;
 	private Map<String, Object> requestMap = new HashMap<String, Object>();
 

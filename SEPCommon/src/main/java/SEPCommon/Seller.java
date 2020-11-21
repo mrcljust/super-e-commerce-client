@@ -1,6 +1,8 @@
 package SEPCommon;
 
-public class Seller extends User {
+import java.io.Serializable;
+
+public class Seller extends User implements Serializable {
 
 	private String businessname;
 
@@ -16,7 +18,6 @@ public class Seller extends User {
 		wallet=_wallet;
 		address=_address;
 		businessname = _businessname;
-
 	}
 
 	//Konstruktor ohne ID
@@ -34,14 +35,14 @@ public class Seller extends User {
 
 	//Getter Methoden
 	
-	private String getBusinessname()
+	public String getBusinessname()
 	{
 		return businessname;
 	}
 	
 	//Setter Methoden
 	
-	private void setBusinessname(String _businessname)
+	public void setBusinessname(String _businessname)
 	{
 		businessname=_businessname;
 	}

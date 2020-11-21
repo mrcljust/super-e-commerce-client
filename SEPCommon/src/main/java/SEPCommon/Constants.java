@@ -9,4 +9,7 @@ public class Constants {
 	
 	public final static String SQLSERVERIP = "localhost";
 	public final static int SQLPORT = 3306;
+	public final static String SQLCONNECTIONSTRING = "jdbc:mysql://localhost:3306/sep";
+	public final static String SQLUSER = "root";
+	
 }

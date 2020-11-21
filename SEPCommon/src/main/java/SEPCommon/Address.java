@@ -1,16 +1,20 @@
 package SEPCommon;
 
-public class Address {
+import java.io.Serializable;
 
+public class Address implements Serializable {
+
+	private String fullname;
 	private String country;
 	private int zipcode;
 	private String city;
 	private String street;
 	private String number; //String wegen Buchstabenzusätzen (z.B. Nr 249a)
 
-	public Address(String _country, int _zipcode, String _city, String _street, String _number)
+	public Address(String _fullname, String _country, int _zipcode, String _city, String _street, String _number)
 	{
 		//Erstellt ein Address-Objekt mit den gegebenen Werten
+		fullname=_fullname;
 		country=_country;
 		zipcode=_zipcode;
 		city=_city;
@@ -19,6 +23,11 @@ public class Address {
 	}
 	
 	//Getter Methoden
+	
+	public String getFullname()
+	{
+		return fullname;
+	}
 	
 	public String getCountry()
 	{
@@ -47,6 +56,11 @@ public class Address {
 	
 	//Setter Methoden
 
+	public void setFullname(String _fullname)
+	{
+		fullname=_fullname;
+	}
+	
 	public void setCountry(String _country)
 	{
 		country=_country;

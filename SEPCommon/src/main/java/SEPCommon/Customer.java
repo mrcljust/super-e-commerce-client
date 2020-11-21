@@ -1,6 +1,8 @@
 package SEPCommon;
 
-public class Customer extends User {
+import java.io.Serializable;
+
+public class Customer extends User implements Serializable {
 	
 	//Konstruktor mit ID
 	public Customer(int _id, String _username, String _email, String _password, byte[] _picture, double _wallet, Address _address)

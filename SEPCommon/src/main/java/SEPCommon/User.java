@@ -1,6 +1,8 @@
 package SEPCommon;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable{
 
 	protected int id;
 	protected String username;
