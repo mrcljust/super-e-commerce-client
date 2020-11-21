@@ -9,7 +9,8 @@ public class Client {
 	private Socket clientSocket;
 	private DataInputStream dis; // Daten empfangen
 	private DataOutputStream dos; // Daten schicken
-
+	public boolean isStarted = false;
+	
 	public boolean start() {
 		// Socket-Verbindung zum Server herstellen
 		try {

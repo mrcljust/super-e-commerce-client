@@ -6,8 +6,6 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
-
 import SEPCommon.ClientRequest;
 import SEPCommon.Product;
 import SEPCommon.Request;
@@ -16,41 +14,36 @@ import SEPCommon.ServerResponse;
 import SEPCommon.User;
 import SEPServer.SQL.SQL;
 
-public class ClientHandler implements Runnable {
+public class ServerThread implements Runnable {
 	private Socket client;
 	private int clientID;
+	private SEPServer.SQL.SQL sql = new SQL();
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
-	private SEPServer.SQL.SQL sql = new SQL();
 	
-	ClientHandler(Socket clientSocket, int _clientID)
+	ServerThread(Socket clientSocket, int _clientID)
 	{
 		this.client = clientSocket;
 		this.clientID = _clientID;
 		System.out.println("Client-Verbindung (ID " + this.clientID + ") angenommen.");
-		try
-		{
-			in = new ObjectInputStream(clientSocket.getInputStream());
-			out = new ObjectOutputStream(clientSocket.getOutputStream());
-		}
-		catch (IOException e)
-		{
-			System.out.println("Client-Verbindung (ID " + this.clientID + ") geschlossen.");
-		}
 	}
 	
 	@Override
 	public void run() {
+		ClientRequest clientreq = null;
 		try
 		{
+			in = new ObjectInputStream(client.getInputStream());
+			out = new ObjectOutputStream(client.getOutputStream());
+			
 			//Endlosschleife
-			while(true)
+			while((clientreq = (ClientRequest)in.readObject()) != null)
 			{
-				ClientRequest clientreq = (ClientRequest)in.readObject();
+				//ClientRequest clientreq = (ClientRequest)_in.readObject();
 				SEPCommon.Request requestType = clientreq.getRequestType();
 				Map<String, Object> requestMap = clientreq.getRequestMap();
+				System.out.println("ClientRequest - " + clientreq.getRequestType() + " - " + clientreq.getRequestMap());
 				
-				System.out.println(requestType);
 				
 				//Verschiedene Requests handlen
 				
@@ -63,6 +56,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.registerUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -76,6 +71,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.loginUser(userOrEmail, password);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -88,6 +85,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.editUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -100,6 +99,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.deleteUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -113,6 +114,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.increaseWallet(argUser, amount);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -126,6 +129,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.decreaseWallet(argUser, amount);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -176,6 +181,8 @@ public class ClientHandler implements Runnable {
 					}
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -203,6 +210,8 @@ public class ClientHandler implements Runnable {
 					}
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -216,6 +225,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.addItem(argUser, argProduct);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -229,6 +240,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.addItems(argUser, argProducts);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -242,6 +255,8 @@ public class ClientHandler implements Runnable {
 					//SQL-Abfrage ausführen
 					Response responseType = sql.buyItem(argUser, argProduct);
 					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -283,13 +298,15 @@ public class ClientHandler implements Runnable {
 					}
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 			}
 		}
 		catch(IOException e)
 		{
-			System.out.println("IO-Exception im ClientHandler: " + e.getLocalizedMessage());
+			System.out.println("Client-Verbindung (ID " + this.clientID + ") geschlossen.");
 		} catch (ClassNotFoundException e) {
 			//sollte nicht auftreten, aber muss gecatcht werden.
 			e.printStackTrace();

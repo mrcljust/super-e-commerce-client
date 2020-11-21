@@ -1,8 +1,5 @@
 package SEPServer;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.EOFException;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -13,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Server {
 	private ServerSocket listener;
-	private static ArrayList<ClientHandler> clients = new ArrayList<>();
+	private static ArrayList<ServerThread> clients = new ArrayList<>();
 	//ExecutorService zum Ausführen der Client-Threads. 999 maximale Threads gleichzeitig.
 	private static ExecutorService pool = Executors.newFixedThreadPool(999);
 	
@@ -30,7 +27,7 @@ public class Server {
 			while(true)
 			{
 				Socket clientSocket = listener.accept();
-				ClientHandler clientThread = new ClientHandler(clientSocket, clientid);
+				ServerThread clientThread = new ServerThread(clientSocket, clientid);
 				clientid++;
 				clients.add(clientThread);
 				

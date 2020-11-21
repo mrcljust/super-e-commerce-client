@@ -3,24 +3,45 @@ package SEPServer.SQL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.ResultSet;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.Vector;
-
 import SEPCommon.Response;
 import SEPCommon.User;
+import SEPCommon.Constants;
 import SEPCommon.Product;
-
-import java.sql.Date;
 
 public class SQL{
 
 	private boolean isConnected;
+	private static Connection connection;
 	
 	public boolean connect() {
-		isConnected=true;
-		return true;
+		try {
+			connection = DriverManager.getConnection(Constants.SQLCONNECTIONSTRING, Constants.SQLUSER, null);
+			isConnected=true;
+			return true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	private Boolean checkConnection()
+	{
+		if (!isConnected)
+		{
+			connect();
+			if(!isConnected)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	public Response registerUser(User user) {
@@ -32,9 +53,9 @@ public class SQL{
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -46,9 +67,9 @@ public class SQL{
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -62,9 +83,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -78,9 +99,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -94,9 +115,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -110,9 +131,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -126,9 +147,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
@@ -142,9 +163,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
@@ -158,9 +179,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
@@ -175,9 +196,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
@@ -191,9 +212,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -207,9 +228,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -223,9 +244,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return Response.NoDBConnection;
 		}
 		
 		return Response.Success;
@@ -239,9 +260,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
@@ -255,9 +276,9 @@ public class SQL{
 		//wenn sonstiger Fehler auftritt ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
-		if (!isConnected)
+		if (!checkConnection())
 		{
-			connect();
+			return null;
 		}
 		
 		return null;
