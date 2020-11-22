@@ -164,10 +164,10 @@ public class SQL {
 			ResultSet AllProducts = pstmt.executeQuery();
 
 			int sqlcounter = 1;
-			while (AllProducts.next()) {
+			while (AllProducts.next()) {  //Tupel Zählen
 				sqlcounter++;
 			}
-			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery);
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			ResultSet AllProducts2= pstmt2.executeQuery();
 			
 
@@ -430,8 +430,8 @@ public class SQL {
 	public static void main(String[] args) {
 	SQL testObject= new SQL();
 	testObject.connect();
-	String searchString="Harry";
-	System.out.println(testObject.fetchProductsByString(searchString));
+	
+	System.out.println(testObject.fetchProducts());
 	
 		
 	}
