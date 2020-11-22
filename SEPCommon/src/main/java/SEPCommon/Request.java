@@ -7,6 +7,7 @@ public enum Request {
 	IncreaseWallet,
 	DecreaseWallet,
 	LastViewedProducts,
+	AddLastViewedProduct,
 	FetchProducts,
 	AddItem,
 	AddItems,

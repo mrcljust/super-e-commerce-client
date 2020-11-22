@@ -215,6 +215,22 @@ public class ServerThread implements Runnable {
 					out.writeObject(response);
 				}
 				
+				//Request AddLastViewedProduct
+				//HASHMAP: "ViewedProductID" - ID des angesehenen Produkts (int), "User" - Userobjekt, 
+				
+				else if(requestType == Request.AddLastViewedProduct)
+				{
+					User argUser = (User)requestMap.get("User");
+					int viewedProductId = (int)requestMap.get("ViewedProductID");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.addLastViewedProduct(viewedProductId, argUser);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
 				//Request AddItem
 				//HASHMAP: "User" - Userobjekt (Verkäufer), "Product" - Hinzuzufügendes Produkt
 				else if(requestType == Request.AddItem)

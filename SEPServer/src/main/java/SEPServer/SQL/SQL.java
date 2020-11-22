@@ -330,20 +330,126 @@ public class SQL {
 	}
 
 	public Product[] fetchLastViewedProducts(User user) {
-		// Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
-		// Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
-
-		// Wenn erfolgreich gefetcht, Product-Array returnen
-		// wenn keine Verbindung zu DB: null returnen
-		// wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null
-		// returnen
-
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
+		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
+		
+		//Wenn erfolgreich gefetcht, Product-Array returnen
+		//wenn keine Verbindung zu DB: null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
+		
+		//Verbindung herstellen, wenn keine Verbindung besteht
+		if (!checkConnection())
+		{
 			return null;
 		}
-
+		
+		Product[] lastViewedProducts;
+		
+		try {
+			PreparedStatement fetchLastViewedProductIds = connection.prepareStatement("SELECT lastviewed FROM users WHERE id='" + user.getId() + "'");
+			ResultSet fetchLastViewedProductIdsResult = fetchLastViewedProductIds.executeQuery();
+			
+			
+			if(fetchLastViewedProductIdsResult.next())
+			{
+				String lastviewed = fetchLastViewedProductIdsResult.getString("lastviewed");
+				if(lastviewed=="" || lastviewed==null)
+					return null;
+				
+				String[] lastViewedIds = lastviewed.split(",");
+				lastViewedProducts = new Product[lastViewedIds.length];
+				
+				int newArrayCounter = 0;
+				for(String viewedIdStr : lastViewedIds)
+				{
+					int viewedId = Integer.parseInt(viewedIdStr);
+					
+					//Produkt-Daten aus DB holen
+					PreparedStatement fetchProductInfo = connection.prepareStatement("SELECT * FROM products JOIN users ON (products.seller_id=users.id) JOIN categories ON (products.category_id = categories.id) WHERE products.id='" + viewedId + "'");
+					ResultSet fetchProductsInfoResult = fetchProductInfo.executeQuery();
+					if(fetchProductsInfoResult.next())
+					{
+						Address address = new Address(fetchProductsInfoResult.getString("users.fullname"),
+								fetchProductsInfoResult.getString("users.country"), fetchProductsInfoResult.getInt("users.postalcode"),
+								fetchProductsInfoResult.getString("users.city"), fetchProductsInfoResult.getString("users.street"),
+								fetchProductsInfoResult.getString("users.number"));
+						Seller seller = new Seller(fetchProductsInfoResult.getInt("users.id"), fetchProductsInfoResult.getString("users.username"),
+								fetchProductsInfoResult.getString("users.email"), fetchProductsInfoResult.getString("users.password"),
+								fetchProductsInfoResult.getBytes("users.picture"), fetchProductsInfoResult.getDouble("users.wallet"), address,
+								fetchProductsInfoResult.getString("users.companyname"));
+						
+						Product product = new Product(viewedId, fetchProductsInfoResult.getString("products.title"), fetchProductsInfoResult.getDouble("products.price"), seller, fetchProductsInfoResult.getString("categories.title"), fetchProductsInfoResult.getString("products.description"));
+						lastViewedProducts[newArrayCounter] = product;
+					}
+					newArrayCounter++;
+				}
+			}
+			else
+			{
+				//kein Entry mit der UserId - eigentlich nicht möglich.
+				return null;
+			}
+		} catch (SQLException e) {
+			return null;
+		}
+		
 		return null;
+	}
+	
+	public Response addLastViewedProduct(int viewedProductId, User user) {
+		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
+		
+		//Wenn erfolgreich hinzugefügt, Response.Success returnen
+		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		
+		//Verbindung herstellen, wenn keine Verbindung besteht
+		if (!checkConnection())
+		{
+			return Response.NoDBConnection;
+		}
+		
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
+		Product[] currentLastViewedProducts = fetchLastViewedProducts(user);
+		
+		String newLastViewedProductsString = "";
+		if(currentLastViewedProducts!=null)
+		{
+			if(currentLastViewedProducts.length==10)
+			{
+				//Maximale Länge (10), setze viewedProductId an den Anfang und ersetze die erste Id
+				newLastViewedProductsString += String.valueOf(viewedProductId);
+				
+				for(int i=1;i<10;i++)
+				{
+					newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+				}
+			}
+			else
+			{
+				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				newLastViewedProductsString += String.valueOf(viewedProductId);
+				
+				for(int i=0;i<currentLastViewedProducts.length;i++)
+				{
+					newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+				}
+			}
+		}
+		else
+		{
+			//Keine zuletzt angesehenen Produkte gespeichert oder Fehler
+			newLastViewedProductsString += String.valueOf(viewedProductId);
+		}
+		
+		try {
+			PreparedStatement updateLastViewedProductIds = connection.prepareStatement("UPDATE users SET lastviewed='" + newLastViewedProductsString + "' WHERE id='" + user.getId() + "'");
+			updateLastViewedProductIds.execute();
+			return Response.Success;
+		} catch (SQLException e) {
+			//Fehler aufgetreten
+			return Response.Failure;
+		}
 	}
 
 	public Response addItem(User seller, Product product) {
@@ -363,18 +469,69 @@ public class SQL {
 	}
 
 	public Response addItems(User seller, Product[] products) {
-		// Neue Produkte in der Datenbank anhand des Arrays products anlegen. Die
-		// seller_id ist die ID des Objekts seller
-
-		// Wenn Produkte erfolgreich angelegt, Response.Success returnen
-		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
-
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		//Neue Produkte in der Datenbank anhand des Arrays products anlegen. Die seller_id ist die ID des Objekts seller
+		
+		//Wenn alle Produkte erfolgreich angelegt, Response.Success returnen
+		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		//wenn nur ein Teil der Produkte angelegt wird ggf. Response.Failure returnen
+		
+		//Verbindung herstellen, wenn keine Verbindung besteht
+		
+		if (!checkConnection())
+		{
+			//Fehler beim Herstellen der DB-Verbindung
 			return Response.NoDBConnection;
 		}
+		
+		//Ungültigkeit usw. wird clientseitig geprüft
+		
+		int sellerid = seller.getId();
+		
+		for(Product p : products)
+		{
+			//Für jedes Produkt p prüfen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
+			int categoryid;
+			
 
+			try {
+				PreparedStatement selectCategoryID = connection.prepareStatement("SELECT id FROM categories WHERE title='" + p.getCategory() + "'");
+				ResultSet selectCategoryIDResult = selectCategoryID.executeQuery();
+				if(selectCategoryIDResult.next())
+				{
+					//Kategorie existiert bereits, schreibe ID in Variable categoryid
+					categoryid = selectCategoryIDResult.findColumn("id");
+				}
+				else
+				{
+					//Kategorie existiert noch nicht
+					//Lege Kategorie an
+					PreparedStatement createCategory = connection.prepareStatement("INSERT INTO categories(title) VALUES('" + p.getCategory() + "'");
+					createCategory.execute();
+					
+					//ID nach Anlegen der Kategorie auslesen
+					selectCategoryIDResult = selectCategoryID.executeQuery();
+					if(selectCategoryIDResult.next())
+					{
+						categoryid = selectCategoryIDResult.findColumn("id");
+					}
+					else
+					{
+						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wäre)
+						return Response.Failure;
+					}
+				}
+				
+				//Produkt p anlegen
+				PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description)"
+							+ "VALUES ('" + sellerid + "', '" + p.getName() + "', '" + p.getPrice() + "', '" + categoryid + "', '" + p.getDescription() + "'");
+				insertProduct.execute();
+			} catch (SQLException e) {
+				e.printStackTrace();
+				//Fehler aufgetreten
+				return Response.Failure;
+			}
+		}
 		return Response.Success;
 	}
 
