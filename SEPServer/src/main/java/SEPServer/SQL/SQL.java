@@ -148,7 +148,7 @@ public class SQL {
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		String allProductsQuery = "SELECT * \r\n" 
 								+ "FROM products\r\n" 
-								+"JOIN categories\r\n"
+								+ "JOIN categories\r\n"
 								+ "WHERE categories.id=products.category_id";
 
 		int counter = 0;
@@ -165,15 +165,19 @@ public class SQL {
 			while (AllProducts.next()) {
 				sqlcounter++;
 			}
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery);
+			ResultSet AllProducts2= pstmt2.executeQuery();
+			
 
 			Product[] allProducts = new Product[sqlcounter];
-
-			while (AllProducts.next() == true) {
-				allProducts[counter] = new Product(AllProducts.getString("products.title"),
-						AllProducts.getDouble("products.price"), AllProducts.getString("products.seller_id"),
-						AllProducts.getString("categories.title"), AllProducts.getString("products.description"));
+			
+			while (AllProducts2.next()) {
+				allProducts[counter] = new Product(AllProducts2.getString("products.title"),
+						AllProducts2.getDouble("products.price"), AllProducts2.getString("products.seller_id"),
+						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
 				counter++;
 				System.out.println("works");
+				System.out.println(counter);
 			}
 
 			return allProducts;
@@ -199,8 +203,8 @@ public class SQL {
 					 		   + "FROM products \r\n" 
 					 		   + "JOIN categories\r\n"
 					 		   + "ON (products.category_ID = categories.ID)\r\n" 
-					 		   + "WHERE categories.title=" + category;
-		
+					 		   + "WHERE categories.title='" + category+"'";
+
 		if (!checkConnection()) {
 			System.out.println("connection probleme");
 			return null;
@@ -215,14 +219,18 @@ public class SQL {
 				sqlcounter++;
 			}
 
+			PreparedStatement pstmt2 = connection.prepareStatement(queryByCategory);
+			ResultSet AllProductsByCategory2 = pstmt2.executeQuery();
+			
+
 			Product[] allProductsSameCategory = new Product[sqlcounter];
 
-			while (AllProductsByCategory.next()) {
-				allProductsSameCategory[counter] = new Product(AllProductsByCategory.getString("products.title"),
-						AllProductsByCategory.getDouble("products.price"),
-						AllProductsByCategory.getString("products.seller_id"),
-						AllProductsByCategory.getString("categories.title"),
-						AllProductsByCategory.getString("products.description"));
+			while (AllProductsByCategory2.next()) {
+				allProductsSameCategory[counter] = new Product(AllProductsByCategory2.getString("products.title"),
+						AllProductsByCategory2.getDouble("products.price"),
+						AllProductsByCategory2.getString("products.seller_id"),
+						AllProductsByCategory2.getString("categories.title"),
+						AllProductsByCategory2.getString("products.description"));
 				counter++;
 				System.out.println("funktioniert");
 			}
@@ -245,10 +253,10 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		String query = "SELECT * \r\n"
-					 + "FROM Producs\r\n"
+					 + "FROM Products\r\n"
 					 + "JOIN Categories\r\n"
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
-					 + "WHERE Products.Title LIKE"+ searchString; //+"%\r\n"
+					 + "WHERE Products.Title LIKE'%"+ searchString+"%'"; //+"%\r\n"
 					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
 					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
 		
@@ -258,20 +266,26 @@ public class SQL {
 		try {
 			int counter = 0;
 			int sqlcounter = 1;
-			PreparedStatement statement = connection.prepareStatement(query);
-			ResultSet AllProductsByString = statement.executeQuery();
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			ResultSet AllProductsByString = pstmt.executeQuery();
 
 			while (AllProductsByString.next()) {
 				sqlcounter++;
 			}
+			
+			PreparedStatement pstmt2 = connection.prepareStatement(query);
+			ResultSet AllProductsByString2 = pstmt2.executeQuery();
+			
+			
 			Product[] allProductsByString = new Product[sqlcounter];
-			while (AllProductsByString.next()) {
-				allProductsByString[counter] = new Product(AllProductsByString.getString("products.title"),
-						AllProductsByString.getDouble("products.price"),
-						AllProductsByString.getString("products.seller_id"),
-						AllProductsByString.getString("categories.title"),
-						AllProductsByString.getString("products.description"));
+			while (AllProductsByString2.next()) {
+				allProductsByString[counter] = new Product(AllProductsByString2.getString("products.title"),
+						AllProductsByString2.getDouble("products.price"),
+						AllProductsByString2.getString("products.seller_id"),
+						AllProductsByString2.getString("categories.title"),
+						AllProductsByString2.getString("products.description"));
 				counter++;
+				System.out.println("funktioniert");
 			}
 			return allProductsByString;
 
@@ -382,7 +396,9 @@ public class SQL {
 	
 	public static void main(String[] args) {
 	SQL testObject= new SQL();
-	System.out.println(testObject.fetchProducts());
+	testObject.connect();
+	String searchString="Harry";
+	System.out.println(testObject.fetchProductsByString(searchString));
 	
 		
 	}
