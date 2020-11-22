@@ -428,10 +428,13 @@ public class SQL {
 	}
 	
 	public static void main(String[] args) {
-	SQL testObject= new SQL();
-	testObject.connect();
+		//Zum testen
+		SQL testObject= new SQL();
+		testObject.connect();
 	
-	System.out.println(testObject.fetchProducts());
+	
+		User testUser = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
+		testObject.fetchLastViewedProducts(testUser);
 	
 		
 	}
