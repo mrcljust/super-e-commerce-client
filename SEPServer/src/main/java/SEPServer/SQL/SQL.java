@@ -161,7 +161,7 @@ public class SQL {
 			PreparedStatement pstmt = connection.prepareStatement(allProductsQuery);
 			ResultSet AllProducts = pstmt.executeQuery();
 
-			int sqlcounter = 0;
+			int sqlcounter = 1;
 			while (AllProducts.next()) {
 				sqlcounter++;
 			}
@@ -207,7 +207,7 @@ public class SQL {
 		}
 		try {
 			int counter = 0;
-			int sqlcounter = 0;
+			int sqlcounter = 1;
 			PreparedStatement statement = connection.prepareStatement(queryByCategory);
 			ResultSet AllProductsByCategory = statement.executeQuery();
 
@@ -257,7 +257,7 @@ public class SQL {
 		}
 		try {
 			int counter = 0;
-			int sqlcounter = 0;
+			int sqlcounter = 1;
 			PreparedStatement statement = connection.prepareStatement(query);
 			ResultSet AllProductsByString = statement.executeQuery();
 
