@@ -6,9 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
+import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
+
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.User;
+import SEPServer.Server;
 import SEPCommon.Address;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
@@ -144,33 +148,39 @@ public class SQL {
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		String allProductsQuery = "SELECT * \r\n" 
 								+ "FROM products\r\n" 
-								+ "WHERE title IS NOT NULL";
-		String queryCategory = "SELECT title\r\n" 
-							 + "FROM categories\r\n" 
-							 + "WHERE categories.id=products.category_id";
+								+"JOIN categories\r\n"
+								+ "WHERE categories.id=products.category_id";
 
 		int counter = 0;
 		if (!checkConnection()) {
+			System.out.println("connection problem");
+
 			return null;
 		}
 		try {
-			Statement statement = connection.createStatement();
+			PreparedStatement pstmt = connection.prepareStatement(allProductsQuery);
+			ResultSet AllProducts = pstmt.executeQuery();
 
-			ResultSet categories = statement.executeQuery(queryCategory);
-			ResultSet AllProducts = statement.executeQuery(allProductsQuery);
-
-			Product[] allProducts = new Product[AllProducts.getRow()];
-
+			int sqlcounter = 0;
 			while (AllProducts.next()) {
-				allProducts[counter] = new Product(AllProducts.getString("title"), AllProducts.getDouble("price"),
-						AllProducts.getString("seller_id"), categories.getString("title"),
-						AllProducts.getString("description"));
-				counter++;
-
+				sqlcounter++;
 			}
+
+			Product[] allProducts = new Product[sqlcounter];
+
+			while (AllProducts.next() == true) {
+				allProducts[counter] = new Product(AllProducts.getString("products.title"),
+						AllProducts.getDouble("products.price"), AllProducts.getString("products.seller_id"),
+						AllProducts.getString("categories.title"), AllProducts.getString("products.description"));
+				counter++;
+				System.out.println("works");
+			}
+
 			return allProducts;
 
 		} catch (SQLException e) {
+			System.out.println("other problem");
+			System.out.println(e.getMessage());
 			return null;
 		}
 
@@ -189,33 +199,37 @@ public class SQL {
 					 		   + "FROM products \r\n" 
 					 		   + "JOIN categories\r\n"
 					 		   + "ON (products.category_ID = categories.ID)\r\n" 
-					 		   + "WHERE categories.title="  + category;
-		
-		String queryPureCategory= "Select title \r\n"
-								+ "FROM categories\r\n"
-								+ "JOIN products\r\n"
-								+ "ON (products.category_ID=categories.ID)\r\n"
-								+"WHERE categories.title=" + category; 
-		int counter = 0;
-		
+					 		   + "WHERE categories.title=" + category;
 		
 		if (!checkConnection()) {
+			System.out.println("connection probleme");
 			return null;
 		}
 		try {
-			Statement statement = connection.createStatement();
-			ResultSet AllProductsByCategory = statement.executeQuery(queryByCategory);
-			ResultSet productsCategory = statement.executeQuery(queryPureCategory);
-			Product[] allProductsSameCategory = new Product[AllProductsByCategory.getRow()];
+			int counter = 0;
+			int sqlcounter = 0;
+			PreparedStatement statement = connection.prepareStatement(queryByCategory);
+			ResultSet AllProductsByCategory = statement.executeQuery();
 
 			while (AllProductsByCategory.next()) {
-				allProductsSameCategory[counter] = new Product(AllProductsByCategory.getString("title"),
-						AllProductsByCategory.getDouble("price"), AllProductsByCategory.getString("seller_id"),
-						productsCategory.getString("title"), AllProductsByCategory.getString("description"));
-				counter++;
+				sqlcounter++;
 			}
+
+			Product[] allProductsSameCategory = new Product[sqlcounter];
+
+			while (AllProductsByCategory.next()) {
+				allProductsSameCategory[counter] = new Product(AllProductsByCategory.getString("products.title"),
+						AllProductsByCategory.getDouble("products.price"),
+						AllProductsByCategory.getString("products.seller_id"),
+						AllProductsByCategory.getString("categories.title"),
+						AllProductsByCategory.getString("products.description"));
+				counter++;
+				System.out.println("funktioniert");
+			}
+
 			return allProductsSameCategory;
 		} catch (SQLException e) {
+			System.out.println(e.getMessage());
 			return null;
 		}
 
@@ -230,14 +244,42 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String query = "";
-		Product[] allProductsByString;
-
+		String query = "SELECT * \r\n"
+					 + "FROM Producs\r\n"
+					 + "JOIN Categories\r\n"
+					 + "ON (Products.category_ID = Categories.ID)\r\n"
+					 + "WHERE Products.Title LIKE searchString\r\n"
+					 + "OR Products.Description LIKE searchString\r\n"
+					 + "OR Categories.Title LIKE searchString;";
+		
 		if (!checkConnection()) {
 			return null;
 		}
+		try {
+			int counter = 0;
+			int sqlcounter = 0;
+			PreparedStatement statement = connection.prepareStatement(query);
+			ResultSet AllProductsByString = statement.executeQuery();
 
-		return null;
+			while (AllProductsByString.next()) {
+				sqlcounter++;
+			}
+			Product[] allProductsByString = new Product[sqlcounter];
+			while (AllProductsByString.next()) {
+				allProductsByString[counter] = new Product(AllProductsByString.getString("products.title"),
+						AllProductsByString.getDouble("products.price"),
+						AllProductsByString.getString("products.seller_id"),
+						AllProductsByString.getString("categories.title"),
+						AllProductsByString.getString("products.description"));
+				counter++;
+			}
+			return allProductsByString;
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+
 	}
 
 	public Product[] fetchLastViewedProducts(User user) {
@@ -336,5 +378,12 @@ public class SQL {
 		}
 
 		return null;
+	}
+	
+	public static void main(String[] args) {
+	SQL testObject= new SQL();
+	System.out.println(testObject.fetchProducts());
+	
+		
 	}
 }
