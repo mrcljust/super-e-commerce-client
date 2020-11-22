@@ -7,13 +7,13 @@ public class Product implements Serializable {
 	private int id;
 	private String name;
 	private double price;
-	private String seller;
+	private Seller seller;
 	private String category;
 	private String description;
 	
 	
 	//Konstruktor mit ID
-	public Product (int _id, String _name, double _price, String _seller, String _category, String _description )
+	public Product (int _id, String _name, double _price, Seller _seller, String _category, String _description )
 	{
 		id=_id;
 		name=_name;
@@ -24,7 +24,7 @@ public class Product implements Serializable {
 	}
 
 	//Konstruktor ohne ID
-	public Product (String _name, double _price, String _seller, String _category, String _description)
+	public Product (String _name, double _price, Seller _seller, String _category, String _description)
 	{
 		name=_name;
 		price=_price;
@@ -50,7 +50,7 @@ public class Product implements Serializable {
 		return price;
 	}
 	
-	public String getSeller()
+	public Seller getSeller()
 	{
 		return seller;
 	}
@@ -82,7 +82,7 @@ public class Product implements Serializable {
 		price=_price;
 	}
 	
-	public void setSeller(String _seller)
+	public void setSeller(Seller _seller)
 	{
 		seller=_seller;
 	}
