@@ -86,10 +86,11 @@ public class Client {
 			if (clientSocket != null)
 				clientSocket.close();
 		} catch (IOException e) {
-			// Beim schließen Problem aufgetreten
+			// Beim schlieï¿½en Problem aufgetreten
 			e.printStackTrace();
 		}
 
 	}
 
 }
+//test
