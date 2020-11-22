@@ -43,7 +43,6 @@ public class Client {
 		}
 	}
 	
-	//@SuppressWarnings("unused")
 	@SuppressWarnings("unused")
 	public ServerResponse sendClientRequest(ClientRequest req)
 	{
