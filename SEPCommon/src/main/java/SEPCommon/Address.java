@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 public class Address implements Serializable {
 
+	//Serializbale weil :
 	private String fullname;
 	private String country;
 	private int zipcode;

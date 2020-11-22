@@ -142,8 +142,12 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String allProductsQuery = "SELECT * FROM products WHERE title IS NOT NULL";
-		String queryCategory = "SELECT title FROM categories WHERE categories.id=products.category_id";
+		String allProductsQuery = "SELECT * \r\n" 
+								+ "FROM products\r\n" 
+								+ "WHERE title IS NOT NULL";
+		String queryCategory = "SELECT title\r\n" 
+							 + "FROM categories\r\n" 
+							 + "WHERE categories.id=products.category_id";
 
 		int counter = 0;
 		if (!checkConnection()) {
@@ -181,13 +185,40 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String query = "";
-		Product[] allProductsByCategory;
+		String queryByCategory = "SELECT *\r\n" 
+					 		   + "FROM products \r\n" 
+					 		   + "JOIN categories\r\n"
+					 		   + "ON (products.category_ID = categories.ID)\r\n" 
+					 		   + "WHERE categories.title="  + category;
+		
+		String queryPureCategory= "Select title \r\n"
+								+ "FROM categories\r\n"
+								+ "JOIN products\r\n"
+								+ "ON (products.category_ID=categories.ID)\r\n"
+								+"WHERE categories.title=" + category; 
+		int counter = 0;
+		
+		
 		if (!checkConnection()) {
 			return null;
 		}
+		try {
+			Statement statement = connection.createStatement();
+			ResultSet AllProductsByCategory = statement.executeQuery(queryByCategory);
+			ResultSet productsCategory = statement.executeQuery(queryPureCategory);
+			Product[] allProductsSameCategory = new Product[AllProductsByCategory.getRow()];
 
-		return null;
+			while (AllProductsByCategory.next()) {
+				allProductsSameCategory[counter] = new Product(AllProductsByCategory.getString("title"),
+						AllProductsByCategory.getDouble("price"), AllProductsByCategory.getString("seller_id"),
+						productsCategory.getString("title"), AllProductsByCategory.getString("description"));
+				counter++;
+			}
+			return allProductsSameCategory;
+		} catch (SQLException e) {
+			return null;
+		}
+
 	}
 
 	public Product[] fetchProductsByString(String searchString) {
