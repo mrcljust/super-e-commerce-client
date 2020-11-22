@@ -191,6 +191,7 @@ public class SQL {
 				System.out.println("works");
 				System.out.println(counter);
 			}
+			//test
 
 			return allProducts;
 
