@@ -383,6 +383,7 @@ public class SQL {
 					}
 					newArrayCounter++;
 				}
+				return lastViewedProducts;
 			}
 			else
 			{
@@ -391,9 +392,10 @@ public class SQL {
 			}
 		} catch (SQLException e) {
 			return null;
+		} catch (NumberFormatException e) {
+			//wenn lastviewed leer ist
+			return null;
 		}
-		
-		return null;
 	}
 	
 	public Response addLastViewedProduct(int viewedProductId, User user) {
@@ -585,11 +587,11 @@ public class SQL {
 	}
 	
 	public static void main(String[] args) {
-	SQL testObject= new SQL();
-	testObject.connect();
-	String searchString="Harry";
-	System.out.println(testObject.fetchProductsByString(searchString));
+		//Zum testen
+		SQL testObject= new SQL();
+		testObject.connect();
 	
-		
+		User testUser = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
+		testObject.fetchLastViewedProducts(testUser);
 	}
 }
