@@ -147,9 +147,11 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		String allProductsQuery = "SELECT * \r\n" 
-								+ "FROM products\r\n" 
-								+"JOIN categories\r\n"
-								+ "WHERE categories.id=products.category_id";
+				+ "FROM products\r\n" 
+				+ "JOIN categories\r\n"
+				+ "ON categories.id=products.category_id\r\n"
+				+ "JOIN users\r\n"
+				+ "ON users.id=products.seller_id";
 
 		int counter = 0;
 		if (!checkConnection()) {
@@ -165,16 +167,31 @@ public class SQL {
 			while (AllProducts.next()) {
 				sqlcounter++;
 			}
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery);
+			ResultSet AllProducts2= pstmt2.executeQuery();
+			
 
 			Product[] allProducts = new Product[sqlcounter];
+			
+			while (AllProducts2.next()) {
 
-			while (AllProducts.next() == true) {
-				allProducts[counter] = new Product(AllProducts.getString("products.title"),
-						AllProducts.getDouble("products.price"), AllProducts.getString("products.seller_id"),
-						AllProducts.getString("categories.title"), AllProducts.getString("products.description"));
+				Address newAddress = new Address(AllProducts2.getString("users.fullname"),
+						AllProducts2.getString("users.country"), AllProducts2.getInt("users.postalcode"),
+						AllProducts2.getString("users.city"), AllProducts2.getString("users.street"),
+						AllProducts2.getString("users.number"));
+				Seller newSeller = new Seller(AllProducts2.getInt("users.id"), AllProducts2.getString("users.username"),
+						AllProducts2.getString("users.email"), AllProducts2.getString("users.password"),
+						AllProducts2.getBytes("users.picture"), AllProducts2.getDouble("users.wallet"), newAddress,
+						AllProducts2.getString("users.companyname"));
+				allProducts[counter] = new Product(AllProducts2.getInt("products.id"),
+						AllProducts2.getString("products.title"), AllProducts2.getDouble("products.price"), newSeller,
+						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
+
 				counter++;
 				System.out.println("works");
+				System.out.println(counter);
 			}
+			//test
 
 			return allProducts;
 
@@ -199,8 +216,9 @@ public class SQL {
 					 		   + "FROM products \r\n" 
 					 		   + "JOIN categories\r\n"
 					 		   + "ON (products.category_ID = categories.ID)\r\n" 
-					 		   + "WHERE categories.title=" + category;
-		
+					 		   + "JOIN users\r\n"
+					 		   + "ON users.id=products.seller_id"
+					 		   + "WHERE categories.title='" + category+ "'";
 		if (!checkConnection()) {
 			System.out.println("connection probleme");
 			return null;
@@ -215,14 +233,29 @@ public class SQL {
 				sqlcounter++;
 			}
 
+			PreparedStatement pstmt2 = connection.prepareStatement(queryByCategory);
+			ResultSet AllProductsByCategory2 = pstmt2.executeQuery();
+			
+
 			Product[] allProductsSameCategory = new Product[sqlcounter];
 
-			while (AllProductsByCategory.next()) {
-				allProductsSameCategory[counter] = new Product(AllProductsByCategory.getString("products.title"),
-						AllProductsByCategory.getDouble("products.price"),
-						AllProductsByCategory.getString("products.seller_id"),
-						AllProductsByCategory.getString("categories.title"),
-						AllProductsByCategory.getString("products.description"));
+			while (AllProductsByCategory2.next()) {
+				
+				
+				Address newAddress = new Address(AllProductsByCategory2.getString("users.fullname"),
+						AllProductsByCategory2.getString("users.country"), AllProductsByCategory2.getInt("users.postalcode"),
+						AllProductsByCategory2.getString("users.city"), AllProductsByCategory2.getString("users.street"),
+						AllProductsByCategory2.getString("users.number"));
+				Seller newSeller = new Seller(AllProductsByCategory2.getInt("users.id"), AllProductsByCategory2.getString("users.username"),
+						AllProductsByCategory2.getString("users.email"), AllProductsByCategory2.getString("users.password"),
+						AllProductsByCategory2.getBytes("users.picture"), AllProductsByCategory2.getDouble("users.wallet"), newAddress,
+						AllProductsByCategory2.getString("users.companyname"));
+				allProductsSameCategory[counter] = new Product(AllProductsByCategory2.getInt("products.id"),
+						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), newSeller,
+						AllProductsByCategory2.getString("categories.title"), AllProductsByCategory2.getString("products.description"));
+				
+				
+			
 				counter++;
 				System.out.println("funktioniert");
 			}
@@ -245,10 +278,13 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		String query = "SELECT * \r\n"
-					 + "FROM Producs\r\n"
+					 + "FROM Products\r\n"
 					 + "JOIN Categories\r\n"
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
-					 + "WHERE Products.Title LIKE"+ searchString; //+"%\r\n"
+					 + "JOIN users\r\n"
+			 		 + "ON users.id=products.seller_id"
+					 + "WHERE Products.Title LIKE'%"+ searchString+"%'";
+		
 					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
 					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
 		
@@ -258,20 +294,31 @@ public class SQL {
 		try {
 			int counter = 0;
 			int sqlcounter = 1;
-			PreparedStatement statement = connection.prepareStatement(query);
-			ResultSet AllProductsByString = statement.executeQuery();
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			ResultSet AllProductsByString = pstmt.executeQuery();
 
 			while (AllProductsByString.next()) {
 				sqlcounter++;
 			}
+			
+			PreparedStatement pstmt2 = connection.prepareStatement(query);
+			ResultSet AllProductsByString2 = pstmt2.executeQuery();
+			
+			
 			Product[] allProductsByString = new Product[sqlcounter];
-			while (AllProductsByString.next()) {
-				allProductsByString[counter] = new Product(AllProductsByString.getString("products.title"),
-						AllProductsByString.getDouble("products.price"),
-						AllProductsByString.getString("products.seller_id"),
-						AllProductsByString.getString("categories.title"),
-						AllProductsByString.getString("products.description"));
-				counter++;
+			while (AllProductsByString2.next()) {
+				Address newAddress = new Address(AllProductsByString2.getString("users.fullname"),
+						AllProductsByString2.getString("users.country"), AllProductsByString2.getInt("users.postalcode"),
+						AllProductsByString2.getString("users.city"), AllProductsByString2.getString("users.street"),
+						AllProductsByString2.getString("users.number"));
+				Seller newSeller = new Seller(AllProductsByString2.getInt("users.id"), AllProductsByString2.getString("users.username"),
+						AllProductsByString2.getString("users.email"), AllProductsByString2.getString("users.password"),
+						AllProductsByString2.getBytes("users.picture"), AllProductsByString2.getDouble("users.wallet"), newAddress,
+						AllProductsByString2.getString("users.companyname"));
+				allProductsByString[counter] = new Product(AllProductsByString2.getInt("products.id"),
+						AllProductsByString2.getString("products.title"), AllProductsByString2.getDouble("products.price"), newSeller,
+						AllProductsByString2.getString("categories.title"), AllProductsByString2.getString("products.description"));
+				System.out.println("funktioniert");
 			}
 			return allProductsByString;
 
@@ -382,7 +429,9 @@ public class SQL {
 	
 	public static void main(String[] args) {
 	SQL testObject= new SQL();
-	System.out.println(testObject.fetchProducts());
+	testObject.connect();
+	String searchString="Harry";
+	System.out.println(testObject.fetchProductsByString(searchString));
 	
 		
 	}
