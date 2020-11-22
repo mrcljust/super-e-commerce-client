@@ -15,6 +15,7 @@ public class Client {
 	public boolean startSuccess = false;
 	private static Client client; 
 	public boolean isStarted = false;
+	private String SuccesfulConnection="Verbindung zum Server hergestellt.";
 
 	public static Client getClient()
 	{
@@ -28,7 +29,7 @@ public class Client {
 			// Client Socket erstellen
 			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT);
 			clientSocket.setSoTimeout(10000);
-			System.out.println("Verbindung zum Server hergestellt.");
+			System.out.println(SuccesfulConnection);
 			
             dos = new ObjectOutputStream(clientSocket.getOutputStream());
             dis = new ObjectInputStream(clientSocket.getInputStream());
