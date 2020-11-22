@@ -248,9 +248,9 @@ public class SQL {
 					 + "FROM Producs\r\n"
 					 + "JOIN Categories\r\n"
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
-					 + "WHERE Products.Title LIKE"+ searchString+"%\r\n"
-					 + "OR Products.Description LIKE"+ searchString+ "%\r\n"
-					 + "OR Categories.Title LIKE" + searchString+"%\r\n";
+					 + "WHERE Products.Title LIKE"+ searchString; //+"%\r\n"
+					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
+					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
 		
 		if (!checkConnection()) {
 			return null;
