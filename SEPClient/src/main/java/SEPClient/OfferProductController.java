@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 
 public class OfferProductController {
 	private Button Sell_ButtonSellConfirm;
-	private Button Sell_SellCsvClick;
+	private Button Sell_ButtonSellCsv;
+	private Button Sell_ButtonChooseFile;
 
 }
