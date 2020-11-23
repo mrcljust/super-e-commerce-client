@@ -159,7 +159,8 @@ public class ServerThread implements Runnable {
 						String searchString = (String)requestMap.get("SearchString");
 						
 						//SQL-Abfrage ausführen
-						products = sql.fetchProductsByString(searchString);
+				//		products = sql.fetchProductsByString(searchString);
+						//test
 					}
 					else
 					{

@@ -507,7 +507,7 @@ public class SQL {
 				
 			
 				counter++;
-				System.out.println("funktioniert");
+				System.out.println("works");
 			}
 
 			return allProductsSameCategory;
@@ -518,7 +518,68 @@ public class SQL {
 
 	}
 
-	public Product[] fetchProductsByString(String searchString) {
+	public Product[] fetchProductsByFullString(String searchString) {
+		// Produkte mit dem Begriff searchString im Namen, Beschreibung oder Kategorie
+		// in der DB suchen und als Product-Array ausgeben
+
+		// Wenn erfolgreich gefetcht, Product-Array returnen
+		// wenn keine Verbindung zu DB: null returnen
+		// wenn sonstiger Fehler auftritt ggf. null returnen
+
+		// Verbindung herstellen, wenn keine Verbindung besteht
+		String query = "SELECT * \r\n"
+					 + "FROM Products\r\n"
+					 + "JOIN Categories\r\n"
+					 + "ON (Products.category_ID = Categories.ID)\r\n"
+					 + "JOIN users\r\n"
+			 		 + "ON users.id=products.seller_id"
+					 + "WHERE Products.Title='"+ searchString+"'";
+		
+					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
+					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
+		
+		if (!checkConnection()) {
+			return null;
+		}
+		try {
+			int counter = 0;
+			int sqlcounter = 1;
+			PreparedStatement pstmt = connection.prepareStatement(query);
+			ResultSet AllProductsByFullString = pstmt.executeQuery();
+
+			while (AllProductsByFullString.next()) {
+				sqlcounter++;
+			}
+			
+			PreparedStatement pstmt2 = connection.prepareStatement(query);
+			ResultSet AllProductsByFullString2 = pstmt2.executeQuery();
+			
+			
+			Product[] allProductsByString = new Product[sqlcounter];
+			while (AllProductsByFullString2.next()) {
+				Address newAddress = new Address(AllProductsByFullString2.getString("users.fullname"),
+						AllProductsByFullString2.getString("users.country"), AllProductsByFullString2.getInt("users.postalcode"),
+						AllProductsByFullString2.getString("users.city"), AllProductsByFullString2.getString("users.street"),
+						AllProductsByFullString2.getString("users.number"));
+				Seller newSeller = new Seller(AllProductsByFullString2.getInt("users.id"), AllProductsByFullString2.getString("users.username"),
+						AllProductsByFullString2.getString("users.email"), AllProductsByFullString2.getString("users.password"),
+						AllProductsByFullString2.getBytes("users.picture"), AllProductsByFullString2.getDouble("users.wallet"), newAddress,
+						AllProductsByFullString2.getString("users.companyname"));
+				allProductsByString[counter] = new Product(AllProductsByFullString2.getInt("products.id"),
+						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
+						AllProductsByFullString2.getString("categories.title"), AllProductsByFullString2.getString("products.description"));
+				System.out.println("funktioniert");
+			}
+			return allProductsByString;
+
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+
+	}
+
+	public Product[] fetchProductsByPartialString(String searchString) {
 		// Produkte mit dem Begriff searchString im Namen, Beschreibung oder Kategorie
 		// in der DB suchen und als Product-Array ausgeben
 
@@ -545,40 +606,41 @@ public class SQL {
 			int counter = 0;
 			int sqlcounter = 1;
 			PreparedStatement pstmt = connection.prepareStatement(query);
-			ResultSet AllProductsByString = pstmt.executeQuery();
+			ResultSet AllProductsByPartialString = pstmt.executeQuery();
 
-			while (AllProductsByString.next()) {
+			while (AllProductsByPartialString.next()) {
 				sqlcounter++;
 			}
 			
 			PreparedStatement pstmt2 = connection.prepareStatement(query);
-			ResultSet AllProductsByString2 = pstmt2.executeQuery();
+			ResultSet AllProductsByPartialString2 = pstmt2.executeQuery();
 			
 			
-			Product[] allProductsByString = new Product[sqlcounter];
-			while (AllProductsByString2.next()) {
-				Address newAddress = new Address(AllProductsByString2.getString("users.fullname"),
-						AllProductsByString2.getString("users.country"), AllProductsByString2.getInt("users.postalcode"),
-						AllProductsByString2.getString("users.city"), AllProductsByString2.getString("users.street"),
-						AllProductsByString2.getString("users.number"));
-				Seller newSeller = new Seller(AllProductsByString2.getInt("users.id"), AllProductsByString2.getString("users.username"),
-						AllProductsByString2.getString("users.email"), AllProductsByString2.getString("users.password"),
-						AllProductsByString2.getBytes("users.picture"), AllProductsByString2.getDouble("users.wallet"), newAddress,
-						AllProductsByString2.getString("users.companyname"));
-				allProductsByString[counter] = new Product(AllProductsByString2.getInt("products.id"),
-						AllProductsByString2.getString("products.title"), AllProductsByString2.getDouble("products.price"), newSeller,
-						AllProductsByString2.getString("categories.title"), AllProductsByString2.getString("products.description"));
+			Product[] allProductsByPartialString = new Product[sqlcounter];
+			while (AllProductsByPartialString2.next()) {
+				Address newAddress = new Address(AllProductsByPartialString2.getString("users.fullname"),
+						AllProductsByPartialString2.getString("users.country"), AllProductsByPartialString2.getInt("users.postalcode"),
+						AllProductsByPartialString2.getString("users.city"), AllProductsByPartialString2.getString("users.street"),
+						AllProductsByPartialString2.getString("users.number"));
+				Seller newSeller = new Seller(AllProductsByPartialString2.getInt("users.id"), AllProductsByPartialString2.getString("users.username"),
+						AllProductsByPartialString2.getString("users.email"), AllProductsByPartialString2.getString("users.password"),
+						AllProductsByPartialString2.getBytes("users.picture"), AllProductsByPartialString2.getDouble("users.wallet"), newAddress,
+						AllProductsByPartialString2.getString("users.companyname"));
+				allProductsByPartialString[counter] = new Product(AllProductsByPartialString2.getInt("products.id"),
+						AllProductsByPartialString2.getString("products.title"), AllProductsByPartialString2.getDouble("products.price"), newSeller,
+						AllProductsByPartialString.getString("categories.title"), AllProductsByPartialString2.getString("products.description"));
 				System.out.println("funktioniert");
 			}
-			return allProductsByString;
+			return allProductsByPartialString;
 
 		} catch (SQLException e) {
 			System.out.println(e.getMessage());
 			return null;
 		}
+		
+		
 
 	}
-
 	public Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
 		//Anschlieﬂend Produkt-Array der betroffenen Produkt-IDs ausgeben
