@@ -284,7 +284,7 @@ public class SQL {
 
 					} catch (SQLException e) {
 						return Response.ImageTooBig;
-					}
+					} 
 				}
 				
 				else
