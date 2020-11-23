@@ -48,19 +48,142 @@ public class SQL {
 	}
 
 	public Response registerUser(User user) {
+		// Die Methode ermöglicht eine Registrierung auf der Plattform
 		// Passwort, Emailvorgaben usw. werden clientseitig geprüft
-
-		// wenn User erfolgreich registriert wurde Response.Success returnen
-		// wenn Email vergeben: Response.Emailtaken returnen
-		// wenn User vergeben: Response.UsernameTaken returnen
-		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
-
+		
+		// wenn User erfolgreich registriert wurde wird Response.Success zurück gegeben
+		// wenn Email vergeben: Response.Emailtaken zurückgeben
+		// wenn User vergeben: Response.UsernameTaken zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn Bild zu groß: Response.ImageTooBig zurückgeben
+		
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		if (!checkConnection())
+		{
 			return Response.NoDBConnection;
 		}
+		
+		if(user instanceof Seller)
+		{
+			// Registrierung Gewerbekunde
+			
+			// User- und Adress-Objekt übergeben
+			Seller seller = (Seller)user;
+			Address sellerAddress = seller.getAddress();
+			
+			// Prüfen, ob Email oder Username schon existieren
+			try
+			{
+				// SQL Abfrage 
+				Statement statement = connection.createStatement();
+				ResultSet emailQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + seller.getEmail() + "'");
+				boolean emailHasEntries = emailQuery.next();
+				if(emailHasEntries)
+				{
+					// 1. Fall: Email vergeben
+					return Response.EmailTaken;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+			
+			try
+			{
+				// SQL Abfrage 
+				Statement statement = connection.createStatement();
+				ResultSet usernameQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + seller.getUsername() + "'");
+				boolean usernameHasEntries = usernameQuery.next();
+				if(usernameHasEntries)
+				{
+					// 2. Fall: Username vergeben
+					return Response.UsernameTaken;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+			
+			try {
+				// Eintrag in Datenbank
+				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
+						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
+				// Bild einfügen
+				if(seller.getPicture()!=null)
+				{
+					stmt.setBytes(1, seller.getPicture());
+				}
+				else
+				{
+					stmt.setString(1, "");
+				}
+				stmt.execute();
+                // 3. Fall: Erfolgreiche Registrierung Gewerbekunde
+				return Response.Success;
 
-		return Response.Success;
+			} catch (SQLException e) {
+				// Ausnahme: Bilddatei passt nicht
+				return Response.ImageTooBig;
+			}
+		}
+		else
+		{
+			// Registrierung Privatkunde
+			// User- und Adress-Objekt übergeben
+			Customer customer = (Customer)user;
+			Address customerAddress = customer.getAddress();
+			
+			//Prüfen, ob Email oder Username schon existieren
+			try
+			{
+				// SQL Abfrage 
+				Statement statement = connection.createStatement();
+				ResultSet emailQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + customer.getEmail() + "'");
+				boolean emailHasEntries = emailQuery.next();
+				if(emailHasEntries)
+				{
+					// 1. Fall: Email vergeben
+					return Response.EmailTaken;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+			
+			try
+			{
+				// SQL Abfrage 
+				Statement statement = connection.createStatement();
+				ResultSet usernameQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + customer.getUsername() + "'");
+				boolean usernameHasEntries = usernameQuery.next();
+				if(usernameHasEntries)
+				{
+					// 2. Fall: Username vergeben
+					return Response.UsernameTaken;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+			
+			try {
+				// Eintrag in Datenbank
+				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
+						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')");
+				// Bild einfügen
+				if(customer.getPicture()!=null)
+				{
+					stmt.setBytes(1, customer.getPicture());
+				}
+				else
+				{
+					stmt.setString(1, "");
+				}
+				
+				stmt.execute();
+				// 3. Fall: Erfolreich
+				return Response.Success;
+			} catch (SQLException e) {
+				// Ausnahme: Bilddatei passt nicht
+				return Response.ImageTooBig;
+			}
+		}
 	}
 
 	public Response loginUser(String emailOrUsername, String password) {
