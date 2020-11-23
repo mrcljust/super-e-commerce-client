@@ -135,8 +135,10 @@ public class MainScreenController {
     }
 
     @FXML
+    //OfferProduct öffnen
     void MainScreen_btnSellProductClick(ActionEvent event) {
-    	
+    	OfferProductController.setUser(user);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", true, true);
     }
     
     @FXML
@@ -144,4 +146,5 @@ public class MainScreenController {
     	
     }
     
-}
+} //push
+
