@@ -19,7 +19,7 @@ public class Seller extends User implements Serializable {
 		address=_address;
 		businessname = _businessname;
 	}
-
+//test
 	//Konstruktor ohne ID
 	public Seller(String _username, String _email, String _password, byte[] _picture, double _wallet, Address _address,
 			String _businessname)
