@@ -78,7 +78,7 @@
                   </Label>
                   <Label layoutX="14.0" layoutY="73.0" text="Kategorie: Bücher" />
                   <TextField layoutX="14.0" layoutY="97.0" prefHeight="332.0" prefWidth="405.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="10.0" />
-                  <Button layoutX="335.0" layoutY="69.0" mnemonicParsing="false" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
+                  <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="69.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
                </children>
             </AnchorPane>
         </items>
