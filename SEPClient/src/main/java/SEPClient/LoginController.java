@@ -117,7 +117,7 @@ public class LoginController {
                 MainScreenController.setUser(user);
 				FXMLHandler.OpenSceneInStage((Stage) Login_OKButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 			}
-		}
+		} 
 	}
 
     @FXML

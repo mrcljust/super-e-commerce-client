@@ -6,7 +6,7 @@ import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
 import SEPCommon.Request;
-import SEPCommon.Response;
+import SEPCommon.Response; 
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
