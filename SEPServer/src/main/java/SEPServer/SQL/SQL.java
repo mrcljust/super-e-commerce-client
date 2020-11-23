@@ -265,16 +265,45 @@ public class SQL {
 	public Response deleteUser(User user) {
 		// User anhand ID aus der Datenbank löschen
 
-		// Wenn User erfolgreich gelöscht Response.Success returnen
-		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		int userId = user.getId();
+		
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
-
-		return Response.Success;
+		
+		if(user instanceof Seller)
+		{
+			try
+			{
+					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
+					Statement statement = connection.createStatement();
+					statement.executeQuery("DELETE FROM products WHERE seller_id ='" + userId + "'");
+					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
+					return Response.Success;
+		   
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+		}
+		
+		else 
+		{
+				try
+				{
+					Statement statement = connection.createStatement();
+					// Bei Privatkunden muss nur der User selbst gelöscht werden
+					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
+					return Response.Success;
+				
+				} catch (SQLException e) {
+					return Response.NoDBConnection;
+				}
+		}
 	}
 
 	public Response increaseWallet(User user, double amount) {
