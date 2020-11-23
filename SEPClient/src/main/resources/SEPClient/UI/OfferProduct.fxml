@@ -1,8 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="465.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.OfferProductController">
+   <children>
+      <TitledPane animated="false" collapsible="false" layoutX="6.0" layoutY="14.0" prefHeight="270.0" prefWidth="451.0" text="1. Produkt anbieten">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="242.0" prefWidth="411.0">
+               <children>
+                  <TextField fx:id="Sell_txtName" layoutX="198.0" layoutY="10.0" prefHeight="25.0" prefWidth="239.0" />
+                  <TextField fx:id="Sell_txtPreis" layoutX="198.0" layoutY="41.0" prefHeight="25.0" prefWidth="238.0" />
+                  <PasswordField fx:id="Sell_txtKategorie" layoutX="199.0" layoutY="72.0" prefHeight="25.0" prefWidth="237.0" />
+                  <PasswordField fx:id="Sell_txtBeschreibung" layoutX="199.0" layoutY="140.0" prefHeight="44.0" prefWidth="237.0" />
+                  <Label layoutX="14.0" layoutY="15.0" text="Name*" />
+                  <Label layoutX="14.0" layoutY="46.0" text="Preis*" />
+                  <Label layoutX="14.0" layoutY="77.0" text="Kategorie*" />
+                  <Label layoutX="14.0" layoutY="110.0" text="Anbietender Gewerbe-Kunde*" />
+                  <Button fx:id="Sell_ButtonSellConfirm" layoutX="259.0" layoutY="201.0" mnemonicParsing="false" onAction="#Sell_SellConfirmClick" text="Produkt inserieren" />
+                  <Label layoutX="14.0" layoutY="140.0" text="Produktbeschreibung*" />
+                  <PasswordField fx:id="Sell_txtSeller" layoutX="199.0" layoutY="105.0" prefHeight="25.0" prefWidth="237.0" />
+               </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" layoutX="6.0" layoutY="292.0" prefHeight="86.0" prefWidth="451.0" text="2. Mehrere Produkte anbieten">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="61.0" prefWidth="395.0">
+               <children>
+                  <TextField fx:id="Sell_InsertCSV" layoutX="14.0" layoutY="14.0" prefHeight="35.0" prefWidth="140.0" promptText="CSV-Datei einfügen" />
+                  <Button fx:id="Sell_ButtonSellCsv" layoutX="242.0" layoutY="18.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" text="Alle Produkte inserieren" />
+               </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+   </children>
 </AnchorPane>
-
