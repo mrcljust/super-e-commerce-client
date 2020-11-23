@@ -388,7 +388,7 @@ public class SQL {
 		return Response.Success;
 	}
 
-	public Product[] fetchProducts() {
+	public Product[] fetchAllProducts() {
 		// Alle in der DB vorhandenen Produkte in einem ProductArray ausgeben
 
 		// Wenn erfolgreich gefetcht, Product-Array returnen
