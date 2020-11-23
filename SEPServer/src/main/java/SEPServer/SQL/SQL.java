@@ -48,14 +48,14 @@ public class SQL {
 	}
 
 	public Response registerUser(User user) {
-		// Die Methode ermöglicht eine Registrierung auf der Plattform
-		// Passwort, Emailvorgaben usw. werden clientseitig geprüft
+		// Die Methode ermï¿½glicht eine Registrierung auf der Plattform
+		// Passwort, Emailvorgaben usw. werden clientseitig geprï¿½ft
 		
-		// wenn User erfolgreich registriert wurde wird Response.Success zurück gegeben
-		// wenn Email vergeben: Response.Emailtaken zurückgeben
-		// wenn User vergeben: Response.UsernameTaken zurückgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
-		// wenn Bild zu groß: Response.ImageTooBig zurückgeben
+		// wenn User erfolgreich registriert wurde wird Response.Success zurï¿½ck gegeben
+		// wenn Email vergeben: Response.Emailtaken zurï¿½ckgeben
+		// wenn User vergeben: Response.UsernameTaken zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// wenn Bild zu groï¿½: Response.ImageTooBig zurï¿½ckgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -67,11 +67,11 @@ public class SQL {
 		{
 			// Registrierung Gewerbekunde
 			
-			// User- und Adress-Objekt übergeben
+			// User- und Adress-Objekt ï¿½bergeben
 			Seller seller = (Seller)user;
 			Address sellerAddress = seller.getAddress();
 			
-			// Prüfen, ob Email oder Username schon existieren
+			// Prï¿½fen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
@@ -106,7 +106,7 @@ public class SQL {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
-				// Bild einfügen
+				// Bild einfï¿½gen
 				if(seller.getPicture()!=null)
 				{
 					stmt.setBytes(1, seller.getPicture());
@@ -127,11 +127,11 @@ public class SQL {
 		else
 		{
 			// Registrierung Privatkunde
-			// User- und Adress-Objekt übergeben
+			// User- und Adress-Objekt ï¿½bergeben
 			Customer customer = (Customer)user;
 			Address customerAddress = customer.getAddress();
 			
-			//Prüfen, ob Email oder Username schon existieren
+			//Prï¿½fen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
@@ -166,7 +166,7 @@ public class SQL {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')");
-				// Bild einfügen
+				// Bild einfï¿½gen
 				if(customer.getPicture()!=null)
 				{
 					stmt.setBytes(1, customer.getPicture());
@@ -187,9 +187,9 @@ public class SQL {
 	}
 
 	public Response loginUser(String emailOrUsername, String password) {
-		// wenn User erfolgreich eingeloggt wurde Response.Success zurückgeben
-		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurückgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn User erfolgreich eingeloggt wurde Response.Success zurï¿½ckgeben
+		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -247,11 +247,11 @@ public class SQL {
 	}
 
 	public Response editUser(User user) {
-		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben 
+		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users ï¿½berschreiben 
  
-		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
+		// Wenn User erfolgreich abgeï¿½ndert wurden Response.Success zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurï¿½ckgeben
 
 		//Verbindung herstellen, wenn keine Verbindung besteht
 				if (!checkConnection())
@@ -315,10 +315,10 @@ public class SQL {
 			}  
 
 	public Response deleteUser(User user) {
-		// User anhand ID aus der Datenbank löschen
+		// User anhand ID aus der Datenbank lï¿½schen
 
-		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// Wenn User erfolgreich gelï¿½scht Response.Success zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
 		
@@ -331,7 +331,7 @@ public class SQL {
 		{ 
 			try
 			{
-					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
+					// Zuerst Produkte des Anbieters und dann den Anbieter selbst lï¿½schen
 					Statement statement = connection.createStatement();
 					statement.executeQuery("DELETE FROM products WHERE seller_id ='" + userId + "'");
 					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
@@ -348,7 +348,7 @@ public class SQL {
 				try
 				{
 					Statement statement = connection.createStatement();
-					// Bei Privatkunden muss nur der User selbst gelöscht werden
+					// Bei Privatkunden muss nur der User selbst gelï¿½scht werden
 					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
 					return Response.Success;
 				
@@ -359,14 +359,26 @@ public class SQL {
 	}
 
 	public Response increaseWallet(User user, double amount) {
-		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhöhen
+		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhÃ¶hen
 
-		// Wenn Wallet erfolgreich erhöht Response.Success returnen
+		// Wenn Wallet erfolgreich erhÃ¶ht Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		int userId= user.getId();
+		double MoreMoney=amount;
+		String increaseWalletQuery=" Update User\r\n"
+								  + "Set wallet= user.wallet +" + MoreMoney + "r\n\""
+								  +"Where users.id=" + userId;
+
 		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeQuery(increaseWalletQuery);
+		} catch (SQLException e) {
 			return Response.NoDBConnection;
 		}
 
@@ -381,11 +393,24 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		int userId= user.getId();
+		double lessMoney=amount;
+		String decreaseWalletQuery=" Update User\r\n"
+								  + "Set wallet= user.wallet -" + lessMoney + "r\n\""
+								  +"Where users.id=" + userId;
+
 		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeQuery(decreaseWalletQuery);
+		} catch (SQLException e) {
 			return Response.NoDBConnection;
 		}
 
 		return Response.Success;
+
 	}
 
 	public Product[] fetchAllProducts() {
@@ -414,10 +439,10 @@ public class SQL {
 			ResultSet AllProducts = pstmt.executeQuery();
 
 			int sqlcounter = 1;
-			while (AllProducts.next()) {  //Tupel Zählen
+			while (AllProducts.next()) {  //Tupel Zï¿½hlen
 				sqlcounter++;
 			}
-			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf kï¿½nnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			ResultSet AllProducts2= pstmt2.executeQuery();
 			
 
@@ -643,11 +668,11 @@ public class SQL {
 	}
 	public Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
-		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
+		//Anschlieï¿½end Produkt-Array der betroffenen Produkt-IDs ausgeben
 		
 		//Wenn erfolgreich gefetcht, Product-Array returnen
 		//wenn keine Verbindung zu DB: null returnen
-		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ï¿½.) ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -698,7 +723,7 @@ public class SQL {
 			}
 			else
 			{
-				//kein Entry mit der UserId - eigentlich nicht möglich.
+				//kein Entry mit der UserId - eigentlich nicht mï¿½glich.
 				return null;
 			}
 		} catch (SQLException e) {
@@ -709,9 +734,9 @@ public class SQL {
 	}
 	
 	public Response addLastViewedProduct(int viewedProductId, User user) {
-		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
+		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufï¿½gen (max. 10 zuletzt betrachtete IDs).
 		
-		//Wenn erfolgreich hinzugefügt, Response.Success returnen
+		//Wenn erfolgreich hinzugefï¿½gt, Response.Success returnen
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
@@ -721,7 +746,7 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefï¿½gt werden muss
 		Product[] currentLastViewedProducts = fetchLastViewedProducts(user);
 		
 		String newLastViewedProductsString = "";
@@ -729,7 +754,7 @@ public class SQL {
 		{
 			if(currentLastViewedProducts.length==10)
 			{
-				//Maximale Länge (10), setze viewedProductId an den Anfang und ersetze die erste Id
+				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die erste Id
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=1;i<10;i++)
@@ -739,7 +764,7 @@ public class SQL {
 			}
 			else
 			{
-				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				//Maximale Lï¿½nge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=0;i<currentLastViewedProducts.length;i++)
@@ -796,13 +821,13 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Ungültigkeit usw. wird clientseitig geprüft
+		//Ungï¿½ltigkeit usw. wird clientseitig geprï¿½ft
 		
 		int sellerid = seller.getId();
 		
 		for(Product p : products)
 		{
-			//Für jedes Produkt p prüfen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
+			//Fï¿½r jedes Produkt p prï¿½fen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
 			int categoryid;
 			
 
@@ -829,7 +854,7 @@ public class SQL {
 					}
 					else
 					{
-						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wäre)
+						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wï¿½re)
 						return Response.Failure;
 					}
 				}
@@ -849,7 +874,7 @@ public class SQL {
 
 	public Response buyItem(User buyer, Product product) {
 		// Neuen Datenbankeintrag in die Tabelle orders. buyer_id ist die ID vom Objekt
-		// buyer, die seller_id, Preis, Produktinfos können dem Objekt product entnommen
+		// buyer, die seller_id, Preis, Produktinfos kï¿½nnen dem Objekt product entnommen
 		// werden
 
 		// Wenn Produkte erfolgreich gekauft, Response.Success returnen
@@ -865,11 +890,11 @@ public class SQL {
 	}
 
 	public User getUserDataByEmail(String email) {
-		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
-		// wenn keine Verbindung zu DB: null zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -881,7 +906,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Email prüfen
+			// Email prï¿½fen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + email + "'");
 			if(userDataQuery.next())
 			{
@@ -893,7 +918,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Obejekt zurückgeben
+					// Privatkunden-Obejekt zurï¿½ckgeben
 					return customer;
 				}
 				
@@ -901,7 +926,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurückgeben
+					// Gewerbekunden-Objekt zurï¿½ckgeben
 					return seller;
 				}
 				// Kein Eintrag zur Email
@@ -917,11 +942,11 @@ public class SQL {
 	}
 
 	public User getUserDataByUsername(String username){
-		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
-		// wenn keine Verbindung zu DB: null zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
+		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -933,7 +958,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Username prüfen
+			// Username prï¿½fen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + username + "'");
 			
 			if(userDataQuery.next())
@@ -945,7 +970,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Objekt zurückgeben
+					// Privatkunden-Objekt zurï¿½ckgeben
 					return customer;
 				}
 				
@@ -953,7 +978,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurückgeben
+					// Gewerbekunden-Objekt zurï¿½ckgeben
 					return seller;
 				}
 				else
