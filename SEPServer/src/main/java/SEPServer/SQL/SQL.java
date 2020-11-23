@@ -187,17 +187,63 @@ public class SQL {
 	}
 
 	public Response loginUser(String emailOrUsername, String password) {
-		// wenn User erfolgreich eingeloggt wurde Response.Success returnen
-		// wenn Daten nicht gefunden oder nicht übereinstimmen (nicht differenzieren)
-		// Response.Failure returnen
-		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
-
+		// wenn User erfolgreich eingeloggt wurde Response.Success zurückgeben
+		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		if (!checkConnection())
+		{
 			return Response.NoDBConnection;
 		}
-
-		return Response.Success;
+		
+		// Email muss ein @ Symbol enthalten und kann dadurch von Username unterschieden werden
+		if(emailOrUsername.contains("@"))
+		{
+			// anmelden mit Email
+			try
+			{
+				// SQL Abfrage
+				Statement statement = connection.createStatement();
+				ResultSet loginQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + emailOrUsername + "' AND password='" + password + "'");
+				boolean hasEntries = loginQuery.next();
+				if(hasEntries)
+				{
+					// Login erfolreich
+					return Response.Success;
+				}
+				else
+				{
+					// Login fehlgeschlagen
+					return Response.Failure;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+		}
+		else
+		{
+			//anmelden mit Benutzernamen
+			try
+			{
+				// SQL Abfrage
+				Statement statement = connection.createStatement();
+				ResultSet loginQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + emailOrUsername + "' AND password='" + password + "'");
+				boolean hasEntries = loginQuery.next();
+				if(hasEntries)
+				{
+					// Login erfolreich
+					return Response.Success;
+				}
+				else
+				{
+					// Login fehlerhaft
+					return Response.Failure;
+				}
+			} catch (SQLException e) {
+				return Response.NoDBConnection;
+			}
+		}
 	}
 
 	public Response editUser(User user) {
