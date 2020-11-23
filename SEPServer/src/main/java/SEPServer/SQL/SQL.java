@@ -877,7 +877,8 @@ public class SQL {
 
 	public Response buyItem(User buyer, Product product) {
 		// Neuen Datenbankeintrag in die Tabelle orders. buyer_id ist die ID vom Objekt
-		// buyer, die seller_id, Preis, Produktinfos k�nnen dem Objekt product entnommen
+		// buyer, die seller_id, Preis, Produktinfos kï¿½nnen dem Objekt product
+		// entnommen
 		// werden
 
 		// Wenn Produkte erfolgreich gekauft, Response.Success returnen
@@ -885,8 +886,32 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+
+		int buyerid = buyer.getId();
+		Seller seller = product.getSeller();
+		int sellerid = seller.getId();
+		String newOrder = "INSERT INTO orders\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
+				+ buyerid + "', '" + product.getPrice() + "')";
+
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
+		}
+
+		// ggf prüfen ob genug balance
+		if (buyer.getWallet() - product.getPrice() < 0) {
+			return Response.Failure;
+		} else {
+			decreaseWallet(buyer, product.getPrice());
+			increaseWallet(seller, product.getPrice());
+
+		}
+
+		try {
+			PreparedStatement addNewOrder = connection.prepareStatement(newOrder);
+			addNewOrder.execute();
+			return Response.Success;
+		} catch (SQLException e) {
+				e.printStackTrace();
 		}
 
 		return Response.Success;
