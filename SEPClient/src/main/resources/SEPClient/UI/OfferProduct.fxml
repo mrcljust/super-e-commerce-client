@@ -21,7 +21,7 @@
                   <Label layoutX="14.0" layoutY="46.0" text="Preis*" />
                   <Label layoutX="14.0" layoutY="77.0" text="Kategorie*" />
                   <Label layoutX="14.0" layoutY="110.0" />
-                  <Button fx:id="Sell_ButtonSellConfirm" layoutX="259.0" layoutY="157.0" mnemonicParsing="false" onAction="#Sell_SellConfirmClick" text="Produkt inserieren" />
+                  <Button fx:id="Sell_ButtonSellConfirm" layoutX="323.0" layoutY="158.0" mnemonicParsing="false" onAction="#Sell_SellConfirmClick" text="Produkt inserieren" />
                   <Label layoutX="14.0" layoutY="102.0" text="Produktbeschreibung*" />
                </children>
             </AnchorPane>
@@ -32,11 +32,13 @@
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="61.0" prefWidth="395.0">
                <children>
                   <TextField fx:id="Sell_InsertCSV" editable="false" layoutX="14.0" layoutY="14.0" prefHeight="35.0" prefWidth="140.0" promptText="CSV-Datei einfügen" />
-                  <Button fx:id="Sell_ButtonSellCsv" layoutX="295.0" layoutY="18.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" text="Alle Produkte inserieren" />
-                  <Button fx:id="Sell_ButtonChooseFile" layoutX="164.0" layoutY="18.0" mnemonicParsing="false" onAction="#Sell_ChooseFile" prefHeight="27.0" prefWidth="121.0" text="Datei auwählen" />
+                  <Button fx:id="Sell_ButtonSellCsv" layoutX="295.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" prefHeight="15.0" prefWidth="147.0" text="Alle Produkte inserieren" />
+                  <Button fx:id="Sell_ButtonChooseFile" layoutX="164.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_ChooseFile" prefHeight="9.0" prefWidth="121.0" text="Datei auwählen" />
                </children>
             </AnchorPane>
          </content>
       </TitledPane>
    </children>
 </AnchorPane>
+
+//push

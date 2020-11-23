@@ -1,11 +1,14 @@
 package SEPClient;
 
 import java.io.IOException;
+import java.util.Optional;
+
 import javafx.application.Application;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.stage.*;
 import javafx.geometry.Rectangle2D;
 
@@ -98,6 +101,8 @@ public class FXMLHandler extends Application {
 
 	public static void ShowMessageBox(String message, String title, String header, AlertType type, boolean wait,
 			boolean exitAfter) {
+		//Wenn exitAfter=true ist, wird das Programm nach Wegklicken der Meldung beendet (z.B. bei einem Fehler o.ä.)
+		//Wenn wait=true ist, wird der folgende Quellcode erst ausgeführt, nachdem die Meldung beendet wurde.
 		Alert alert = new Alert(type);
 		alert.setTitle(title);
 		alert.setHeaderText(header);
@@ -110,5 +115,14 @@ public class FXMLHandler extends Application {
 		} else {
 			alert.show();
 		}
+	}
+	
+	public static Optional<ButtonType> ShowYesNoQuestionBox(String message, String title, String header, AlertType type) {
+		Alert alert = new Alert(type, message, ButtonType.YES, ButtonType.NO);
+		alert.setTitle(title);
+		alert.setHeaderText(header);
+		alert.setContentText(message);
+		Optional<ButtonType> result = alert.showAndWait();
+		return result;
 	}
 }

@@ -268,7 +268,7 @@ public class SQL {
 													
 					try {
 						//Statement statement = connection.createStatement();
-						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE seller_id ='" + userId + "'"
+						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE id ='" + userId + "'"
 								+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
 						if(seller.getPicture()!=null)
 						{
@@ -295,7 +295,7 @@ public class SQL {
 					
 					try {
 						//Statement statement = connection.createStatement();
-						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE seller_id ='" + userId + "'"
+						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE id ='" + userId + "'"
 								+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')" );
 						if(customer.getPicture()!=null)
 						{
@@ -312,7 +312,7 @@ public class SQL {
 						return Response.ImageTooBig;
 					}
 				}
-			}
+			}  
 
 	public Response deleteUser(User user) {
 		// User anhand ID aus der Datenbank löschen
@@ -328,7 +328,7 @@ public class SQL {
 		
 		// Gewerbekunde
 		if(user instanceof Seller)
-		{
+		{ 
 			try
 			{
 					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
