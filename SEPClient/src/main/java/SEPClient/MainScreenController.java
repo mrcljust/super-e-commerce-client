@@ -20,7 +20,22 @@ public class MainScreenController {
 	{
 		user = _user;
 	}
-
+	
+    @FXML
+    public void initialize() {
+    	refreshView();
+    	LoadAllProducts();
+    }
+    
+    public void refreshView()
+    {
+    	
+    }
+    
+    public void LoadAllProducts()
+    {
+    	
+    }
 	
     @FXML
     private ListView<Product> MainScreen_ListLastViewed;
@@ -103,4 +118,5 @@ public class MainScreenController {
 
     }
 }
+
 
