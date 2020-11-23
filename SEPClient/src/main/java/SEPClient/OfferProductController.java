@@ -13,6 +13,13 @@ import javafx.stage.Stage;
 
 public class OfferProductController {
 	
+	static User user = null;
+	
+	public static void setUser(User _user)
+	{
+		user = _user;
+	}
+	
 	@FXML
 	private Button Sell_ButtonSellConfirm;
 	
