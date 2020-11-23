@@ -114,7 +114,7 @@ public class LoginController {
 				user = (User)queryResponse.getResponseMap().get("User");
 				
 				//MainScreen öffnen
-// klappt noch nicht			MainScreenController.setUser(user);
+                MainScreenController.setUser(user);
 				FXMLHandler.OpenSceneInStage((Stage) Login_OKButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 			}
 		}
