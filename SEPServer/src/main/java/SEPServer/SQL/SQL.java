@@ -328,7 +328,7 @@ public class SQL {
 		
 		// Gewerbekunde
 		if(user instanceof Seller)
-		{
+		{ 
 			try
 			{
 					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
