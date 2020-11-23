@@ -312,7 +312,7 @@ public class SQL {
 						return Response.ImageTooBig;
 					}
 				}
-			}
+			}  
 
 	public Response deleteUser(User user) {
 		// User anhand ID aus der Datenbank löschen
