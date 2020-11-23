@@ -160,6 +160,7 @@ public class ServerThread implements Runnable {
 						
 						//SQL-Abfrage ausführen
 				//		products = sql.fetchProductsByString(searchString);
+						//test
 					}
 					else
 					{
