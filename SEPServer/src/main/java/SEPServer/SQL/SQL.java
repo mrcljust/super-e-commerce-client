@@ -366,7 +366,19 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		int userId= user.getId();
+		double MoreMoney=amount;
+		String increaseWalletQuery=" Update User\r\n"
+								  + "Set wallet= user.wallet +" + MoreMoney + "r\n\""
+								  +"Where users.id=" + userId;
+
 		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeQuery(increaseWalletQuery);
+		} catch (SQLException e) {
 			return Response.NoDBConnection;
 		}
 
@@ -381,11 +393,24 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		int userId= user.getId();
+		double lessMoney=amount;
+		String decreaseWalletQuery=" Update User\r\n"
+								  + "Set wallet= user.wallet -" + lessMoney + "r\n\""
+								  +"Where users.id=" + userId;
+
 		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		try {
+			Statement statement = connection.createStatement();
+			statement.executeQuery(decreaseWalletQuery);
+		} catch (SQLException e) {
 			return Response.NoDBConnection;
 		}
 
 		return Response.Success;
+
 	}
 
 	public Product[] fetchAllProducts() {
@@ -425,7 +450,7 @@ public class SQL {
 			
 			while (AllProducts2.next()) {
 
-				Address newAddress = new Address(AllProducts2.getString("users.fullname"),
+				Address newAddress = new Address(AllProducts2.getString("users.fullname"),		//getString erhält den Inhalt der Tabelle(Spalte) an der Stelle
 						AllProducts2.getString("users.country"), AllProducts2.getInt("users.postalcode"),
 						AllProducts2.getString("users.city"), AllProducts2.getString("users.street"),
 						AllProducts2.getString("users.number"));
@@ -556,7 +581,7 @@ public class SQL {
 			
 			
 			Product[] allProductsByString = new Product[sqlcounter];
-			while (AllProductsByFullString2.next()) {
+			while (AllProductsByFullString2.next()) {				
 				Address newAddress = new Address(AllProductsByFullString2.getString("users.fullname"),
 						AllProductsByFullString2.getString("users.country"), AllProductsByFullString2.getInt("users.postalcode"),
 						AllProductsByFullString2.getString("users.city"), AllProductsByFullString2.getString("users.street"),

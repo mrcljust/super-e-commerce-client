@@ -11,5 +11,5 @@ public class Constants {
 	public final static int SQLPORT = 3306;
 	public final static String SQLCONNECTIONSTRING = "jdbc:mysql://localhost:3306/sep?serverTimezone=Europe/Berlin";
 	public final static String SQLUSER = "root";
-	
+	public final static int TIMEOUT= 10000;
 }
