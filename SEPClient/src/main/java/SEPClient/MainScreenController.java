@@ -29,7 +29,26 @@ public class MainScreenController {
     
     public void refreshView()
     {
+    	MainScreen_LabelWallet.setText("Guthaben: " + user.getWallet() + "$");
     	
+    	if(user instanceof Seller)
+    	{
+    		//Gewerbekunde
+        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
+    		MainScreen_ButtonAddWallet.setDisable(true);
+    		MainScreen_ButtonSellProduct.setDisable(false);
+    		MainScreen_ButtonMyProducts.setDisable(false);
+    		MainScreen_ButtonPurchases.setDisable(true);
+    	}
+    	else
+    	{
+    		//Privatkunde
+        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
+    		MainScreen_ButtonAddWallet.setDisable(false);
+    		MainScreen_ButtonSellProduct.setDisable(true);
+    		MainScreen_ButtonMyProducts.setDisable(true);
+    		MainScreen_ButtonPurchases.setDisable(false);
+    	}
     }
     
     public void LoadAllProducts()
@@ -75,12 +94,14 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_CloseButtonMenuClick(ActionEvent event) {
-    	
+    	System.exit(0);
     }
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
-    	
+    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
+				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
+				false);
     }
 
     @FXML
@@ -115,8 +136,12 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_btnSellProductClick(ActionEvent event) {
-
+    	
     }
+    
+    @FXML
+    void MainScreen_BuyProductClick (ActionEvent event) {
+    	
+    }
+    
 }
-
-
