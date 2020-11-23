@@ -247,7 +247,7 @@ public class SQL {
 	}
 
 	public Response editUser(User user) {
-		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben
+		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben 
  
 		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
 		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
