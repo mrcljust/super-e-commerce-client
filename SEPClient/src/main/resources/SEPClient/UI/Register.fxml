@@ -1,11 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0" prefWidth="423.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.RegisterController">
    <children>
-      <Label layoutX="176.0" layoutY="75.0" text="Registrieren" />
-   </children>
+      <RadioButton fx:id="Register_radioCustomer" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#Register_CustomerSelected" selected="true" text="Privatkunde" />
+      <RadioButton fx:id="Register_radioSeller" layoutX="114.0" layoutY="14.0" mnemonicParsing="false" onAction="#Register_SellerSelected" text="Gewerbekunde" />
+      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="39.0" prefHeight="170.0" prefWidth="397.0" text="1. Allgemeine Daten">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="139.0" prefWidth="395.0">
+               <children>
+                  <TextField fx:id="Register_txtUsername" layoutX="149.0" layoutY="11.0" prefHeight="25.0" prefWidth="239.0" />
+                  <TextField fx:id="Register_txtEmail" layoutX="149.0" layoutY="42.0" prefHeight="25.0" prefWidth="238.0" />
+                  <PasswordField fx:id="Register_txtPassword" layoutX="149.0" layoutY="73.0" prefHeight="25.0" prefWidth="237.0" />
+                  <PasswordField fx:id="Register_txtPasswordRepeat" layoutX="149.0" layoutY="106.0" prefHeight="25.0" prefWidth="237.0" />
+                  <Label layoutX="14.0" layoutY="15.0" text="Benutzername*" />
+                  <Label layoutX="14.0" layoutY="46.0" text="E-Mail-Adresse*" />
+                  <Label layoutX="14.0" layoutY="77.0" text="Passwort*" />
+                  <Label layoutX="14.0" layoutY="110.0" text="Passwortwiederholung*" />
+               </children></AnchorPane>
+        </content>
+      </TitledPane>
+      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="216.0" prefHeight="326.0" prefWidth="397.0" text="2. Ihr Profil">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="225.0" prefWidth="395.0">
+               <children>
+                  <TextField fx:id="Register_txtFullName" layoutX="149.0" layoutY="11.0" prefHeight="25.0" prefWidth="239.0" />
+                  <TextField fx:id="Register_txtStreet" layoutX="149.0" layoutY="42.0" prefHeight="25.0" prefWidth="176.0" />
+                  <TextField fx:id="Register_txtNumber" layoutX="335.0" layoutY="42.0" prefHeight="25.0" prefWidth="51.0" />
+                  <TextField fx:id="Register_txtPostalcode" layoutX="149.0" layoutY="73.0" prefHeight="25.0" prefWidth="84.0" />
+                  <Label layoutX="14.0" layoutY="15.0" text="Vor- und Nachname*" />
+                  <Label layoutX="14.0" layoutY="46.0" text="Straße &amp; Hausnummer*" />
+                  <Label layoutX="14.0" layoutY="77.0" text="PLZ &amp; Ort*" />
+                  <TextField fx:id="Register_txtCity" layoutX="237.0" layoutY="73.0" prefHeight="25.0" prefWidth="149.0" />
+                  <ChoiceBox fx:id="Register_txtCountry" layoutX="149.0" layoutY="107.0" prefHeight="25.0" prefWidth="238.0" />
+               	  <Label fx:id="Register_LblBusinessname" layoutX="12.0" layoutY="147.0" text="Gewerbename" />
+                  <TextField fx:id="Register_txtBusinessname" disable="true" layoutX="149.0" layoutY="143.0" prefHeight="25.0" prefWidth="239.0" />
+                  <Button fx:id="Register_ButtonChooseImage" layoutX="250.0" layoutY="261.0" mnemonicParsing="false" onAction="#Register_OpenPictureClick" text="Profilbild auswählen..." />
+                  <ImageView fx:id="Register_imgPicture" fitHeight="110.0" fitWidth="110.0" layoutX="13.0" layoutY="176.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label layoutX="13.0" layoutY="111.0" text="Land*" />
+                  </children>
+            </AnchorPane>
+         </content>
+      </TitledPane>
+      <Button fx:id="Register_ButtonOK" layoutX="270.0" layoutY="549.0" mnemonicParsing="false" onAction="#Register_OKClick" text="Registrieren" />
+   	  <Button fx:id="Register_ButtonCancel" layoutX="356.0" layoutY="549.0" mnemonicParsing="false" onAction="#Register_ReturnClick" text="Zurück" />
+      </children>
 </AnchorPane>

@@ -13,6 +13,7 @@ public class ClientRequest implements Serializable {
 	{
 		requestType=res;
 		requestMap=reqMap;
+		//test
 	}
 	
 	public Request getRequestType()
