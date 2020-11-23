@@ -359,26 +359,28 @@ public class SQL {
 	}
 
 	public Response increaseWallet(User user, double amount) {
-		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhöhen
+		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhÃ¶hen
 
-		// Wenn Wallet erfolgreich erhöht Response.Success returnen
+		// Wenn Wallet erfolgreich erhÃ¶ht Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		int userId= user.getId();
-		double MoreMoney=amount;
-		String increaseWalletQuery=" Update User\r\n"
-								  + "Set wallet= user.wallet +" + MoreMoney + "r\n\""
-								  +"Where users.id=" + userId;
+		int userId = user.getId();
+		double MoreMoney = amount;
+		double currentBalance = user.getWallet();
+		double newBalance = currentBalance + MoreMoney;
+		String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 		try {
 			Statement statement = connection.createStatement();
-			statement.executeQuery(increaseWalletQuery);
+			statement.execute(increaseWalletQuery);
+
 		} catch (SQLException e) {
+
 			return Response.NoDBConnection;
 		}
 
@@ -393,19 +395,20 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		int userId= user.getId();
-		double lessMoney=amount;
-		String decreaseWalletQuery=" Update User\r\n"
-								  + "Set wallet= user.wallet -" + lessMoney + "r\n\""
-								  +"Where users.id=" + userId;
+		int userId = user.getId();
+		double lessMoney = amount;
+		double currentBalance = user.getWallet();
+		double newBalance = currentBalance - lessMoney;
+		String decreaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 		try {
 			Statement statement = connection.createStatement();
-			statement.executeQuery(decreaseWalletQuery);
+			statement.executeUpdate(decreaseWalletQuery);
 		} catch (SQLException e) {
+
 			return Response.NoDBConnection;
 		}
 
