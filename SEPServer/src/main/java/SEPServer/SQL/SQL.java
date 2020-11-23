@@ -722,19 +722,55 @@ public class SQL {
 	}
 
 	public User getUserDataByEmail(String email) {
-		// Anhand der email in der DB das entsprechende User-Objekt suchen und ein
-		// vollständiges User-Objekt mit id und allen anderen Werten aus der DB returnen
-
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt returnen
-		// wenn keine Verbindung zu DB: null returnen
-		// wenn sonstiger Fehler auftritt ggf. null returnen
-
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		if (!checkConnection())
+		{
 			return null;
 		}
-
-		return null;
+		
+		try
+		{
+			// SQL Abfrage
+			Statement statement = connection.createStatement();
+			// Email prüfen
+			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + email + "'");
+			if(userDataQuery.next())
+			{
+				// Privat- oder Gewerbekunde?
+				String accountType = userDataQuery.getString("type");
+				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
+				
+				// Privatkunde
+				if(accountType.equals("Customer"))
+				{
+					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
+					// Privatkunden Obejekt zurückgeben
+					return customer;
+				}
+				
+				// Gewerbekunde
+				else if(accountType.equals("Seller"))
+				{
+					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
+					// Gewerbekunden Objekt zurückgeben
+					return seller;
+				}
+				// Kein Eintrag zur Email
+				else
+				{
+					return null;
+				}
+			}
+			return null;
+		} catch (SQLException e) {
+			return null;
+		}
 	}
 
 	public User getUserDataByUsername(String username) {
