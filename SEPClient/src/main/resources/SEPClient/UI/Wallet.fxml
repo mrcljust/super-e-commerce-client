@@ -7,7 +7,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="384.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.WalletController">
    <children>
       <TitledPane animated="false" collapsible="false" prefHeight="262.0" prefWidth="384.0" text="Guthaben aufladen">
@@ -20,7 +19,7 @@
                   <RadioButton fx:id="Wallet_RadioAdd50" layoutX="14.0" layoutY="116.0" mnemonicParsing="false" onAction="#Wallet_Add50" text="50" />
                   <RadioButton fx:id="Wallet_RadioAdd100" layoutX="14.0" layoutY="139.0" mnemonicParsing="false" onAction="#Wallet_Add100" text="100" />
                   <RadioButton fx:id="Wallet_RadioAddCustom" layoutX="14.0" layoutY="163.0" mnemonicParsing="false" onAction="#Wallet_AddCustom" text="manuelle Eingabe :" />
-                  <TextField fx:id="Wallet_txtCustomAmount" editable="false" layoutX="140.0" layoutY="158.0" onAction="#Wallet_CustomAmount" prefHeight="27.0" prefWidth="144.0" />
+                  <TextField fx:id="Wallet_txtCustomAmount" disable="true" layoutX="140.0" layoutY="158.0" onAction="#Wallet_CustomAmount" prefHeight="27.0" prefWidth="144.0" />
                   <Button fx:id="Wallet_ButtonIncrease" layoutX="223.0" layoutY="193.0" mnemonicParsing="false" onAction="#Wallet_IncreaseClick" text="Aufladen" />
                   <Button fx:id="Wallet_ButtonReturn" layoutX="296.0" layoutY="193.0" mnemonicParsing="false" onAction="#Wallet_ReturnClick" text="Schließen" />
                </children>
