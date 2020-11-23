@@ -750,7 +750,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden Obejekt zurückgeben
+					// Privatkunden-Obejekt zurückgeben
 					return customer;
 				}
 				
@@ -758,7 +758,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden Objekt zurückgeben
+					// Gewerbekunden-Objekt zurückgeben
 					return seller;
 				}
 				// Kein Eintrag zur Email
@@ -773,20 +773,57 @@ public class SQL {
 		}
 	}
 
-	public User getUserDataByUsername(String username) {
-		// Anhand des username in der DB das entsprechende User-Objekt suchen und ein
-		// vollständiges User-Objekt mit id und allen anderen Werten aus der DB returnen
-
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt returnen
-		// wenn keine Verbindung zu DB: null returnen
-		// wenn sonstiger Fehler auftritt ggf. null returnen
-
+	public User getUserDataByUsername(String username){
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
+		if (!checkConnection())
+		{
 			return null;
 		}
-
-		return null;
+		
+		try
+		{
+			// SQL Abfrage
+			Statement statement = connection.createStatement();
+			// Username prüfen
+			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + username + "'");
+			
+			if(userDataQuery.next())
+			{
+				String accountType = userDataQuery.getString("type");
+				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
+				
+				// Privatkunde
+				if(accountType.equals("Customer"))
+				{
+					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
+					// Privatkunden-Objekt zurückgeben
+					return customer;
+				}
+				
+				// Gewerbekunde
+				else if(accountType.equals("Seller"))
+				{
+					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
+					// Gewerbekunden-Objekt zurückgeben
+					return seller;
+				}
+				else
+				{
+					// Kein Eintrag zum Username
+					return null;
+				}
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public static void main(String[] args) {
