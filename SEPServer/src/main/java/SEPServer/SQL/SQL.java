@@ -247,28 +247,78 @@ public class SQL {
 	}
 
 	public Response editUser(User user) {
-		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts
-		// user überschreiben
+		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben
 
-		// Wenn User erfolgreich abgeändert wurden Response.Success returnen
-		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
 
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection()) {
-			return Response.NoDBConnection;
-		}
+		//Verbindung herstellen, wenn keine Verbindung besteht
+				if (!checkConnection())
+				{
+					return Response.NoDBConnection;
+				}
+				int userId = user.getId();
+				
+				if(user instanceof Seller)
+				{
+					//Gewerbekunde
+					Seller seller = (Seller)user;
+					Address sellerAddress = seller.getAddress();
+													
+					try {
+						//Statement statement = connection.createStatement();
+						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE seller_id ='" + userId + "'"
+								+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
+						if(seller.getPicture()!=null)
+						{
+							stmt.setBytes(1, seller.getPicture());
+						}
+						else
+						{
+							stmt.setString(1, "");
+						}
+						stmt.execute();
 
-		return Response.Success;
-	}
+						return Response.Success;
+
+					} catch (SQLException e) {
+						return Response.ImageTooBig;
+					}
+				}
+				
+				else
+				{
+					//Privatkunde
+					Customer customer = (Customer)user;
+					Address customerAddress = customer.getAddress();
+					
+					try {
+						//Statement statement = connection.createStatement();
+						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE seller_id ='" + userId + "'"
+								+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')" );
+						if(customer.getPicture()!=null)
+						{
+							stmt.setBytes(1, customer.getPicture());
+						}
+						else
+						{
+							stmt.setString(1, "");
+						}
+						
+						stmt.execute();
+						return Response.Success;
+					} catch (SQLException e) {
+						return Response.ImageTooBig;
+					}
+				}
+			}
 
 	public Response deleteUser(User user) {
 		// User anhand ID aus der Datenbank löschen
 
 		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
 		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
-
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
 		
@@ -276,6 +326,7 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
+		// Gewerbekunde
 		if(user instanceof Seller)
 		{
 			try
@@ -291,6 +342,7 @@ public class SQL {
 			}
 		}
 		
+		// Privatkunde
 		else 
 		{
 				try
