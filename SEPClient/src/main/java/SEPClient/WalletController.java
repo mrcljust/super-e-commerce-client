@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 public class WalletController {
 
@@ -78,7 +79,7 @@ public class WalletController {
 
     @FXML
     void Wallet_ReturnClick(ActionEvent event) {
-
+    	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
     }
 
 }
