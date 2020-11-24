@@ -294,6 +294,14 @@ public class RegisterController {
     	File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
     	if(file!=null)
     	{
+    		if(!file.toURI().toString().contains(".png") && !file.toURI().toString().contains(".jpg"))
+    	    {
+    			//Bild weder .jpg noch .png
+    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg- oder .png-Datei aus.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    	    	return;
+    	    }
     	    Image selectedImage = new Image(file.toURI().toString());
     	    Register_imgPicture.setImage(selectedImage);
 	    }

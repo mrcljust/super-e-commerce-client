@@ -465,7 +465,6 @@ public class SQL {
 				System.out.println("works");
 				System.out.println(counter);
 			}
-			//test
 
 			return allProducts;
 
@@ -636,6 +635,7 @@ public class SQL {
 				int newArrayCounter = 0;
 				for(String viewedIdStr : lastViewedIds)
 				{
+					try {
 					int viewedId = Integer.parseInt(viewedIdStr);
 					
 					//Produkt-Daten aus DB holen
@@ -656,6 +656,11 @@ public class SQL {
 						lastViewedProducts[newArrayCounter] = product;
 					}
 					newArrayCounter++;
+					} catch (NumberFormatException e) {
+						//Produkt mittlerweile gelöscht
+						//ignorieren, nichts ausgeben
+						lastViewedProducts[newArrayCounter] = null;
+					}
 				}
 				return lastViewedProducts;
 			}
@@ -690,12 +695,16 @@ public class SQL {
 		{
 			if(currentLastViewedProducts.length==10)
 			{
-				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die erste Id
+				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die letzte Id
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
-				for(int i=1;i<10;i++)
+				for(int i=0;i<9;i++)
 				{
-					newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+					if(currentLastViewedProducts[i]!=null)
+					{
+						//wenn currentLastViewedProducts[i] = null, ist das Produkt gelöscht. Dann ist es aus der Liste der zuletzt aufgerufenen Produkte zu entfernen
+						newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+					}
 				}
 			}
 			else
@@ -705,7 +714,11 @@ public class SQL {
 				
 				for(int i=0;i<currentLastViewedProducts.length;i++)
 				{
-					newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+					if(currentLastViewedProducts[i]!=null)
+					{
+						//wenn currentLastViewedProducts[i] = null, ist das Produkt gelöscht. Dann ist es aus der Liste der zuletzt aufgerufenen Produkte zu entfernen
+						newLastViewedProductsString += "," + String.valueOf(currentLastViewedProducts[i].getId());
+					}
 				}
 			}
 		}
@@ -716,7 +729,8 @@ public class SQL {
 		}
 		
 		try {
-			PreparedStatement updateLastViewedProductIds = connection.prepareStatement("UPDATE users SET lastviewed='" + newLastViewedProductsString + "' WHERE id='" + user.getId() + "'");
+			PreparedStatement updateLastViewedProductIds = connection.prepareStatement("UPDATE users SET lastviewed='" + newLastViewedProductsString
+					+ "' WHERE id='" + user.getId() + "'");
 			updateLastViewedProductIds.execute();
 			return Response.Success;
 		} catch (SQLException e) {
@@ -741,29 +755,38 @@ public class SQL {
 		
 		//zunÃ¤chst Ã¼berprÃ¼fen, ob Kategorie bereits existiert:
 		try {
-			PreparedStatement selectCategoryID = connection.prepareStatement("SELECT if FROM categories WHERE title ='" + product.getCategory() + "'");
+			PreparedStatement selectCategoryID = connection.prepareStatement("SELECT id, title FROM categories WHERE title=?");
+			selectCategoryID.setString(1, product.getCategory());
 			ResultSet selectCategoryIDResult = selectCategoryID.executeQuery();
 			if (selectCategoryIDResult.next()) {
 				//wenn Kategorie bereits existiert, speichere ID in der Variable categoryid:
-				categoryid = selectCategoryIDResult.findColumn("id");
+				categoryid = selectCategoryIDResult.getInt("id");
 			} 
 			else {
 				//wenn Kategorie noch nicht existiert, muss erst eine neue Kategorie angelegt werden
-				PreparedStatement createCategory = connection.prepareStatement("INSERT INTO categories(title) VALUES ('" + product.getCategory() + "'");
+				PreparedStatement createCategory = connection.prepareStatement("INSERT INTO categories(title) "
+						+ "VALUES(?)");
+				createCategory.setString(1, product.getCategory());
 				createCategory.execute();
 				
 				//nachdem Kategorie erstellt wurde, kÃ¶nnen wir Kategorie auslesen:
 				selectCategoryIDResult = selectCategoryID.executeQuery();
 				if (selectCategoryIDResult.next()) {
-					categoryid = selectCategoryIDResult.findColumn("id");
+					categoryid = selectCategoryIDResult.getInt("id");
 				} else {
 					//vielleicht noch rausnehmen? Weil sollte eigentlich nicht passieren
 					return Response.Failure;
 				}
 			}
 			//da jetzt Kategorie existiert, kÃ¶nnen wir das Produkt anlegen
-			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description)"
-					+ "VALUES ('" + seller.getId() + "', '" + product.getName() + "', '" + product.getPrice() + "', '" + categoryid + "', '" + product.getDescription() + "', '");
+			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description) "
+					+ "VALUES (?, ?, ?, ?, ?)");
+		
+			insertProduct.setInt(1, seller.getId()); //An Stelle des 1. ? setzen
+			insertProduct.setString(2,  product.getName()); // ...
+			insertProduct.setDouble(3,  product.getPrice());
+			insertProduct.setInt(4, categoryid);
+			insertProduct.setString(5, product.getDescription());
 			insertProduct.execute();
 			return Response.Success;		
 			
@@ -772,12 +795,6 @@ public class SQL {
 			e.printStackTrace();
 			return Response.Failure;
 		}
-		
-		
-		
-		
-		
-		
 	}
 
 	public Response addItems(User seller, Product[] products) {
@@ -805,27 +822,32 @@ public class SQL {
 			//Fï¿½r jedes Produkt p prï¿½fen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
 			int categoryid;
 			
-
 			try {
-				PreparedStatement selectCategoryID = connection.prepareStatement("SELECT id FROM categories WHERE title='" + p.getCategory() + "'");
+				PreparedStatement selectCategoryID;
+				selectCategoryID = connection.prepareStatement("SELECT id, title FROM categories "
+						+ "WHERE title=?");
+				selectCategoryID.setString(1, p.getCategory());
 				ResultSet selectCategoryIDResult = selectCategoryID.executeQuery();
 				if(selectCategoryIDResult.next())
 				{
 					//Kategorie existiert bereits, schreibe ID in Variable categoryid
-					categoryid = selectCategoryIDResult.findColumn("id");
+					categoryid = selectCategoryIDResult.getInt("id");
 				}
 				else
 				{
 					//Kategorie existiert noch nicht
 					//Lege Kategorie an
-					PreparedStatement createCategory = connection.prepareStatement("INSERT INTO categories(title) VALUES('" + p.getCategory() + "'");
+					PreparedStatement createCategory;
+					createCategory = connection.prepareStatement("INSERT INTO categories(title) "
+							+ "VALUES(?)");
+					createCategory.setString(1, p.getCategory());
 					createCategory.execute();
 					
-					//ID nach Anlegen der Kategorie auslesen
+					//ID nach Anlegen der Kategorie auslesen (Query selectCategoryID erneut ausführen)
 					selectCategoryIDResult = selectCategoryID.executeQuery();
 					if(selectCategoryIDResult.next())
 					{
-						categoryid = selectCategoryIDResult.findColumn("id");
+						categoryid = selectCategoryIDResult.getInt("id");
 					}
 					else
 					{
@@ -835,8 +857,15 @@ public class SQL {
 				}
 				
 				//Produkt p anlegen
-				PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description)"
-							+ "VALUES ('" + sellerid + "', '" + p.getName() + "', '" + p.getPrice() + "', '" + categoryid + "', '" + p.getDescription() + "'");
+				PreparedStatement insertProduct;
+				insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description) "
+							+ "VALUES (?, ?, ?, ?, ?)");
+				
+				insertProduct.setInt(1, sellerid); //An Stelle des 1. ? setzen
+				insertProduct.setString(2,  p.getName()); // ...
+				insertProduct.setDouble(3,  p.getPrice());
+				insertProduct.setInt(4, categoryid);
+				insertProduct.setString(5, p.getDescription());
 				insertProduct.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();

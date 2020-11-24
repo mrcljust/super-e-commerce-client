@@ -25,7 +25,9 @@ public class FXMLHandler extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Zeige Start-Szene in neuem Fenster
+		
 		OpenSceneAndStage("Start", "Super-E-commerce-Platform", false, true);
+		//OpenSceneAndStage("OfferProduct", "Super-E-commerce-Platform", false, true);
 
 		Client client = new Client();
 		client.start();

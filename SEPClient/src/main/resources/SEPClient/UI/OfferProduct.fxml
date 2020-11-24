@@ -33,7 +33,7 @@
                <children>
                   <Button fx:id="Sell_ButtonSellCsv" disable="true" layoutX="409.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" prefHeight="27.0" prefWidth="183.0" text="Produkte aus Datei inserieren" />
                   <Button fx:id="Sell_ButtonChooseFile" layoutX="206.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_ChooseFile" prefHeight="27.0" prefWidth="151.0" text="CSV-Datei auwählen..." />
-                  <TextField fx:id="Sell_txtCSV" layoutX="14.0" layoutY="16.0" prefHeight="27.0" prefWidth="183.0" />
+                  <TextField fx:id="Sell_txtCSV" disable="true" layoutX="14.0" layoutY="16.0" prefHeight="27.0" prefWidth="183.0" />
                </children>
             </AnchorPane>
          </content>
