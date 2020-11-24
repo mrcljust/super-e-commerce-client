@@ -477,7 +477,7 @@ public class SQL {
 
 		int counter = 0;
 		if (!checkConnection()) {
-			System.out.println("connection problem");
+		
 
 			return null;
 		}
@@ -510,21 +510,19 @@ public class SQL {
 						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
 
 				counter++;
-				System.out.println("works");
-				System.out.println(counter);
+
 			}
 
 			return allProducts;
 
 		} catch (SQLException e) {
-			System.out.println("other problem");
-			System.out.println(e.getMessage());
+			
 			return null;
 		}
 
 	}
 
-	public Product[] fetchProductsByCategory(String category) {
+	public Product[] fetchProductsByCategory(String category) { //Array ausgelesen in Mainscreen
 		// Produkte mit der Kategorie category in der DB suchen und als Product-Array
 		// ausgeben
 
@@ -578,12 +576,12 @@ public class SQL {
 				
 			
 				counter++;
-				System.out.println("works");
+	
 			}
 
 			return allProductsSameCategory;
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+		
 			return null;
 		}
 
@@ -639,12 +637,12 @@ public class SQL {
 				allProductsByString[counter] = new Product(AllProductsByFullString2.getInt("products.id"),
 						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
 						AllProductsByFullString2.getString("categories.title"), AllProductsByFullString2.getString("products.description"));
-				System.out.println("funktioniert");
+			
 			}
 			return allProductsByString;
 
 		} catch (SQLException e) {
-			System.out.println(e.getMessage());
+			
 			return null;
 		}
 
