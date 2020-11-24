@@ -151,7 +151,14 @@ public class ServerThread implements Runnable {
 					Product[] products = null;
 					Response responseType;
 					HashMap<String, Object> responseMap = new HashMap<String, Object>();
-					if(requestMap.containsKey("Category"))
+					if(requestMap == null)
+					{
+						//alle Produkte suchen
+						
+						//SQL-Abfrage ausführen
+						products = sql.fetchAllProducts();
+					}
+					else if(requestMap.containsKey("Category"))
 					{
 						//nach Produkten mit Kategorie suchen
 						String category = (String)requestMap.get("Category");
@@ -159,28 +166,13 @@ public class ServerThread implements Runnable {
 						//SQL-Abfrage ausführen
 						products = sql.fetchProductsByCategory(category);
 					}
-					else if(requestMap.containsKey("SearchFullString"))
+					else if(requestMap.containsKey("SearchString"))
 					{
 						//nach Produkten mit Suchbegriff suchen
-						String searchString = (String)requestMap.get("SearchFullString");
+						String searchString = (String)requestMap.get("SearchString");
 						
 						//SQL-Abfrage ausführen
-						products = sql.fetchProductsByFullString(searchString);
-					}
-					else if(requestMap.containsKey("SearchPartialString"))
-					{
-						//nach Produkten mit Suchbegriff suchen
-						String searchString = (String)requestMap.get("SearchPartialString");
-						
-						//SQL-Abfrage ausführen
-						products = sql.fetchProductsByPartialString(searchString);
-					}
-					else
-					{
-						//alle Produkte suchen
-						
-						//SQL-Abfrage ausführen
-						products = sql.fetchAllProducts();
+						products = sql.fetchProductsByString(searchString);
 					}
 					
 					if(products==null)

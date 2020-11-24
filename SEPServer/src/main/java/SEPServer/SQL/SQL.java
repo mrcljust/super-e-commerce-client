@@ -6,13 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
-
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.User;
-import SEPServer.Server;
 import SEPCommon.Address;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
@@ -48,14 +44,14 @@ public class SQL {
 	}
 
 	public Response registerUser(User user) {
-		// Die Methode ermï¿½glicht eine Registrierung auf der Plattform
-		// Passwort, Emailvorgaben usw. werden clientseitig geprï¿½ft
+		// Die Methode ermöglicht eine Registrierung auf der Plattform
+		// Passwort, Emailvorgaben usw. werden clientseitig geprüft
 		
-		// wenn User erfolgreich registriert wurde wird Response.Success zurï¿½ck gegeben
-		// wenn Email vergeben: Response.Emailtaken zurï¿½ckgeben
-		// wenn User vergeben: Response.UsernameTaken zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
-		// wenn Bild zu groï¿½: Response.ImageTooBig zurï¿½ckgeben
+		// wenn User erfolgreich registriert wurde wird Response.Success zurück gegeben
+		// wenn Email vergeben: Response.Emailtaken zurückgeben
+		// wenn User vergeben: Response.UsernameTaken zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn Bild zu groß: Response.ImageTooBig zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -67,11 +63,11 @@ public class SQL {
 		{
 			// Registrierung Gewerbekunde
 			
-			// User- und Adress-Objekt ï¿½bergeben
+			// User- und Adress-Objekt übergeben
 			Seller seller = (Seller)user;
 			Address sellerAddress = seller.getAddress();
 			
-			// Prï¿½fen, ob Email oder Username schon existieren
+			// Prüfen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
@@ -106,7 +102,7 @@ public class SQL {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
-				// Bild einfï¿½gen
+				// Bild einfügen
 				if(seller.getPicture()!=null)
 				{
 					stmt.setBytes(1, seller.getPicture());
@@ -127,11 +123,11 @@ public class SQL {
 		else
 		{
 			// Registrierung Privatkunde
-			// User- und Adress-Objekt ï¿½bergeben
+			// User- und Adress-Objekt übergeben
 			Customer customer = (Customer)user;
 			Address customerAddress = customer.getAddress();
 			
-			//Prï¿½fen, ob Email oder Username schon existieren
+			//Prüfen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
@@ -166,7 +162,7 @@ public class SQL {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')");
-				// Bild einfï¿½gen
+				// Bild einfügen
 				if(customer.getPicture()!=null)
 				{
 					stmt.setBytes(1, customer.getPicture());
@@ -187,9 +183,9 @@ public class SQL {
 	}
 
 	public Response loginUser(String emailOrUsername, String password) {
-		// wenn User erfolgreich eingeloggt wurde Response.Success zurï¿½ckgeben
-		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// wenn User erfolgreich eingeloggt wurde Response.Success zurückgeben
+		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -247,11 +243,11 @@ public class SQL {
 	}
 
 	public Response editUser(User user) {
-		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users ï¿½berschreiben 
+		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben 
  
-		// Wenn User erfolgreich abgeï¿½ndert wurden Response.Success zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurï¿½ckgeben
+		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
 
 		//Verbindung herstellen, wenn keine Verbindung besteht
 				if (!checkConnection())
@@ -315,10 +311,10 @@ public class SQL {
 			}  
 
 	public Response deleteUser(User user) {
-		// User anhand ID aus der Datenbank lï¿½schen
+		// User anhand ID aus der Datenbank löschen
 
-		// Wenn User erfolgreich gelï¿½scht Response.Success zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
 		
@@ -331,7 +327,7 @@ public class SQL {
 		{ 
 			try
 			{
-					// Zuerst Produkte des Anbieters und dann den Anbieter selbst lï¿½schen
+					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
 					Statement statement = connection.createStatement();
 					statement.executeQuery("DELETE FROM products WHERE seller_id ='" + userId + "'");
 					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
@@ -348,7 +344,7 @@ public class SQL {
 				try
 				{
 					Statement statement = connection.createStatement();
-					// Bei Privatkunden muss nur der User selbst gelï¿½scht werden
+					// Bei Privatkunden muss nur der User selbst gelöscht werden
 					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
 					return Response.Success;
 				
@@ -359,35 +355,20 @@ public class SQL {
 	}
 
 	public Response increaseWallet(User user, double amount) {
-		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhÃƒÂ¶hen
+		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhöhen
 
-		// Wenn Wallet erfolgreich erhÃƒÂ¶ht Response.Success returnen
+		// Wenn Wallet erfolgreich erhöht Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		int userId = user.getId();
-		double MoreMoney = amount;
-		double currentBalance = user.getWallet();
-		double newBalance = currentBalance + MoreMoney;
-		String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
-
 		if (!checkConnection()) {
-			return Response.NoDBConnection;
-		}
-		try {
-			Statement statement = connection.createStatement();
-			statement.execute(increaseWalletQuery);
-
-		} catch (SQLException e) {
-
 			return Response.NoDBConnection;
 		}
 
 		return Response.Success;
 	}
 
-	//Test
 	public Response decreaseWallet(User user, double amount) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount vermindern
 
@@ -396,25 +377,11 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		int userId = user.getId();
-		double lessMoney = amount;
-		double currentBalance = user.getWallet();
-		double newBalance = currentBalance - lessMoney;
-		String decreaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
-
 		if (!checkConnection()) {
-			return Response.NoDBConnection;
-		}
-		try {
-			Statement statement = connection.createStatement();
-			statement.executeUpdate(decreaseWalletQuery);
-		} catch (SQLException e) {
-
 			return Response.NoDBConnection;
 		}
 
 		return Response.Success;
-
 	}
 
 	public Product[] fetchAllProducts() {
@@ -442,11 +409,11 @@ public class SQL {
 			PreparedStatement pstmt = connection.prepareStatement(allProductsQuery);
 			ResultSet AllProducts = pstmt.executeQuery();
 
-			int sqlcounter = 1;
-			while (AllProducts.next()) {  //Tupel Zï¿½hlen
+			int sqlcounter = 0;
+			while (AllProducts.next()) {  //Tupel Zählen
 				sqlcounter++;
 			}
-			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf kï¿½nnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			ResultSet AllProducts2= pstmt2.executeQuery();
 			
 
@@ -454,13 +421,13 @@ public class SQL {
 			
 			while (AllProducts2.next()) {
 
-				Address newAddress = new Address(AllProducts2.getString("users.fullname"),		//getString erhält den Inhalt der Tabelle(Spalte) an der Stelle
+				Address newAddress = new Address(AllProducts2.getString("users.fullname"),
 						AllProducts2.getString("users.country"), AllProducts2.getInt("users.postalcode"),
 						AllProducts2.getString("users.city"), AllProducts2.getString("users.street"),
 						AllProducts2.getString("users.number"));
 				Seller newSeller = new Seller(AllProducts2.getInt("users.id"), AllProducts2.getString("users.username"),
 						AllProducts2.getString("users.email"), AllProducts2.getString("users.password"),
-						AllProducts2.getBytes("users.picture"), AllProducts2.getDouble("users.wallet"), newAddress,
+						AllProducts2.getBytes("users.image"), AllProducts2.getDouble("users.wallet"), newAddress,
 						AllProducts2.getString("users.companyname"));
 				allProducts[counter] = new Product(AllProducts2.getInt("products.id"),
 						AllProducts2.getString("products.title"), AllProducts2.getDouble("products.price"), newSeller,
@@ -496,7 +463,7 @@ public class SQL {
 					 		   + "JOIN categories\r\n"
 					 		   + "ON (products.category_ID = categories.ID)\r\n" 
 					 		   + "JOIN users\r\n"
-					 		   + "ON users.id=products.seller_id"
+					 		   + "ON users.id=products.seller_id\r\n"
 					 		   + "WHERE categories.title='" + category+ "'";
 		if (!checkConnection()) {
 			System.out.println("connection probleme");
@@ -504,7 +471,7 @@ public class SQL {
 		}
 		try {
 			int counter = 0;
-			int sqlcounter = 1;
+			int sqlcounter = 0;
 			PreparedStatement statement = connection.prepareStatement(queryByCategory);
 			ResultSet AllProductsByCategory = statement.executeQuery();
 
@@ -527,7 +494,7 @@ public class SQL {
 						AllProductsByCategory2.getString("users.number"));
 				Seller newSeller = new Seller(AllProductsByCategory2.getInt("users.id"), AllProductsByCategory2.getString("users.username"),
 						AllProductsByCategory2.getString("users.email"), AllProductsByCategory2.getString("users.password"),
-						AllProductsByCategory2.getBytes("users.picture"), AllProductsByCategory2.getDouble("users.wallet"), newAddress,
+						AllProductsByCategory2.getBytes("users.image"), AllProductsByCategory2.getDouble("users.wallet"), newAddress,
 						AllProductsByCategory2.getString("users.companyname"));
 				allProductsSameCategory[counter] = new Product(AllProductsByCategory2.getInt("products.id"),
 						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), newSeller,
@@ -547,7 +514,7 @@ public class SQL {
 
 	}
 
-	public Product[] fetchProductsByFullString(String searchString) {
+	public Product[] fetchProductsByString(String searchString) {
 		// Produkte mit dem Begriff searchString im Namen, Beschreibung oder Kategorie
 		// in der DB suchen und als Product-Array ausgeben
 
@@ -561,8 +528,8 @@ public class SQL {
 					 + "JOIN Categories\r\n"
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
 					 + "JOIN users\r\n"
-			 		 + "ON users.id=products.seller_id"
-					 + "WHERE Products.Title='"+ searchString+"'";
+			 		 + "ON users.id=products.seller_id\r\n"
+					 + "WHERE Products.Title LIKE '%"+ searchString+"%'";
 		
 					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
 					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
@@ -572,7 +539,7 @@ public class SQL {
 		}
 		try {
 			int counter = 0;
-			int sqlcounter = 1;
+			int sqlcounter = 0;
 			PreparedStatement pstmt = connection.prepareStatement(query);
 			ResultSet AllProductsByFullString = pstmt.executeQuery();
 
@@ -585,14 +552,14 @@ public class SQL {
 			
 			
 			Product[] allProductsByString = new Product[sqlcounter];
-			while (AllProductsByFullString2.next()) {				
+			while (AllProductsByFullString2.next()) {
 				Address newAddress = new Address(AllProductsByFullString2.getString("users.fullname"),
 						AllProductsByFullString2.getString("users.country"), AllProductsByFullString2.getInt("users.postalcode"),
 						AllProductsByFullString2.getString("users.city"), AllProductsByFullString2.getString("users.street"),
 						AllProductsByFullString2.getString("users.number"));
 				Seller newSeller = new Seller(AllProductsByFullString2.getInt("users.id"), AllProductsByFullString2.getString("users.username"),
 						AllProductsByFullString2.getString("users.email"), AllProductsByFullString2.getString("users.password"),
-						AllProductsByFullString2.getBytes("users.picture"), AllProductsByFullString2.getDouble("users.wallet"), newAddress,
+						AllProductsByFullString2.getBytes("users.image"), AllProductsByFullString2.getDouble("users.wallet"), newAddress,
 						AllProductsByFullString2.getString("users.companyname"));
 				allProductsByString[counter] = new Product(AllProductsByFullString2.getInt("products.id"),
 						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
@@ -607,76 +574,14 @@ public class SQL {
 		}
 
 	}
-
-	public Product[] fetchProductsByPartialString(String searchString) {
-		// Produkte mit dem Begriff searchString im Namen, Beschreibung oder Kategorie
-		// in der DB suchen und als Product-Array ausgeben
-
-		// Wenn erfolgreich gefetcht, Product-Array returnen
-		// wenn keine Verbindung zu DB: null returnen
-		// wenn sonstiger Fehler auftritt ggf. null returnen
-
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		String query = "SELECT * \r\n"
-					 + "FROM Products\r\n"
-					 + "JOIN Categories\r\n"
-					 + "ON (Products.category_ID = Categories.ID)\r\n"
-					 + "JOIN users\r\n"
-			 		 + "ON users.id=products.seller_id"
-					 + "WHERE Products.Title LIKE'%"+ searchString+"%'";
-		
-					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
-					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
-		
-		if (!checkConnection()) {
-			return null;
-		}
-		try {
-			int counter = 0;
-			int sqlcounter = 1;
-			PreparedStatement pstmt = connection.prepareStatement(query);
-			ResultSet AllProductsByPartialString = pstmt.executeQuery();
-
-			while (AllProductsByPartialString.next()) {
-				sqlcounter++;
-			}
-			
-			PreparedStatement pstmt2 = connection.prepareStatement(query);
-			ResultSet AllProductsByPartialString2 = pstmt2.executeQuery();
-			
-			
-			Product[] allProductsByPartialString = new Product[sqlcounter];
-			while (AllProductsByPartialString2.next()) {
-				Address newAddress = new Address(AllProductsByPartialString2.getString("users.fullname"),
-						AllProductsByPartialString2.getString("users.country"), AllProductsByPartialString2.getInt("users.postalcode"),
-						AllProductsByPartialString2.getString("users.city"), AllProductsByPartialString2.getString("users.street"),
-						AllProductsByPartialString2.getString("users.number"));
-				Seller newSeller = new Seller(AllProductsByPartialString2.getInt("users.id"), AllProductsByPartialString2.getString("users.username"),
-						AllProductsByPartialString2.getString("users.email"), AllProductsByPartialString2.getString("users.password"),
-						AllProductsByPartialString2.getBytes("users.picture"), AllProductsByPartialString2.getDouble("users.wallet"), newAddress,
-						AllProductsByPartialString2.getString("users.companyname"));
-				allProductsByPartialString[counter] = new Product(AllProductsByPartialString2.getInt("products.id"),
-						AllProductsByPartialString2.getString("products.title"), AllProductsByPartialString2.getDouble("products.price"), newSeller,
-						AllProductsByPartialString.getString("categories.title"), AllProductsByPartialString2.getString("products.description"));
-				System.out.println("funktioniert");
-			}
-			return allProductsByPartialString;
-
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-			return null;
-		}
-		
-		
-
-	}
+	
 	public Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
-		//Anschlieï¿½end Produkt-Array der betroffenen Produkt-IDs ausgeben
+		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
 		
 		//Wenn erfolgreich gefetcht, Product-Array returnen
 		//wenn keine Verbindung zu DB: null returnen
-		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ï¿½.) ggf. null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -694,7 +599,7 @@ public class SQL {
 			if(fetchLastViewedProductIdsResult.next())
 			{
 				String lastviewed = fetchLastViewedProductIdsResult.getString("lastviewed");
-				if(lastviewed=="" || lastviewed==null)
+				if(lastviewed=="" || lastviewed==null || lastviewed.isEmpty() || lastviewed.isBlank())
 					return null;
 				
 				String[] lastViewedIds = lastviewed.split(",");
@@ -716,7 +621,7 @@ public class SQL {
 								fetchProductsInfoResult.getString("users.number"));
 						Seller seller = new Seller(fetchProductsInfoResult.getInt("users.id"), fetchProductsInfoResult.getString("users.username"),
 								fetchProductsInfoResult.getString("users.email"), fetchProductsInfoResult.getString("users.password"),
-								fetchProductsInfoResult.getBytes("users.picture"), fetchProductsInfoResult.getDouble("users.wallet"), address,
+								fetchProductsInfoResult.getBytes("users.image"), fetchProductsInfoResult.getDouble("users.wallet"), address,
 								fetchProductsInfoResult.getString("users.companyname"));
 						
 						Product product = new Product(viewedId, fetchProductsInfoResult.getString("products.title"), fetchProductsInfoResult.getDouble("products.price"), seller, fetchProductsInfoResult.getString("categories.title"), fetchProductsInfoResult.getString("products.description"));
@@ -724,23 +629,22 @@ public class SQL {
 					}
 					newArrayCounter++;
 				}
+				return lastViewedProducts;
 			}
 			else
 			{
-				//kein Entry mit der UserId - eigentlich nicht mï¿½glich.
+				//kein Entry mit der UserId - eigentlich nicht möglich.
 				return null;
 			}
 		} catch (SQLException e) {
 			return null;
 		}
-		
-		return null;
 	}
 	
 	public Response addLastViewedProduct(int viewedProductId, User user) {
-		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufï¿½gen (max. 10 zuletzt betrachtete IDs).
+		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
 		
-		//Wenn erfolgreich hinzugefï¿½gt, Response.Success returnen
+		//Wenn erfolgreich hinzugefügt, Response.Success returnen
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
@@ -750,7 +654,7 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefï¿½gt werden muss
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
 		Product[] currentLastViewedProducts = fetchLastViewedProducts(user);
 		
 		String newLastViewedProductsString = "";
@@ -758,7 +662,7 @@ public class SQL {
 		{
 			if(currentLastViewedProducts.length==10)
 			{
-				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die erste Id
+				//Maximale Länge (10), setze viewedProductId an den Anfang und ersetze die erste Id
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=1;i<10;i++)
@@ -768,7 +672,7 @@ public class SQL {
 			}
 			else
 			{
-				//Maximale Lï¿½nge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=0;i<currentLastViewedProducts.length;i++)
@@ -825,13 +729,13 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Ungï¿½ltigkeit usw. wird clientseitig geprï¿½ft
+		//Ungültigkeit usw. wird clientseitig geprüft
 		
 		int sellerid = seller.getId();
 		
 		for(Product p : products)
 		{
-			//Fï¿½r jedes Produkt p prï¿½fen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
+			//Für jedes Produkt p prüfen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
 			int categoryid;
 			
 
@@ -858,7 +762,7 @@ public class SQL {
 					}
 					else
 					{
-						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wï¿½re)
+						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wäre)
 						return Response.Failure;
 					}
 				}
@@ -878,8 +782,7 @@ public class SQL {
 
 	public Response buyItem(User buyer, Product product) {
 		// Neuen Datenbankeintrag in die Tabelle orders. buyer_id ist die ID vom Objekt
-		// buyer, die seller_id, Preis, Produktinfos kÃ¯Â¿Â½nnen dem Objekt product
-		// entnommen
+		// buyer, die seller_id, Preis, Produktinfos können dem Objekt product entnommen
 		// werden
 
 		// Wenn Produkte erfolgreich gekauft, Response.Success returnen
@@ -887,43 +790,19 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-
-		int buyerid = buyer.getId();
-		Seller seller = product.getSeller();
-		int sellerid = seller.getId();
-		String newOrder = "INSERT INTO orders\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
-				+ buyerid + "', '" + product.getPrice() + "')";
-
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
-		}
-
-		// ggf prÃ¼fen ob genug balance
-		if (buyer.getWallet() - product.getPrice() < 0) {
-			return Response.Failure;
-		} else {
-			decreaseWallet(buyer, product.getPrice());
-			increaseWallet(seller, product.getPrice());
-
-		}
-
-		try {
-			PreparedStatement addNewOrder = connection.prepareStatement(newOrder);
-			addNewOrder.execute();
-			return Response.Success;
-		} catch (SQLException e) {
-				e.printStackTrace();
 		}
 
 		return Response.Success;
 	}
 
 	public User getUserDataByEmail(String email) {
-		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -935,7 +814,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Email prï¿½fen
+			// Email prüfen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + email + "'");
 			if(userDataQuery.next())
 			{
@@ -947,7 +826,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Obejekt zurï¿½ckgeben
+					// Privatkunden-Obejekt zurückgeben
 					return customer;
 				}
 				
@@ -955,7 +834,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurï¿½ckgeben
+					// Gewerbekunden-Objekt zurückgeben
 					return seller;
 				}
 				// Kein Eintrag zur Email
@@ -971,11 +850,11 @@ public class SQL {
 	}
 
 	public User getUserDataByUsername(String username){
-		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -987,7 +866,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Username prï¿½fen
+			// Username prüfen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + username + "'");
 			
 			if(userDataQuery.next())
@@ -999,7 +878,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Objekt zurï¿½ckgeben
+					// Privatkunden-Objekt zurückgeben
 					return customer;
 				}
 				
@@ -1007,7 +886,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurï¿½ckgeben
+					// Gewerbekunden-Objekt zurückgeben
 					return seller;
 				}
 				else
