@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
 
+import SEPCommon.Address;
 import SEPCommon.ClientRequest;
+import SEPCommon.Customer;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.Seller;
@@ -26,6 +28,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -110,6 +113,125 @@ public class EditAccountController {
 	private Button EditAccount_ButtonOK;
 	@FXML
 	private Button EditAccount_ButtonCancel;
+	
+	void EditAccount_OKClick (ActionEvent event) {
+		String username = EditAccount_txtUsername.getText();
+		String email = EditAccount_txtEmail.getText();
+		String password = EditAccount_txtPassword.getText();
+		String passwordRepeated = EditAccount_txtPasswordRepeat.getText();
+		String fullname = EditAccount_txtFullName.getText();
+		String street = EditAccount_txtStreet.getText();
+		String number = EditAccount_txtNumber.getText(); //ich muss nicht typecasten?
+		String zipcode = EditAccount_txtPostalcode.getText();	
+		String city = EditAccount_txtCity.getText();
+		String country = (String) EditAccount_txtCountry.getValue(); //richtig so?
+		String businessname = EditAccount_txtBusinessname.getText();
+		boolean isSeller = EditAccount_radioSeller.isSelected();
+		
+		Image image = EditAccount_imgPicture.getImage();
+		byte [] bufImg = null; //erst null, weil wir h und w noch nicht kennen; nachtraeglich kann array-größe nicht einfach angepasst werden
+		if (image != null) {
+			int w = (int) image.getWidth();
+			int h = (int) image.getHeight();
+			
+			bufImg = new byte [w*h*4];
+			
+			image.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), bufImg, 0, w*4);
+		}
+		
+		//Ungültige Abfragen abfangen: 
+		
+		if (username=="" || username==null || email=="" || email==null || password=="" || password==null || passwordRepeated=="" || passwordRepeated==null 
+				|| fullname=="" || fullname==null || street=="" || street==null || number=="" || number==null || zipcode=="" || zipcode==null 
+				|| city=="" || city==null || country=="" || country==null || (isSeller && businessname==null) || (isSeller && businessname=="")) {
+			
+			FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return; //nochmal versuchen
+		}
+    	
+		if (!passwordRepeated.equals(password)) {
+			FXMLHandler.ShowMessageBox("Die Passwörter stimmen nicht überein.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			EditAccount_txtPassword.setText("");
+			EditAccount_txtPasswordRepeat.setText("");
+			return; //nochmal versuchen
+		}
+		
+		if (!email.contains("@")) {
+			FXMLHandler.ShowMessageBox("Die E-Mail Adresse ist nicht gültig.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			EditAccount_txtEmail.setText("");
+			return;
+		}
+		
+		if (username.contains("@")) {
+			FXMLHandler.ShowMessageBox("Der Benutzername darf kein '@' enthalten.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			EditAccount_txtUsername.setText("");
+			return;
+		}
+		
+		int postalcode;
+		try {
+			postalcode = Integer.parseInt(zipcode.trim());
+		} catch (NumberFormatException nfe) {
+			FXMLHandler.ShowMessageBox("Die Postleitzahl darf nur Zahlen enthalten.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			EditAccount_txtPostalcode.setText("");
+			return;
+		}
+		
+		User user;
+		Address address = new Address (fullname, country, postalcode, city, street, number);
+		if (isSeller) {
+			user = new Seller(username, email, password, bufImg, 0, address, businessname);
+		} else {
+			user = new Customer(username, email, password, bufImg, 0, address);
+		}
+		HashMap <String, Object> requestMap = new HashMap<String, Object>();
+		requestMap.put("User", user);
+    	
+    	ClientRequest req = new ClientRequest(Request.EditUser, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		//keine Verbindung zu DB
+		if(queryResponse.getResponseType() == Response.NoDBConnection) {
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+		}
+		
+		//Bild zu groß
+		if(queryResponse.getResponseType() == Response.ImageTooBig) {
+			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß. Bitte wählen Sie ein anderes Bild aus.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			EditAccount_imgPicture.setImage(null);
+		}
+		
+		//Username bereits vergeben
+		else if(queryResponse.getResponseType() == Response.UsernameTaken) {
+			FXMLHandler.ShowMessageBox("Der Benutzername ist bereits vergeben.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			EditAccount_txtUsername.setText("");
+		}
+		
+		//Email bereits vergeben
+		else if(queryResponse.getResponseType() == Response.EmailTaken) {
+			FXMLHandler.ShowMessageBox("Die E-Mail-Adresse ist bereits vergeben.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			EditAccount_txtEmail.setText("");
+		}
+		
+		//Änderungen erfolgreich
+		else if(queryResponse.getResponseType() == Response.Success) {
+			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
+					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
+			LoginController.setPreText(EditAccount_txtUsername.getText());
+			FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Login", "Anmeldung", false, true);
+		}
+		
+	}
+
 	
 	@FXML
 	void EditAccount_OpenPictureClick(ActionEvent event) {
