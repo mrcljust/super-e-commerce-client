@@ -6,13 +6,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
-import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
-
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.User;
-import SEPServer.Server;
 import SEPCommon.Address;
 import SEPCommon.Constants;
 import SEPCommon.Customer;

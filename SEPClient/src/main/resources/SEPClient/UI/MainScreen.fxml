@@ -107,7 +107,7 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkäufer: abc123" />
+                  <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkaeufer: abc123" />
                   <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="84.0" text="Kategorie: Bücher" />
                   <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="80.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
                   <TextArea fx:id="MainScreen_TextProductDescription" editable="false" layoutX="14.0" layoutY="111.0" prefHeight="313.0" prefWidth="405.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="111.0" />
