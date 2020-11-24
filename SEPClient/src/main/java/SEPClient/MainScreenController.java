@@ -365,7 +365,7 @@ public class MainScreenController {
     @FXML
     void MainScreen_btnEditAccountClick(ActionEvent event) {
     	EditAccountController.setUser(user);
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "Konto bearbeiten", true, false);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "Konto bearbeiten", true, true);
     }
 
     @FXML

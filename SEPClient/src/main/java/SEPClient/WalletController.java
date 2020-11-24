@@ -1,12 +1,20 @@
 package SEPClient;
 
 
+import java.util.HashMap;
+
+import SEPCommon.ClientRequest;
+import SEPCommon.Request;
+import SEPCommon.Response;
+import SEPCommon.ServerResponse;
 import SEPCommon.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 
 public class WalletController {
@@ -17,6 +25,16 @@ public class WalletController {
 	{
 		user = _user;
 	}
+	
+    @FXML
+    public void initialize() {
+    	ToggleGroup radioGroup = new ToggleGroup();
+    	Wallet_RadioAdd10.setToggleGroup(radioGroup);
+    	Wallet_RadioAdd25.setToggleGroup(radioGroup);
+    	Wallet_RadioAdd50.setToggleGroup(radioGroup);
+    	Wallet_RadioAdd100.setToggleGroup(radioGroup);
+    	Wallet_RadioAddCustom.setToggleGroup(radioGroup);
+    }
 	
     @FXML
     private RadioButton Wallet_RadioAdd10;
@@ -63,27 +81,103 @@ public class WalletController {
 
     @FXML
     void Wallet_AddCustom(ActionEvent event) {
-    	
+    	if(Wallet_RadioAddCustom.isSelected())
+    	{
+    		Wallet_txtCustomAmount.setDisable(false);
+    	}
+    	else
+    	{
+    		Wallet_txtCustomAmount.setDisable(true);
+    	}
     }
 
     @FXML
     void Wallet_CustomAmount(ActionEvent event) {
-
+    	
     }
 
     @FXML
     void Wallet_IncreaseClick(ActionEvent event) {
-    	int aufladebetrag;
+    	double amount = 0;
     	if(Wallet_RadioAdd10.isSelected())
     	{
-    		aufladebetrag = 10;
+    		amount = 10.0;
     	} else if (Wallet_RadioAdd25.isSelected()) {
-    		aufladebetrag = 25;
+    		amount = 25.0;
     	} else if (Wallet_RadioAdd50.isSelected()) {
-    		aufladebetrag = 50;
+    		amount = 50.0;
     	} else if (Wallet_RadioAdd100.isSelected()) {
-    		aufladebetrag = 100;
+    		amount = 100.0;
+    	} else if(Wallet_RadioAddCustom.isSelected()) {
+    		if(Wallet_txtCustomAmount.getText()!=null)
+    		{
+    			try
+    	    	{
+    	        	int customAmountInt = Integer.parseInt(Wallet_txtCustomAmount.getText().trim());
+    	        	amount = Integer.parseInt(Wallet_txtCustomAmount.getText());
+    	    	}
+    			catch (NumberFormatException nfe)
+    	    	{
+    				//Buchstaben enthalten
+    				FXMLHandler.ShowMessageBox("Der Aufladebetrag darf nur Nummern enthalten.",
+    						"Fehler", "Fehler", AlertType.ERROR, true,
+    						false);
+    				return;
+    	    	}
+    			
+    		}
+    		else
+    		{
+    			//Textbox ist leer
+				FXMLHandler.ShowMessageBox("Bitte geben Sie einen Aufladebetrag ein.",
+						"Fehler", "Fehler", AlertType.ERROR, true,
+						false);
+    			return;
+    		}
     	}
+    	else
+    	{
+    		return;
+    	}
+    	
+    	HashMap <String, Object> requestMap = new HashMap<String, Object>();
+		requestMap.put("User", user);
+		requestMap.put("Amount", amount);
+    	
+    	ClientRequest req = new ClientRequest(Request.IncreaseWallet, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+    	
+		//keine Verbindung zur DB
+		if(queryResponse.getResponseType() == Response.NoDBConnection)
+		{
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+		}
+		
+		//
+		else if(queryResponse.getResponseType() == Response.Failure)
+		{
+
+			FXMLHandler.ShowMessageBox("Ihr Konto konnte nicht aufgeladen werden.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			
+		}
+		else if(queryResponse.getResponseType() == Response.Success)
+		{
+			user.setWallet(user.getWallet() + amount);
+			//messagebox
+			FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich aufgeladen.",
+					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
+			System.out.println(user.getWallet());
+			MainScreenController.setUser(user);
+			System.out.println(MainScreenController.user.getWallet());
+	    	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
+	    
+		}
+
     }
 
     @FXML
