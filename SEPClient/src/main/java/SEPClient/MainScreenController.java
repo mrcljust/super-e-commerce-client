@@ -1,8 +1,13 @@
 package SEPClient;
 
+import SEPCommon.ClientRequest;
 import SEPCommon.Product;
+import SEPCommon.Request;
 import SEPCommon.Seller;
+import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -11,6 +16,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
@@ -30,6 +36,7 @@ public class MainScreenController {
     public void initialize() {
     	refreshView();
     	LoadAllProducts();
+    	loadLastViewedProducts();
     }
     
     public void refreshView()
@@ -67,12 +74,55 @@ public class MainScreenController {
     	//Alle Kategorien Item hinzufügen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
     	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
+    	
+    	//Werte an die Spalten der Kataloglisten zuweisen
+    	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+        catalogProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
+        catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+
+        lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
+    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
     }
     
     public void LoadAllProducts()
     {
+    	MainScreen_ListCatalog.getItems().clear();
+    	
+    	ClientRequest req = new ClientRequest(Request.FetchProducts, null);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Products")!=null)
+		{
+			//Product Array
+			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
+			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			
+			//Kategorien in Liste einfügen
+			for(Product p: products)
+			{
+				String pCategory = p.getCategory();
+				if(!MainScreen_ChoiceBox_Category.getItems().contains(pCategory))
+				{
+					MainScreen_ChoiceBox_Category.getItems().add(pCategory);
+				}
+			}
+			
+			MainScreen_ListCatalog.setItems(ObservableProducts);
+		}
+    }
+    
+    private void loadLastViewedProducts()
+    {
     	
     }
+    
+    
 	
     @FXML
     private ChoiceBox<String> MainScreen_ChoiceBox_Category;
