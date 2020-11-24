@@ -82,13 +82,13 @@ public class MainScreenController {
     	//Werte an die Spalten der Kataloglisten zuweisen
     	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         catalogProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
         catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
         catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
 
         lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
     	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
     	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
     	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
     }
@@ -152,7 +152,7 @@ public class MainScreenController {
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		//was passiert, wenn ein Eintrag in der ListCatalog ausgew�hlt wird
-    		updateArticleInfo(false);
+    		updateArticleInfo(true);
     		addToLastViewedItems();
     	});
     	
@@ -176,7 +176,7 @@ public class MainScreenController {
 		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPrice() + "$");
-		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductSeller.setText("Verkaeufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory());
 		    	MainScreen_TextProductDescription.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription());
 		    	
@@ -352,7 +352,7 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
-    	FXMLHandler.ShowMessageBox("� 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universit�t Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("(C) 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universitaet Duisburg-Essen, 2020/21.",
 				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }

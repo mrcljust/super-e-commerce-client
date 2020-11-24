@@ -7,8 +7,9 @@ public class Product implements Serializable {
 	private int id;
 	private String name;
 	private double price;
+	private String priceString;
 	private Seller seller;
-	private String businessname; //wird benötigt, um den Verkäufer in den Katalog-TableViews im MainScreen anzuzeigen
+	private String businessname; //wird benï¿½tigt, um den Verkï¿½ufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
 	
@@ -19,6 +20,7 @@ public class Product implements Serializable {
 		id=_id;
 		name=_name;
 		price=_price;
+		priceString=String.valueOf(_price) + "$";
 		seller=_seller;
 		category=_category;
 		description=_description;
@@ -30,6 +32,7 @@ public class Product implements Serializable {
 	{
 		name=_name;
 		price=_price;
+		priceString=String.valueOf(_price) + "$";
 		seller=_seller;
 		category=_category;
 		description=_description;
@@ -71,6 +74,11 @@ public class Product implements Serializable {
 	public String getBusinessname()
 	{
 		return businessname;
+	}
+	
+	public String getPriceString()
+	{
+		return priceString;
 	}
 	
 	//Setter Methoden
