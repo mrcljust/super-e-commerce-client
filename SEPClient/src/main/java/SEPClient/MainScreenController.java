@@ -54,6 +54,19 @@ public class MainScreenController {
     		MainScreen_ButtonMyProducts.setDisable(true);
     		MainScreen_ButtonPurchases.setDisable(false);
     	}
+    	
+    	//Aktuelle Produktinfos leeren
+    	MainScreen_LabelProductTitle.setText("");
+    	MainScreen_LabelProductPrice.setText("");
+    	MainScreen_LabelProductSeller.setText("");
+    	MainScreen_LabelProductCategory.setText("");
+    	MainScreen_TextProductDescription.setText("");
+    	MainScreen_ButtonBuyProduct.setVisible(false);
+    	MainScreen_TextProductDescription.setVisible(false);
+    	
+    	//Alle Kategorien Item hinzufÃ¼gen
+    	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
+    	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
     }
     
     public void LoadAllProducts()
@@ -155,14 +168,15 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
-    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("ï¿½ 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universitï¿½t Duisburg-Essen, 2020/21.",
 				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
 
     @FXML
     void MainScreen_btnAddWalletClick(ActionEvent event) {
-
+    	WalletController.setUser(user);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "Wallet", "Guthaben aufladen", true, true);
     }
 
     @FXML
@@ -172,7 +186,7 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_btnLogoutClick(ActionEvent event) {
-
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonLogout.getScene().getWindow(), "Start", "Super-E-commerce-Platform", true, true);
     }
 
     @FXML
