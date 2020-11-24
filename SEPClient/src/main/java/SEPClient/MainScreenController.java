@@ -124,12 +124,6 @@ public class MainScreenController {
     private void loadLastViewedProducts()
     {
     	MainScreen_ListLastViewed.getItems().clear();
-    	
-    	lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
-    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
-    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
         
         HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
@@ -152,14 +146,20 @@ public class MainScreenController {
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		//was passiert, wenn ein Eintrag in der ListCatalog ausgew�hlt wird
+    		if(newSelection != null)
+    		{
     		updateArticleInfo(true);
     		addToLastViewedItems();
+    		}
     	});
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgew�hlt wird
-	    	updateArticleInfo(false);
+	    	if(newSelection != null)
+	    	{
+		    	updateArticleInfo(false);
+	    	}
 	    });
 	}
     
