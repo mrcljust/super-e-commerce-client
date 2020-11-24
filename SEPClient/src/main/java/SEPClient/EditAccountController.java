@@ -49,7 +49,7 @@ public class EditAccountController {
 		EditAccount_txtNumber.setText(user.getAddress().getNumber());
 		EditAccount_txtPostalcode.setText(String.valueOf(user.getAddress().getZipcode()));
 		EditAccount_txtCity.setText(user.getAddress().getCity());
-		EditAccount_txtCountry.getItems().addAll("Deutschland", "Ã–sterreich", "Schweiz");
+		EditAccount_txtCountry.getItems().addAll("Deutschland", "Österreich", "Schweiz");
 		EditAccount_txtCountry.getSelectionModel().select(user.getAddress().getCountry());
 		
 		InputStream in = new ByteArrayInputStream(user.getPicture());
@@ -131,7 +131,7 @@ public class EditAccountController {
 		
 		Image image = EditAccount_imgPicture.getImage();
 		byte [] bufImg = null; //erst null, weil wir h und w noch nicht kennen; nachtraeglich kann array-grÃ¶ÃŸe nicht einfach angepasst werden
-		if (image != null) {
+		if (image != null && image.getPixelReader() != null) {
 			int w = (int) image.getWidth();
 			int h = (int) image.getHeight();
 			
@@ -146,19 +146,19 @@ public class EditAccountController {
 				|| fullname=="" || fullname==null || street=="" || street==null || number=="" || number==null || zipcode=="" || zipcode==null 
 				|| city=="" || city==null || country=="" || country==null || (isSeller && businessname==null) || (isSeller && businessname=="")) {
 			
-			FXMLHandler.ShowMessageBox("Bitte fÃ¼llen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return; //nochmal versuchen
 		}
     	
 		if (!passwordRepeated.equals(password)) {
-			FXMLHandler.ShowMessageBox("Die PasswÃ¶rter stimmen nicht Ã¼berein.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			FXMLHandler.ShowMessageBox("Die Passwörter stimmen nicht überein.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			EditAccount_txtPassword.setText("");
 			EditAccount_txtPasswordRepeat.setText("");
 			return; //nochmal versuchen
 		}
 		
 		if (!email.contains("@")) {
-			FXMLHandler.ShowMessageBox("Die E-Mail Adresse ist nicht gÃ¼ltig.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			FXMLHandler.ShowMessageBox("Die E-Mail Adresse ist nicht gültig.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			EditAccount_txtEmail.setText("");
 			return;
 		}
@@ -178,15 +178,15 @@ public class EditAccountController {
 			return;
 		}
 		
-		User user;
+		User newUser;
 		Address address = new Address (fullname, country, postalcode, city, street, number);
 		if (isSeller) {
-			user = new Seller(username, email, password, bufImg, 0, address, businessname);
+			newUser = new Seller(user.getId(), username, email, password, bufImg, 0, address, businessname);
 		} else {
-			user = new Customer(username, email, password, bufImg, 0, address);
+			newUser = new Customer(user.getId(), username, email, password, bufImg, 0, address);
 		}
 		HashMap <String, Object> requestMap = new HashMap<String, Object>();
-		requestMap.put("User", user);
+		requestMap.put("User", newUser);
     	
     	ClientRequest req = new ClientRequest(Request.EditUser, requestMap);
     	Client client = Client.getClient();
@@ -200,8 +200,8 @@ public class EditAccountController {
 		}
 		
 		//Bild zu groÃŸ
-		if(queryResponse.getResponseType() == Response.ImageTooBig) {
-			FXMLHandler.ShowMessageBox("Die DateigrÃ¶ÃŸe des ausgewÃ¤hlten Profilbildes ist zu groÃŸ. Bitte wÃ¤hlen Sie ein anderes Bild aus.",
+		if(queryResponse.getResponseType() == Response.Failure) {
+			FXMLHandler.ShowMessageBox("Es ist ein unbekannter Fehler aufgetreten. Eventuell ist die Dateigröße des ausgewählten Profilbildes ist zu groß.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			EditAccount_imgPicture.setImage(null);
@@ -225,8 +225,8 @@ public class EditAccountController {
 		
 		//Ã„nderungen erfolgreich
 		else if(queryResponse.getResponseType() == Response.Success) {
-			FXMLHandler.ShowMessageBox("Die Ã„nderung Ihrer Daten war erfolgreich. Sie mÃ¼ssen sich nun erneut anmelden.",
-					"Ã„nderung abgeschlossen", "Ã„nderung abgeschlossen", AlertType.INFORMATION, true, false);
+			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
+					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
 			LoginController.setPreText(EditAccount_txtUsername.getText());
 			FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Login", "Anmeldung", false, true);
 		}
@@ -237,7 +237,7 @@ public class EditAccountController {
 	@FXML
 	void EditAccount_OpenPictureClick(ActionEvent event) {
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Profilbild auswÃ¤hlen...");
+		fileChooser.setTitle("Profilbild auswählen...");
 		File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
 		if (file != null) {
 			Image selectedImage = new Image (file.toURI().toString());
@@ -247,7 +247,7 @@ public class EditAccountController {
 	
 	@FXML
 	void EditAccount_DeleteAccountClick(ActionEvent event) {
-		Optional<ButtonType> dialogResult = FXMLHandler.ShowYesNoQuestionBox("MÃ¶chten Sie Ihr Konto wirklich lÃ¶schen?", "Konto lÃ¶schen?", "Konto lÃ¶schen", AlertType.NONE);
+		Optional<ButtonType> dialogResult = FXMLHandler.ShowYesNoQuestionBox("Möchten Sie Ihr Konto wirklich löschen?", "Konto löschen?", "Konto löschen", AlertType.NONE);
 		if (dialogResult.get() == ButtonType.YES) {
 			HashMap<String, Object> requestMap = new HashMap<String, Object>();
 			requestMap.put("User", user);
@@ -261,11 +261,11 @@ public class EditAccountController {
 				FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
     					"Fehler", "Fehler", AlertType.ERROR, true, false);
 			} else if (queryResponse.getResponseType() == Response.Failure) {
-				FXMLHandler.ShowMessageBox("Es ist ein unbekannter Fehler beim LÃ¶schen Ihres Kontos aufgetreten.",
+				FXMLHandler.ShowMessageBox("Es ist ein unbekannter Fehler beim Löschen Ihres Kontos aufgetreten.",
     					"Fehler", "Fehler", AlertType.ERROR, true,false);
 			} else if (queryResponse.getResponseType() == Response.Success) {
-				FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich gelÃ¶scht.",
-    					"Konto gelÃ¶scht", "Konto gelÃ¶scht", AlertType.ERROR, true,false);
+				FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich gelöscht.",
+    					"Konto gelöscht", "Konto gelöscht", AlertType.ERROR, true,false);
 				FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 			}
 			
@@ -274,7 +274,7 @@ public class EditAccountController {
 	
 	@FXML
 	void EditAccount_ReturnClick (ActionEvent event) {
-		FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
+		FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 	}
 	
 	

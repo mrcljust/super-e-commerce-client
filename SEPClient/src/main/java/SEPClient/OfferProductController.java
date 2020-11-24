@@ -40,9 +40,9 @@ public class OfferProductController {
     	Sell_ButtonSellCsv.setDisable(true);
     	
     	//ZUM TESTEN (ENTFERNEN) ////////////////////////////////////////////////////////////////////
-    	Sell_ButtonSellCsv.setDisable(false);
-    	Sell_txtCSV.setText("F:/Downloads/Verschiedenes3.csv");
-    	user = new Seller(1, "test", "test@test.de", "test", null, 90, null, "Test GmbH");
+    	//Sell_ButtonSellCsv.setDisable(false);
+    	//Sell_txtCSV.setText("F:/Downloads/Verschiedenes3.csv");
+    	//user = new Seller(1, "test", "test@test.de", "test", null, 90, null, "Test GmbH");
     }
 	
     @FXML
@@ -191,14 +191,13 @@ public class OfferProductController {
 				if(errorcount==0)
 				{
 					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Datensätze aus der .csv-Datei ausgelesen und erfolgreich inseriert.",
-							"Erfolg", "Erfolg", AlertType.ERROR, true,
+							"Erfolg", "Erfolg", AlertType.CONFIRMATION, true,
 							false);
 				}
 				else
 				{
 					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Datensätze aus der .csv-Datei ausgelesen. Hiervon war(en) " + errorcount + " Datensätze fehlerhaft (zum Beispiel falsch formatiert), daher wurde(n) " + ((lines.size()-1)-errorcount) + " Datensätze inseriert.",
-							"Erfolg", "Erfolg", AlertType.ERROR, true,
-							false);
+							"Erfolg", "Erfolg", AlertType.CONFIRMATION, true, false);
 				}
 				//MainScreen oeffnen
 				MainScreenController.setUser(user);

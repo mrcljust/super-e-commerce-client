@@ -156,7 +156,6 @@ public class WalletController {
 					false);
 		}
 		
-		//
 		else if(queryResponse.getResponseType() == Response.Failure)
 		{
 
@@ -167,24 +166,23 @@ public class WalletController {
 		}
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
+			System.out.println(user.getWallet() + " --  " + amount);
 			user.setWallet(user.getWallet() + amount);
+			User newUser = user;
 			//messagebox
 			FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich aufgeladen.",
-					"Ã„nderung abgeschlossen", "Ã„nderung abgeschlossen", AlertType.INFORMATION, true, false);
-			System.out.println(user.getWallet());
-			MainScreenController.setUser(user);
-			System.out.println(MainScreenController.user.getWallet());
-	    	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
-	    
+					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
+	    	//FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "Login", "Super-E-commerce-Platform", true, true);
+	    	MainScreenController.setUser(newUser);
+			FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+		
 		}
-
     }
 
     @FXML
     void Wallet_ReturnClick(ActionEvent event) {
     	MainScreenController.setUser(user);
-    	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
+    	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
-
 }
 

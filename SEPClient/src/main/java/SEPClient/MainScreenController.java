@@ -35,6 +35,7 @@ public class MainScreenController {
 		user = _user;
 	}
 	
+	
     @FXML
     public void initialize() {
     	refreshView();

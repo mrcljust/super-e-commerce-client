@@ -263,23 +263,39 @@ public class SQL {
 					Address sellerAddress = seller.getAddress();
 													
 					try {
-						//Statement statement = connection.createStatement();
-						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE id ='" + userId + "'"
-								+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
+						PreparedStatement stmt;
+						stmt = connection.prepareStatement("UPDATE users "
+								+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
+								+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ?, companyname = ? "
+								+ "WHERE id=" + userId);
+						stmt.setString(1, seller.getUsername());
+						stmt.setString(2, seller.getPassword());
+						stmt.setString(3, seller.getEmail());
+						stmt.setString(4, seller.getAddress().getFullname());
+						stmt.setString(5, seller.getAddress().getStreet());
+						stmt.setString(6, seller.getAddress().getNumber());
+						stmt.setInt(7, seller.getAddress().getZipcode());
+						stmt.setString(8, seller.getAddress().getCity());
+						stmt.setString(9, seller.getAddress().getCountry());
+						stmt.setDouble(11, seller.getWallet());
+						stmt.setString(12, seller.getBusinessname());
+						
+						
 						if(seller.getPicture()!=null)
 						{
-							stmt.setBytes(1, seller.getPicture());
+							stmt.setBytes(10, seller.getPicture());
 						}
 						else
 						{
-							stmt.setString(1, "");
+							stmt.setString(10, "");
 						}
 						stmt.execute();
 
 						return Response.Success;
 
 					} catch (SQLException e) {
-						return Response.ImageTooBig;
+						e.printStackTrace();
+						return Response.Failure;
 					} 
 				}
 				
@@ -290,22 +306,38 @@ public class SQL {
 					Address customerAddress = customer.getAddress();
 					
 					try {
-						//Statement statement = connection.createStatement();
-						PreparedStatement stmt = connection.prepareStatement("UPDATE users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) WHERE id ='" + userId + "'"
-								+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')" );
+						PreparedStatement stmt;
+						stmt = connection.prepareStatement("UPDATE users "
+								+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
+								+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ? "
+								+ "WHERE id=" + userId);
+						stmt.setString(1, customer.getUsername());
+						stmt.setString(2, customer.getPassword());
+						stmt.setString(3, customer.getEmail());
+						stmt.setString(4, customer.getAddress().getFullname());
+						stmt.setString(5, customer.getAddress().getStreet());
+						stmt.setString(6, customer.getAddress().getNumber());
+						stmt.setInt(7, customer.getAddress().getZipcode());
+						stmt.setString(8, customer.getAddress().getCity());
+						stmt.setString(9, customer.getAddress().getCountry());
+						stmt.setDouble(11, customer.getWallet());
+						
+						
 						if(customer.getPicture()!=null)
 						{
-							stmt.setBytes(1, customer.getPicture());
+							stmt.setBytes(10, customer.getPicture());
 						}
 						else
 						{
-							stmt.setString(1, "");
+							stmt.setString(10, "");
 						}
-						
+						System.out.println(stmt);
 						stmt.execute();
+
 						return Response.Success;
 					} catch (SQLException e) {
-						return Response.ImageTooBig;
+						e.printStackTrace();
+						return Response.Failure;
 					}
 				}
 			}  
@@ -354,7 +386,7 @@ public class SQL {
 		}
 	}
 
-	public Response increaseWallet(User user, double amount) {
+	public Response increaseWallet(User user, double MoreMoney) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhÃ¶hen
 
 		// Wenn Wallet erfolgreich erhÃ¶ht Response.Success returnen
@@ -363,27 +395,35 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
-		double MoreMoney = amount;
-		double currentBalance = user.getWallet();
-		double newBalance = currentBalance + MoreMoney;
-		String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
+		
+		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + userId + "'";
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
+		
 		try {
+			double wallettemp = 0;
 			Statement statement = connection.createStatement();
+			ResultSet walletSet = statement.executeQuery(getCurrentWalletQuery);
+			if(walletSet.next())
+			{
+				wallettemp = walletSet.getDouble("wallet");
+			}
+			
+			double newBalance = wallettemp + MoreMoney;
+			
+			String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
 			statement.execute(increaseWalletQuery);
 
+			return Response.Success;
 		} catch (SQLException e) {
 
 			return Response.NoDBConnection;
 		}
-
-		return Response.Success;
 	}
 
-	public Response decreaseWallet(User user, double amount) {
+	public Response decreaseWallet(User user, double LessMoney) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount vermindern
 
 		// Wenn Wallet erfolgreich vermindert Response.Success returnen
@@ -392,24 +432,32 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
-		double lessMoney = amount;
-		double currentBalance = user.getWallet();
-		double newBalance = currentBalance - lessMoney;
-		String decreaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
+		
+		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + userId + "'";
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
+		
 		try {
+			double wallettemp = 0;
 			Statement statement = connection.createStatement();
-			statement.executeUpdate(decreaseWalletQuery);
+			ResultSet walletSet = statement.executeQuery(getCurrentWalletQuery);
+			if(walletSet.next())
+			{
+				wallettemp = walletSet.getDouble("wallet");
+			}
+			
+			double newBalance = wallettemp - LessMoney;
+			
+			String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
+			statement.execute(increaseWalletQuery);
+
+			return Response.Success;
 		} catch (SQLException e) {
 
 			return Response.NoDBConnection;
 		}
-
-		return Response.Success;
-
 	}
 
 	public Product[] fetchAllProducts() {
@@ -998,6 +1046,7 @@ public class SQL {
 				// Privatkunde
 				if(accountType.equals("Customer"))
 				{
+					int i = userDataQuery.getInt("id");
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
 					// Privatkunden-Objekt zur�ckgeben
 					return customer;

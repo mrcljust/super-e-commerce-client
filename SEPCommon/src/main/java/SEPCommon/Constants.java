@@ -14,7 +14,7 @@ public class Constants {
 	//SQL Connection String mit Zeitzone um Zeitzonenfehler zu umgehen
 	public final static String SQLCONNECTIONSTRING = "jdbc:mysql://localhost:3306/sep?serverTimezone=Europe/Berlin";
 	public final static String SQLUSER = "root";
-	public final static int TIMEOUT= 15000;
+	public final static int TIMEOUT= 60000;
 	
 	public final static String CLIENT_LOGO_RESOURCE_PATH = "/SEPClient/UI/sep-logo.png";
 }
