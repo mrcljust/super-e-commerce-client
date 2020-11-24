@@ -14,7 +14,7 @@ public class Product implements Serializable {
 	private String description;
 	
 	
-	//Konstruktor mit ID
+	//Konstruktor mit ID (bestehende Produkte, die aus der DB gelesen werden)
 	public Product (int _id, String _name, double _price, Seller _seller, String _category, String _description )
 	{
 		id=_id;
@@ -27,7 +27,7 @@ public class Product implements Serializable {
 		businessname = _seller.getBusinessname();
 	}
 
-	//Konstruktor ohne ID
+	//Konstruktor ohne ID (neues Produkt)
 	public Product (String _name, double _price, Seller _seller, String _category, String _description)
 	{
 		name=_name;

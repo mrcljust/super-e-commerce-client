@@ -1,5 +1,7 @@
 package SEPCommon;
 
+import java.text.DecimalFormat;
+
 public class Constants {
 	
 	//Konstante Adressen, Variablen, die an mehreren Klassen verwendet werden

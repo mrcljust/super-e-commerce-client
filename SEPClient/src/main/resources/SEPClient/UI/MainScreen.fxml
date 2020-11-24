@@ -45,7 +45,7 @@
             <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </Pane>
-      <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">
         <items>
             <SplitPane dividerPositions="0.4045977011494253" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
               <items>
@@ -85,7 +85,7 @@
                               <TableColumn fx:id="catalogCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
                            </columns>
                         </TableView>
-                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" prefWidth="185.0" />
+                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
                      </children>
                   </AnchorPane>
               </items>

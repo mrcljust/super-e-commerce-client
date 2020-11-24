@@ -232,9 +232,9 @@ public class MainScreenController {
     	boolean alreadyInLastViewed = false;
     	if(MainScreen_ListLastViewed.getItems() != null)
     	{
-	    	for(Product p: MainScreen_ListLastViewed.getItems())
+			for(Product p: MainScreen_ListLastViewed.getItems())
 	    	{
-	    		if(p.getId() == viewedProduct.getId())
+	    		if(p != null && p.getId() == viewedProduct.getId())
 	    		{
 	    			alreadyInLastViewed = true;
 	    		}

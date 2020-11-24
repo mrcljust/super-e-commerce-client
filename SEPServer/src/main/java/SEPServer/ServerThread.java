@@ -254,7 +254,7 @@ public class ServerThread implements Runnable {
 				
 				//Request AddItems
 				//HASHMAP: "User" - Userobjekt (Verkäufer), "Products" - Hinzuzufügende Produkte
-				else if(requestType == Request.AddItem)
+				else if(requestType == Request.AddItems)
 				{
 					User argUser = (User)requestMap.get("User");
 					Product[] argProducts = (Product[])requestMap.get("Products");
@@ -269,7 +269,7 @@ public class ServerThread implements Runnable {
 				
 				//Request BuyItem
 				//HASHMAP: "User" - Userobjekt (Käufer), "Product" - Zu kaufendes Produkt
-				else if(requestType == Request.AddItem)
+				else if(requestType == Request.BuyItem)
 				{
 					User argUser = (User)requestMap.get("User");
 					Product argProduct = (Product)requestMap.get("Product");
