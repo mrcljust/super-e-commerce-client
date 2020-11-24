@@ -255,8 +255,6 @@ public class MainScreenController {
 			}
     	}
 	}
-    
-    
 	
     @FXML
     private ChoiceBox<String> MainScreen_ChoiceBox_Category;
@@ -352,12 +350,9 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
-<<<<<<< HEAD
-    	FXMLHandler.ShowMessageBox("� 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universit�t Duisburg-Essen, 2020/21.",
-=======
+
     	FXMLHandler.ShowMessageBox("(C) 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universitaet Duisburg-Essen, 2020/21.",
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
-				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
+    			"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
 
@@ -369,7 +364,8 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_btnEditAccountClick(ActionEvent event) {
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "EditAccount", true, false);
+    	EditAccountController.setUser(user);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "Konto bearbeiten", true, false);
     }
 
     @FXML
@@ -393,7 +389,7 @@ public class MainScreenController {
     }
 
     @FXML
-    //OfferProduct öffnen
+    //OfferProduct oeffnen
     void MainScreen_btnSellProductClick(ActionEvent event) {
     	OfferProductController.setUser(user);
     	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", true, true);
