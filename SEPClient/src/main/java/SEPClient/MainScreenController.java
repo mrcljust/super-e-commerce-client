@@ -1,8 +1,11 @@
 package SEPClient;
 
+import java.util.HashMap;
+
 import SEPCommon.ClientRequest;
 import SEPCommon.Product;
 import SEPCommon.Request;
+import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
@@ -11,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -37,6 +39,7 @@ public class MainScreenController {
     	refreshView();
     	LoadAllProducts();
     	loadLastViewedProducts();
+    	selectionsChangedListener();
     }
     
     public void refreshView()
@@ -119,8 +122,83 @@ public class MainScreenController {
     
     private void loadLastViewedProducts()
     {
+    	MainScreen_ListLastViewed.getItems().clear();
+    	
+    	lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("price"));
+    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
+    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        
+        HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("User", user);
+        ClientRequest req = new ClientRequest(Request.LastViewedProducts, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		if(queryResponse.getResponseType() == Response.Success)
+		{
+			//Product Array
+			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
+			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			
+			MainScreen_ListLastViewed.setItems(ObservableProducts);
+		}
+    }
+    
+    private void selectionsChangedListener()
+    {
+    	//ListCatalog Selection Change Listener
+    	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
+    		updateArticleInfo(false);
+    		addToLastViewedItems();
+    	});
+    	
+    	//ListLastViewed Selection Change Listener
+	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewählt wird
+	    	updateArticleInfo(false);
+	    });
+	}
+    
+    private void updateArticleInfo(boolean selectionInCatalog)
+    {
+    	//selectionInCatalog = true: Eintrag in ListCatalog ausgewählt
+    	//selectionInCatalog = false: Eintrag in ListLastViewed ausgewählt
     	
     }
+    
+    private void addToLastViewedItems() {
+    	//Zu zuletzt angesehenen Produkten hinzufügen
+    	Product viewedProduct = MainScreen_ListCatalog.getSelectionModel().getSelectedItem();
+    	
+    	boolean alreadyInLastViewed = false;
+    	if(MainScreen_ListLastViewed.getItems() != null)
+    	{
+	    	for(Product p: MainScreen_ListLastViewed.getItems())
+	    	{
+	    		if(p.getId() == viewedProduct.getId())
+	    		{
+	    			alreadyInLastViewed = true;
+	    		}
+	    	}
+    	}
+    	if(!alreadyInLastViewed)
+    	{
+    		//noch nicht in der Liste der zuletzt angesehenen Produkte, hinzufügen
+    		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+	    	requestMap.put("User", user);
+	    	requestMap.put("ViewedProductID", viewedProduct.getId());
+	    	ClientRequest req = new ClientRequest(Request.AddLastViewedProduct, requestMap);
+	    	Client client = Client.getClient();
+			ServerResponse queryResponse = client.sendClientRequest(req);
+			if(queryResponse.getResponseType() == Response.Success)
+			{
+				loadLastViewedProducts();
+			}
+    	}
+	}
     
     
 	
