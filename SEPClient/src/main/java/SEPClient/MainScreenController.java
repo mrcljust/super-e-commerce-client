@@ -205,7 +205,7 @@ public class MainScreenController {
 		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPrice() + "$");
-		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductSeller.setText("Verkaeufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory());
 		    	MainScreen_TextProductDescription.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription());
 		    

@@ -36,6 +36,9 @@ public class OfferProductController {
 
     @FXML
     private Button Sell_ButtonChooseFile;
+    
+    @FXML
+    private Button Sell_ReturnButton;
 
     @FXML
     private TextField Sell_txtCSV;
@@ -53,6 +56,11 @@ public class OfferProductController {
     @FXML
     void Sell_SellCsvClick(ActionEvent event) {
 
+    }
+    
+    @FXML
+    void Sell_ReturnButtonClick(ActionEvent event) {
+    	
     }
 
 }

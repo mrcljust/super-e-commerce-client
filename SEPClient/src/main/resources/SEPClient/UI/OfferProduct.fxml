@@ -7,7 +7,7 @@
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="501.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.OfferProductController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="558.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.OfferProductController">
    <children>
       <TitledPane animated="false" collapsible="false" layoutX="6.0" layoutY="14.0" prefHeight="385.0" prefWidth="608.0" text="1. Produkt anbieten" AnchorPane.rightAnchor="8.0">
          <content>
@@ -27,16 +27,17 @@
             </AnchorPane>
          </content>
       </TitledPane>
-      <TitledPane animated="false" collapsible="false" layoutX="7.0" layoutY="252.0" prefHeight="86.0" prefWidth="608.0" text="2. Mehrere Produkte anbieten" AnchorPane.bottomAnchor="9.0" AnchorPane.rightAnchor="8.0">
+      <TitledPane animated="false" collapsible="false" layoutX="12.0" layoutY="409.0" prefHeight="86.0" prefWidth="608.0" text="2. Mehrere Produkte anbieten" AnchorPane.rightAnchor="8.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="61.0" prefWidth="395.0">
                <children>
-                  <Button fx:id="Sell_ButtonSellCsv" disable="true" layoutX="445.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" prefHeight="15.0" prefWidth="147.0" text="Produkte aus Datei inserieren" />
+                  <Button fx:id="Sell_ButtonSellCsv" disable="true" layoutX="409.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_SellCsvClick" prefHeight="27.0" prefWidth="183.0" text="Produkte aus Datei inserieren" />
                   <Button fx:id="Sell_ButtonChooseFile" layoutX="206.0" layoutY="16.0" mnemonicParsing="false" onAction="#Sell_ChooseFile" prefHeight="27.0" prefWidth="151.0" text="CSV-Datei auwählen..." />
                   <TextField fx:id="Sell_txtCSV" layoutX="14.0" layoutY="16.0" prefHeight="27.0" prefWidth="183.0" />
                </children>
             </AnchorPane>
          </content>
       </TitledPane>
+      <Button fx:id="Sell_ReturnButton" layoutX="557.0" layoutY="517.0" mnemonicParsing="false" onAction="#Sell_ReturnButtonClick" text="Zurück" />
    </children>
 </AnchorPane>
