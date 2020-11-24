@@ -3,6 +3,7 @@ package SEPClient;
 import java.util.HashMap;
 
 import SEPCommon.ClientRequest;
+import SEPCommon.Customer;
 import SEPCommon.Product;
 import SEPCommon.Request;
 import SEPCommon.Response;
@@ -150,27 +151,82 @@ public class MainScreenController {
     {
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
+    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewï¿½hlt wird
     		updateArticleInfo(false);
     		addToLastViewedItems();
     	});
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewählt wird
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewï¿½hlt wird
 	    	updateArticleInfo(false);
 	    });
 	}
     
     private void updateArticleInfo(boolean selectionInCatalog)
     {
-    	//selectionInCatalog = true: Eintrag in ListCatalog ausgewählt
-    	//selectionInCatalog = false: Eintrag in ListLastViewed ausgewählt
-    	
+    	if(selectionInCatalog==true)
+    	{
+    		//Artikel in der ListCatalog ausgewÃ¤hlt
+    		if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
+	    	{
+		    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
+	    		//Item in der Katalog-Liste angewÃ¤hlt
+		    	
+		    	//Daten einfÃ¼gen
+		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
+		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPrice() + "$");
+		    	MainScreen_LabelProductSeller.setText("VerkÃ¤ufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory());
+		    	MainScreen_TextProductDescription.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription());
+		    	
+		    	MainScreen_ButtonBuyProduct.setVisible(true);
+		    	MainScreen_TextProductDescription.setVisible(true);
+		    	
+		    	//Kaufen Button nur fÃ¼r Customer enablen
+		    	if(user instanceof Customer)
+		    	{
+		    		MainScreen_ButtonBuyProduct.setDisable(false);
+		    	}
+		    	else
+		    	{
+		    		MainScreen_ButtonBuyProduct.setDisable(true);
+				}
+	    	}
+    	}
+    	else
+    	{
+    		//Artikel in ListLastViewed ausgewÃ¤hlt
+    		if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
+	    	{
+		    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
+	    		//Item in der zuletzt angesehen Liste angewÃ¤hlt
+		    	
+		    	//Daten einfÃ¼gen
+		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
+		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPrice() + "$");
+		    	MainScreen_LabelProductSeller.setText("VerkÃ¤ufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory());
+		    	MainScreen_TextProductDescription.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription());
+		    
+		    	MainScreen_ButtonBuyProduct.setVisible(true);
+		    	MainScreen_TextProductDescription.setVisible(true);
+		    	
+		    	//Kaufen Button nur fÃ¼r Customer enablen
+		    	if(user instanceof Customer)
+		    	{
+		    		MainScreen_ButtonBuyProduct.setDisable(false);
+		    	}
+		    	else
+		    	{
+		    		MainScreen_ButtonBuyProduct.setDisable(true);
+				}
+	    	}
+    	}
     }
     
     private void addToLastViewedItems() {
-    	//Zu zuletzt angesehenen Produkten hinzufügen
+    	//Zu zuletzt angesehenen Produkten hinzufï¿½gen
     	Product viewedProduct = MainScreen_ListCatalog.getSelectionModel().getSelectedItem();
     	
     	boolean alreadyInLastViewed = false;
@@ -186,7 +242,7 @@ public class MainScreenController {
     	}
     	if(!alreadyInLastViewed)
     	{
-    		//noch nicht in der Liste der zuletzt angesehenen Produkte, hinzufügen
+    		//noch nicht in der Liste der zuletzt angesehenen Produkte, hinzufï¿½gen
     		HashMap<String, Object> requestMap = new HashMap<String, Object>();
 	    	requestMap.put("User", user);
 	    	requestMap.put("ViewedProductID", viewedProduct.getId());
