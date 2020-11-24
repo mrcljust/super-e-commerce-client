@@ -44,7 +44,6 @@ public class WalletController {
 
     @FXML
     void Wallet_Add10(ActionEvent event) {
-
     }
 
     @FXML
@@ -59,12 +58,12 @@ public class WalletController {
 
     @FXML
     void Wallet_Add50(ActionEvent event) {
-
+ 
     }
 
     @FXML
     void Wallet_AddCustom(ActionEvent event) {
-
+    	
     }
 
     @FXML
@@ -74,11 +73,22 @@ public class WalletController {
 
     @FXML
     void Wallet_IncreaseClick(ActionEvent event) {
-
+    	int aufladebetrag;
+    	if(Wallet_RadioAdd10.isSelected())
+    	{
+    		aufladebetrag = 10;
+    	} else if (Wallet_RadioAdd25.isSelected()) {
+    		aufladebetrag = 25;
+    	} else if (Wallet_RadioAdd50.isSelected()) {
+    		aufladebetrag = 50;
+    	} else if (Wallet_RadioAdd100.isSelected()) {
+    		aufladebetrag = 100;
+    	}
     }
 
     @FXML
     void Wallet_ReturnClick(ActionEvent event) {
+    	MainScreenController.setUser(user);
     	FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, false);
     }
 

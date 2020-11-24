@@ -114,6 +114,7 @@ public class EditAccountController {
 	@FXML
 	private Button EditAccount_ButtonCancel;
 	
+	@FXML
 	void EditAccount_OKClick (ActionEvent event) {
 		String username = EditAccount_txtUsername.getText();
 		String email = EditAccount_txtEmail.getText();
