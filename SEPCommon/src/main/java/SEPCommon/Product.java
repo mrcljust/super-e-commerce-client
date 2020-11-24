@@ -8,6 +8,7 @@ public class Product implements Serializable {
 	private String name;
 	private double price;
 	private Seller seller;
+	private String businessname; //wird benötigt, um den Verkäufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
 	
@@ -21,6 +22,7 @@ public class Product implements Serializable {
 		seller=_seller;
 		category=_category;
 		description=_description;
+		businessname = _seller.getBusinessname();
 	}
 
 	//Konstruktor ohne ID
@@ -31,6 +33,7 @@ public class Product implements Serializable {
 		seller=_seller;
 		category=_category;
 		description=_description;
+		businessname = _seller.getBusinessname();
 	}
 	
 	//Getter Methoden
@@ -63,6 +66,11 @@ public class Product implements Serializable {
 	public String getDescription()
 	{
 		return description;
+	}
+	
+	public String getBusinessname()
+	{
+		return businessname;
 	}
 	
 	//Setter Methoden

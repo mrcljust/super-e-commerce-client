@@ -7,9 +7,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 
 public class MainScreenController {
@@ -57,8 +62,8 @@ public class MainScreenController {
     }
 	
     @FXML
-    private ListView<Product> MainScreen_ListLastViewed;
-
+    private ChoiceBox<String> MainScreen_ChoiceBox_Category;
+    
     @FXML
     private Label MainScreen_LabelWallet;
 
@@ -88,9 +93,60 @@ public class MainScreenController {
 
     @FXML
     private TextField MainScreen_txtSearch;
+    
+    @FXML
+    private TableView<Product> MainScreen_ListLastViewed;
 
     @FXML
-    private ListView<Product> MainScreen_ListCatalog;
+    private TableView<Product> MainScreen_ListCatalog;
+    
+    @FXML
+    private TableColumn<?, ?> lastviewedIdColumn;
+
+    @FXML
+    private TableColumn<?, ?> lastviewedProductColumn;
+
+    @FXML
+    private TableColumn<?, ?> lastviewedPriceColumn;
+
+    @FXML
+    private TableColumn<?, ?> lastviewedSellerColumn;
+
+    @FXML
+    private TableColumn<?, ?> lastviewedCategoryColumn;
+
+    @FXML
+    private TableColumn<?, ?> catalogIdColumn;
+
+    @FXML
+    private TableColumn<?, ?> catalogProductColumn;
+
+    @FXML
+    private TableColumn<?, ?> catalogPriceColumn;
+
+    @FXML
+    private TableColumn<?, ?> catalogSellerColumn;
+
+    @FXML
+    private TableColumn<?, ?> catalogCategoryColumn;
+
+    @FXML
+    private Label MainScreen_LabelProductTitle;
+
+    @FXML
+    private Label MainScreen_LabelProductSeller;
+
+    @FXML
+    private Label MainScreen_LabelProductPrice;
+
+    @FXML
+    private Label MainScreen_LabelProductCategory;
+
+    @FXML
+    private TextArea MainScreen_TextProductDescription;
+    
+    @FXML
+    private ImageView MainScreen_ImgProfilePicture;
 
     @FXML
     void MainScreen_CloseButtonMenuClick(ActionEvent event) {
@@ -99,7 +155,7 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
-    	FXMLHandler.ShowMessageBox("Â© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, UniversitÃ¤t Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
 				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
@@ -146,5 +202,5 @@ public class MainScreenController {
     	
     }
     
-} //push
+}
 
