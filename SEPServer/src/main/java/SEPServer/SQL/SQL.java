@@ -442,10 +442,10 @@ public class SQL {
 			ResultSet AllProducts = pstmt.executeQuery();
 
 			int sqlcounter = 0;
-			while (AllProducts.next()) {  //Tupel Zählen
+			while (AllProducts.next()) {  //Tupel Zï¿½hlen
 				sqlcounter++;
 			}
-			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf kï¿½nnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			ResultSet AllProducts2= pstmt2.executeQuery();
 			
 
@@ -609,11 +609,11 @@ public class SQL {
 	
 	public Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
-		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
+		//Anschlieï¿½end Produkt-Array der betroffenen Produkt-IDs ausgeben
 		
 		//Wenn erfolgreich gefetcht, Product-Array returnen
 		//wenn keine Verbindung zu DB: null returnen
-		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ï¿½.) ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -665,7 +665,7 @@ public class SQL {
 			}
 			else
 			{
-				//kein Entry mit der UserId - eigentlich nicht möglich.
+				//kein Entry mit der UserId - eigentlich nicht mï¿½glich.
 				return null;
 			}
 		} catch (SQLException e) {
@@ -674,9 +674,9 @@ public class SQL {
 	}
 	
 	public Response addLastViewedProduct(int viewedProductId, User user) {
-		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
+		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufï¿½gen (max. 10 zuletzt betrachtete IDs).
 		
-		//Wenn erfolgreich hinzugefügt, Response.Success returnen
+		//Wenn erfolgreich hinzugefï¿½gt, Response.Success returnen
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
@@ -686,7 +686,7 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefï¿½gt werden muss
 		Product[] currentLastViewedProducts = fetchLastViewedProducts(user);
 		
 		String newLastViewedProductsString = "";
@@ -694,7 +694,7 @@ public class SQL {
 		{
 			if(currentLastViewedProducts.length==10)
 			{
-				//Maximale Länge (10), setze viewedProductId an den Anfang und ersetze die erste Id
+				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die erste Id
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=1;i<10;i++)
@@ -704,7 +704,7 @@ public class SQL {
 			}
 			else
 			{
-				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				//Maximale Lï¿½nge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=0;i<currentLastViewedProducts.length;i++)
@@ -730,8 +730,7 @@ public class SQL {
 	}
 
 	public Response addItem(User seller, Product product) {
-		// Neues Produkt in der Datenbank anlegen. Die seller_id ist die ID des Objekts
-		// seller
+		// Neues Produkt in der Datenbank anlegen. Die seller_id ist die ID des Objekts seller
 
 		// Wenn Produkt erfolgreich angelegt, Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
@@ -741,8 +740,48 @@ public class SQL {
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
-
-		return Response.Success;
+		
+		int categoryid;
+		
+		//zunÃ¤chst Ã¼berprÃ¼fen, ob Kategorie bereits existiert:
+		try {
+			PreparedStatement selectCategoryID = connection.prepareStatement("SELECT if FROM categories WHERE title ='" + product.getCategory() + "'");
+			ResultSet selectCategoryIDResult = selectCategoryID.executeQuery();
+			if (selectCategoryIDResult.next()) {
+				//wenn Kategorie bereits existiert, speichere ID in der Variable categoryid:
+				categoryid = selectCategoryIDResult.findColumn("id");
+			} 
+			else {
+				//wenn Kategorie noch nicht existiert, muss erst eine neue Kategorie angelegt werden
+				PreparedStatement createCategory = connection.prepareStatement("INSERT INTO categories(title) VALUES ('" + product.getCategory() + "'");
+				createCategory.execute();
+				
+				//nachdem Kategorie erstellt wurde, kÃ¶nnen wir Kategorie auslesen:
+				selectCategoryIDResult = selectCategoryID.executeQuery();
+				if (selectCategoryIDResult.next()) {
+					categoryid = selectCategoryIDResult.findColumn("id");
+				} else {
+					//vielleicht noch rausnehmen? Weil sollte eigentlich nicht passieren
+					return Response.Failure;
+				}
+			}
+			//da jetzt Kategorie existiert, kÃ¶nnen wir das Produkt anlegen
+			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description)"
+					+ "VALUES ('" + seller.getId() + "', '" + product.getName() + "', '" + product.getPrice() + "', '" + categoryid + "', '" + product.getDescription() + "', '");
+			insertProduct.execute();
+			return Response.Success;		
+			
+		} catch (SQLException e) {
+			//es ist ein Fehler aufgetreten:
+			e.printStackTrace();
+			return Response.Failure;
+		}
+		
+		
+		
+		
+		
+		
 	}
 
 	public Response addItems(User seller, Product[] products) {
