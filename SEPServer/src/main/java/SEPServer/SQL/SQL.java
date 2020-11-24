@@ -387,6 +387,7 @@ public class SQL {
 		return Response.Success;
 	}
 
+	//Test
 	public Response decreaseWallet(User user, double amount) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount vermindern
 
