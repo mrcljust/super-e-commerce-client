@@ -114,7 +114,7 @@ public class WalletController {
     			try
     	    	{
     	        	int customAmountInt = Integer.parseInt(Wallet_txtCustomAmount.getText().trim());
-    	        	amount = Integer.parseInt(Wallet_txtCustomAmount.getText());
+    	        	amount = customAmountInt;
     	    	}
     			catch (NumberFormatException nfe)
     	    	{
