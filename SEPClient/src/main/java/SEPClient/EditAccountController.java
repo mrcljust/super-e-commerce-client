@@ -130,7 +130,7 @@ public class EditAccountController {
 		boolean isSeller = EditAccount_radioSeller.isSelected();
 		
 		Image image = EditAccount_imgPicture.getImage();
-		byte [] bufImg = null; //erst null, weil wir h und w noch nicht kennen; nachtraeglich kann array-größe nicht einfach angepasst werden
+		byte [] bufImg = null; //erst null, weil wir h und w noch nicht kennen; nachtraeglich kann array-gr�ߟe nicht einfach angepasst werden
 		if (image != null) {
 			int w = (int) image.getWidth();
 			int h = (int) image.getHeight();
@@ -140,7 +140,7 @@ public class EditAccountController {
 			image.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), bufImg, 0, w*4);
 		}
 		
-		//Ungültige Abfragen abfangen: 
+		//Ung�ltige Abfragen abfangen: 
 		
 		if (username=="" || username==null || email=="" || email==null || password=="" || password==null || passwordRepeated=="" || passwordRepeated==null 
 				|| fullname=="" || fullname==null || street=="" || street==null || number=="" || number==null || zipcode=="" || zipcode==null 
@@ -199,7 +199,7 @@ public class EditAccountController {
 					false);
 		}
 		
-		//Bild zu groß
+		//Bild zu groߟ
 		if(queryResponse.getResponseType() == Response.ImageTooBig) {
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß. Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
@@ -223,7 +223,7 @@ public class EditAccountController {
 			EditAccount_txtEmail.setText("");
 		}
 		
-		//Änderungen erfolgreich
+		//Ąnderungen erfolgreich
 		else if(queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
@@ -240,6 +240,14 @@ public class EditAccountController {
 		fileChooser.setTitle("Profilbild auswählen...");
 		File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
 		if (file != null) {
+			if(!file.toURI().toString().contains(".png") && !file.toURI().toString().contains(".jpg"))
+    	    {
+    			//Bild weder .jpg noch .png
+    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg- oder .png-Datei aus.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    	    	return;
+    	    }
 			Image selectedImage = new Image (file.toURI().toString());
 			EditAccount_imgPicture.setImage(selectedImage);
 		}
