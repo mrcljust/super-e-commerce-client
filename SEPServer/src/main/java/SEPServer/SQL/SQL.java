@@ -913,8 +913,8 @@ public class SQL {
 		testObject.connect();
 	
 	
-		User testUser = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
-		testObject.fetchLastViewedProducts(testUser);
+		User testUser = new Customer(23, "Yannis", "yannisbromby@gmx.de", "abc123", null, 0, new Address("Yannis Bromby", "Deutschland", 12345, "neueStadt", "beispielstrasse", "1234"));
+		testObject.deleteUser(testUser);
 	
 		
 	}
