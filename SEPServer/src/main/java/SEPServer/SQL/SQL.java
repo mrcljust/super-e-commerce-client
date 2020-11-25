@@ -909,7 +909,7 @@ public class SQL {
 	
 	public static void main(String[] args) {
 		//Zum testen
-		SQL testObject= new SQL();
+		SQL testObject= new SQL(); 
 		testObject.connect();
 	
 	
