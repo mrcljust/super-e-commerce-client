@@ -17,7 +17,7 @@ public class Client {
 	public boolean isStarted = false;
 	private String SuccesfulConnection="Verbindung zum Server hergestellt.";
 
-	public static Client getClient()		//Methode in Controlle aufgerufen, um über Client zu schicken
+	public static Client getClient()		//Methode in Controlle aufgerufen, um ueber Client zu schicken
 	{										//kommt an Client Objekt um Request zu schicken
 		return client;
 	}
@@ -84,7 +84,7 @@ public class Client {
 			if (clientSocket != null)
 				clientSocket.close();
 		} catch (IOException e) {
-			// Beim schlieï¿½en Problem aufgetreten
+			// Beim schliessen Problem aufgetreten
 			e.printStackTrace();
 		}
 
