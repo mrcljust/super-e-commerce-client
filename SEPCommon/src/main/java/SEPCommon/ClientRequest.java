@@ -11,7 +11,7 @@ public class ClientRequest implements Serializable { //Serializable damit man vo
 
 	public ClientRequest(Request res, HashMap<String, Object> reqMap)		//in Map String User, und Userobjekt bspw.
 	{																		//Konstruktoren, um neues Objekt zu initialisierne (Clientrequest)
-		requestType=res;
+		requestType=res;													//test
 		requestMap=reqMap;
 		
 	}
