@@ -1063,16 +1063,21 @@ public class SQL {
 			return null;
 		} catch (SQLException e) {
 			e.printStackTrace(); 
-			return null;
-		}
+			return null; 
+		} 
 	}
 	
 	public static void main(String[] args) {
 		//Zum testen
-		SQL testObject= new SQL();
+		SQL testObject= new SQL(); 
 		testObject.connect();
 	
-		User testUser = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
-		testObject.fetchLastViewedProducts(testUser);
+
+	
+		User testUser = new Customer(23, "Yannis", "yannisbromby@gmx.de", "abc123", null, 0, new Address("Yannis Bromby", "Deutschland", 12345, "neueStadt", "beispielstrasse", "1234"));
+		testObject.deleteUser(testUser);
+	
+		User testUser1 = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
+		testObject.fetchLastViewedProducts(testUser1);
 	}
 }
