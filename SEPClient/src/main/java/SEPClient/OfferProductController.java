@@ -46,7 +46,7 @@ public class OfferProductController {
 	
     @FXML
     public void initialize() {
-    	//CSV-Verkaufen Button erst aktivieren, wenn Datei ausgewählt ist.
+    	//CSV-Verkaufen Button erst aktivieren, wenn Datei ausgewï¿½hlt ist.
     	Sell_ButtonSellCsv.setDisable(true);
     	
     	ToggleGroup radioGroup = new ToggleGroup();
@@ -54,7 +54,7 @@ public class OfferProductController {
     	Sell_radioUseCategory.setToggleGroup(radioGroup);
     	Sell_radioNewCategory.setToggleGroup(radioGroup);
     	
-    	//Kategorien vom MainScreenController übergeben, Alle Kategorien vorher entfernen
+    	//Kategorien vom MainScreenController ï¿½bergeben, Alle Kategorien vorher entfernen
     	if(productCategories!=null)
     	{
     		productCategories.remove("Alle Kategorien");
@@ -132,14 +132,14 @@ public class OfferProductController {
     @FXML
     void Sell_ChooseFile(ActionEvent event) {
     	FileChooser fileChooser = new FileChooser();
-    	fileChooser.setTitle(".csv-Datei auswählen");
+    	fileChooser.setTitle(".csv-Datei auswï¿½hlen");
     	File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
     	if(file!=null)
     	{
     	    if(!file.toURI().toString().contains(".csv"))
     	    {
-    	    	//Ungültige Datei ohne .csv im Pfad ausgewählt
-    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .csv-Datei aus.",
+    	    	//Ungï¿½ltige Datei ohne .csv im Pfad ausgewï¿½hlt
+    	    	FXMLHandler.ShowMessageBox("Bitte wï¿½hlen Sie eine .csv-Datei aus.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
         	    Sell_ButtonSellCsv.setDisable(true);
@@ -160,7 +160,7 @@ public class OfferProductController {
     void Sell_SellCsvClick(ActionEvent event) {
     	String csvFilePathString = Sell_txtCSV.getText();
     	File csvFile = new File(csvFilePathString);
-    	Seller seller = (Seller)user; //Typecasten. Das Fenster OfferProduct kann nur von Sellern aufgerufen werden. Zum Erstellen von Produkten wird ein Seller-Objekt benötigt.
+    	Seller seller = (Seller)user; //Typecasten. Das Fenster OfferProduct kann nur von Sellern aufgerufen werden. Zum Erstellen von Produkten wird ein Seller-Objekt benï¿½tigt.
     	
 		try {
 			BufferedReader csvReader = new BufferedReader(new FileReader(csvFile));
@@ -196,14 +196,14 @@ public class OfferProductController {
 				}
 				catch (NumberFormatException e)
 				{
-					//aus einer Zeile kann kein Produkt-Array erstellt werden (z.B. wenn in der Preis-Spalte kein gültiger Double eingetragen ist)
-					//Zähle den FehlerCounter hoch
+					//aus einer Zeile kann kein Produkt-Array erstellt werden (z.B. wenn in der Preis-Spalte kein gï¿½ltiger Double eingetragen ist)
+					//Zï¿½hle den FehlerCounter hoch
 					e.printStackTrace();
 					errorcount++;
 				}
 			}
 			
-			//Prüfen ob in jeder Zeile ein Fehler ist, da dann keine Produkte hinzugefügt werden müssen
+			//Prï¿½fen ob in jeder Zeile ein Fehler ist, da dann keine Produkte hinzugefï¿½gt werden mï¿½ssen
 			//lines.size()-1, da die erste Zeile der csv-Dateien ja die Identifier sind.
 			if(errorcount>=(lines.size()-1))
 			{
@@ -271,7 +271,8 @@ public class OfferProductController {
     
     @FXML
     void Sell_ReturnButtonClick(ActionEvent event) {
-    	
+    	MainScreenController.setUser(user);
+    	FXMLHandler.OpenSceneInStage((Stage) Sell_ReturnButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 
 }
