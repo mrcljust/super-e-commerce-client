@@ -387,12 +387,12 @@ public class MainScreenController {
 				//Verkapselte Suche (Kategorie und Suchbegriff)
 				articlesInSearch = (Product[])queryResponse.getResponseMap().get("Products");
 				Product[] articlesInSearchAndCategory = null;
-				//Alle Kategorien ausgewÃ¤hlt
+				//Alle Kategorien ausgewählt
 				if(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedIndex()==0)	{
 					articlesInSearchAndCategory = articlesInSearch;
 				}
 				else {
-					//bestimmte Kategorie ausgewÃ¤hlt
+					//bestimmte Kategorie ausgewählt
 					int i=0;
 					for(Product p : articlesInSearch) {
 						i++;
@@ -555,7 +555,7 @@ public class MainScreenController {
     void MainScreen_btnSellProductClick(ActionEvent event) {
     	OfferProductController.setUser(user);
     	
-    	//ggf. Kategorien mit ï¿½bergeben
+    	//ggf. Kategorien mit übergeben
     	if(MainScreen_ChoiceBox_Category.getItems() != null)
     	{
     		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
