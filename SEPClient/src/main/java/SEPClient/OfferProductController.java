@@ -253,7 +253,7 @@ public class OfferProductController {
 				}
 				else
 				{
-			    	FXMLHandler.ShowMessageBox("Fehler beim Lesen der .csv-Datei, der Vorgang wird abgebrochen. Es wurde kein Artikel inseriert.",
+					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Artikel aus der .csv-Datei ausgelesen. Hiervon war(en) " + errorcount + " Artikel fehlerhaft (zum Beispiel ein falsches Preis-Format), daher wurde(n) " + ((lines.size()-1)-errorcount) + " Artikel inseriert.",
 							"Erfolg", "Erfolg", AlertType.CONFIRMATION, true, false);
 				}
 				//MainScreen oeffnen
@@ -263,7 +263,7 @@ public class OfferProductController {
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-	    	FXMLHandler.ShowMessageBox("Fehler beim Lesen der .csv-Datei, der Vorgang wird abgebrochen. Es wurde kein Produkt inseriert.",
+	    	FXMLHandler.ShowMessageBox("Fehler beim Lesen der .csv-Datei, der Vorgang wird abgebrochen. Es wurde kein Artikel inseriert.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 		} 
