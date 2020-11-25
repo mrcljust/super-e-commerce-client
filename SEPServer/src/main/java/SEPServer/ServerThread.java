@@ -136,16 +136,29 @@ public class ServerThread implements Runnable {
 				
 				//Request FetchProducts
 				//HASHMAP: leer
+				
 				//Request FetchProducts mit Kategorie
 				//HASHMAP: "Category" - Kategorie
-				//Request FetchProducts mit Suchbegriff
-				//HASHMAP: "SearchString" - Suchbegriff
+				
+				//Request FetchProducts mit vollem Suchbegriff
+				//HASHMAP: "SearchFullString" - Suchbegriff
+				
+				//Request FetchProducts unvollständigem Suchbegriff
+				//HASHMAP: "SearchPartialString" - Suchbegriff
+				
 				else if(requestType == Request.FetchProducts)
 				{
 					Product[] products = null;
 					Response responseType;
 					HashMap<String, Object> responseMap = new HashMap<String, Object>();
-					if(requestMap.containsKey("Category"))
+					if(requestMap == null)
+					{
+						//alle Produkte suchen
+						
+						//SQL-Abfrage ausführen
+						products = sql.fetchAllProducts();
+					}
+					else if(requestMap.containsKey("Category"))
 					{
 						//nach Produkten mit Kategorie suchen
 						String category = (String)requestMap.get("Category");
@@ -160,13 +173,6 @@ public class ServerThread implements Runnable {
 						
 						//SQL-Abfrage ausführen
 						products = sql.fetchProductsByString(searchString);
-					}
-					else
-					{
-						//alle Produkte suchen
-						
-						//SQL-Abfrage ausführen
-						products = sql.fetchProducts();
 					}
 					
 					if(products==null)
@@ -248,7 +254,7 @@ public class ServerThread implements Runnable {
 				
 				//Request AddItems
 				//HASHMAP: "User" - Userobjekt (Verkäufer), "Products" - Hinzuzufügende Produkte
-				else if(requestType == Request.AddItem)
+				else if(requestType == Request.AddItems)
 				{
 					User argUser = (User)requestMap.get("User");
 					Product[] argProducts = (Product[])requestMap.get("Products");
@@ -263,7 +269,7 @@ public class ServerThread implements Runnable {
 				
 				//Request BuyItem
 				//HASHMAP: "User" - Userobjekt (Käufer), "Product" - Zu kaufendes Produkt
-				else if(requestType == Request.AddItem)
+				else if(requestType == Request.BuyItem)
 				{
 					User argUser = (User)requestMap.get("User");
 					Product argProduct = (Product)requestMap.get("Product");

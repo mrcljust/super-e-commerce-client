@@ -9,7 +9,7 @@ public class ClientRequest implements Serializable {
 	private Request requestType;
 	private Map<String, Object> requestMap = new HashMap<String, Object>();
 
-	public ClientRequest(Request res, HashMap<String, Object> reqMap)
+	public ClientRequest(Request res, HashMap<String, Object> reqMap)		//in Map String User, und Userobjekt bspw.
 	{
 		requestType=res;
 		requestMap=reqMap;

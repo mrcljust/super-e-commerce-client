@@ -3,12 +3,14 @@ package SEPClient;
 import java.io.IOException;
 import java.util.Optional;
 
+import SEPCommon.Constants;
 import javafx.application.Application;
 import javafx.fxml.*;
 import javafx.scene.*;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.*;
 import javafx.geometry.Rectangle2D;
 
@@ -23,7 +25,9 @@ public class FXMLHandler extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		// Zeige Start-Szene in neuem Fenster
+		
 		OpenSceneAndStage("Start", "Super-E-commerce-Platform", false, true);
+		//OpenSceneAndStage("OfferProduct", "Super-E-commerce-Platform", false, true);
 
 		Client client = new Client();
 		client.start();
@@ -62,6 +66,7 @@ public class FXMLHandler extends Application {
 			scene = new Scene(CreateParent(sceneName));
 			if(stage==null)
 				stage = new Stage();
+			stage.getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));
 			stage.setScene(scene);
 			stage.setTitle(sceneTitle);
 			stage.setResizable(resizable);
@@ -83,6 +88,7 @@ public class FXMLHandler extends Application {
 		try {
 			scene = new Scene(CreateParent(sceneName));
 			stage=_stage;
+			stage.getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));
 			stage.setScene(scene);
 			stage.setTitle(sceneTitle);
 			stage.setResizable(resizable);
@@ -103,10 +109,14 @@ public class FXMLHandler extends Application {
 			boolean exitAfter) {
 		//Wenn exitAfter=true ist, wird das Programm nach Wegklicken der Meldung beendet (z.B. bei einem Fehler o.ä.)
 		//Wenn wait=true ist, wird der folgende Quellcode erst ausgeführt, nachdem die Meldung beendet wurde.
-		Alert alert = new Alert(type);
+		Alert alert = new Alert(type, message, ButtonType.OK);
 		alert.setTitle(title);
 		alert.setHeaderText(header);
 		alert.setContentText(message);
+		
+		//Icon hinzufügen
+		((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));		
+		
 		if (wait) {
 			alert.showAndWait();
 			if (exitAfter) {
@@ -122,6 +132,10 @@ public class FXMLHandler extends Application {
 		alert.setTitle(title);
 		alert.setHeaderText(header);
 		alert.setContentText(message);
+		
+		//Icon hinzufügen
+		((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));		
+		
 		Optional<ButtonType> result = alert.showAndWait();
 		return result;
 	}

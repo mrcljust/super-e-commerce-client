@@ -3,12 +3,15 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
@@ -29,56 +32,85 @@
             </Menu>
         </menus>
       </MenuBar>
-      <Pane layoutY="25.0" prefHeight="82.0" prefWidth="864.0" AnchorPane.leftAnchor="0.0">
+      <Pane layoutY="25.0" prefHeight="82.0" prefWidth="1196.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Label fx:id="MainScreen_LabelWallet" alignment="TOP_LEFT" layoutX="14.0" layoutY="24.0" prefHeight="17.0" prefWidth="111.0" text="Guthaben:" />
-            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="461.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
-            <Button fx:id="MainScreen_ButtonAddWallet" layoutX="337.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
-            <Button fx:id="MainScreen_ButtonLogout" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
-            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="210.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Produkt(e) anbieten" />
-            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="103.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Produkte" />
+            <Label fx:id="MainScreen_LabelLoggedInAs" layoutX="59.0" layoutY="3.0" text="Angemeldet als:" />
+            <Label fx:id="MainScreen_LabelWallet" alignment="TOP_LEFT" layoutX="59.0" layoutY="24.0" prefHeight="17.0" prefWidth="111.0" text="Guthaben:" />
             <Button fx:id="MainScreen_ButtonPurchases" layoutX="14.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyPurchasesClick" text="Meine Käufe" />
-            <Label fx:id="MainScreen_LabelLoggedInAs" layoutX="14.0" layoutY="3.0" text="Angemeldet als:" />
+            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="103.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Produkte" />
+            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="210.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Produkt(e) anbieten" />
+            <Button fx:id="MainScreen_ButtonAddWallet" layoutX="337.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
+            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="461.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
+            <Button fx:id="MainScreen_ButtonLogout" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
+            <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
          </children>
       </Pane>
-      <SplitPane dividerPositions="0.6381909547738693" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="436.0" prefWidth="759.0">
-               <children>
-                  <ListView fx:id="MainScreen_ListLastViewed" layoutY="27.0" prefHeight="114.0" prefWidth="959.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <Label alignment="CENTER" layoutX="330.0" layoutY="152.0" prefHeight="17.0" prefWidth="100.0" text="Katalog">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-                  <TextField fx:id="MainScreen_txtSearch" layoutX="526.0" layoutY="148.0" prefHeight="25.0" prefWidth="179.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="54.0" />
-                  <ChoiceBox layoutX="6.0" layoutY="148.0" prefWidth="150.0" />
-                  <ChoiceBox layoutX="163.0" layoutY="148.0" prefWidth="150.0" />
-                  <Button layoutX="712.0" layoutY="148.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
-                  <ListView fx:id="MainScreen_ListCatalog" layoutY="184.0" prefHeight="251.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-                  <Label alignment="CENTER" layoutX="263.0" layoutY="4.0" prefHeight="17.0" prefWidth="235.0" text="Zuletzt angesehene Produkte">
-                     <font>
-                        <Font name="System Bold" size="12.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
+            <SplitPane dividerPositions="0.4045977011494253" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+              <items>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="474.0" prefWidth="759.0">
+                     <children>
+                        <Label alignment="CENTER" layoutX="28.0" layoutY="2.0" prefHeight="17.0" prefWidth="703.0" text="Zuletzt angesehene Produkte" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="27.0">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TableView fx:id="MainScreen_ListLastViewed" layoutY="21.0" prefHeight="153.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0">
+                          <columns>
+                            <TableColumn fx:id="lastviewedIdColumn" editable="false" prefWidth="75.0" text="ID" />
+                            <TableColumn fx:id="lastviewedProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
+                              <TableColumn fx:id="lastviewedPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
+                              <TableColumn fx:id="lastviewedSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
+                              <TableColumn fx:id="lastviewedCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="86.0" prefWidth="759.0">
+                     <children>
+                        <Label alignment="CENTER" layoutX="218.0" layoutY="9.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <ChoiceBox fx:id="MainScreen_ChoiceBox_Category" layoutX="4.0" layoutY="5.0" prefHeight="25.0" prefWidth="185.0" />
+                        <Button layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
+                        <TableView fx:id="MainScreen_ListCatalog" layoutY="35.0" prefHeight="221.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                           <columns>
+                              <TableColumn fx:id="catalogIdColumn" editable="false" prefWidth="75.0" text="ID" />
+                              <TableColumn fx:id="catalogProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
+                              <TableColumn fx:id="catalogPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
+                              <TableColumn fx:id="catalogSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
+                              <TableColumn fx:id="catalogCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
+                           </columns>
+                        </TableView>
+                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
+                     </children>
+                  </AnchorPane>
+              </items>
+            </SplitPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Label layoutX="14.0" layoutY="14.0" prefHeight="20.0" prefWidth="405.0" text="TITEL">
+                  <Label alignment="CENTER" layoutX="6.0" layoutY="6.0" prefHeight="17.0" prefWidth="421.0" text="Produktdetails" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="3.0">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="MainScreen_LabelProductTitle" layoutX="14.0" layoutY="25.0" prefHeight="20.0" prefWidth="405.0" text="Titel">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="56.0" text="Verkäufer: abc123" />
-                  <Label layoutX="14.0" layoutY="34.0" text="Preis: 99,99$">
+                  <Label fx:id="MainScreen_LabelProductPrice" layoutX="14.0" layoutY="45.0" text="Preis:">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label layoutX="14.0" layoutY="73.0" text="Kategorie: Bücher" />
-                  <TextField layoutX="14.0" layoutY="97.0" prefHeight="332.0" prefWidth="405.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="10.0" />
-                  <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="69.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
+                  <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkäufer:" />
+                  <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="84.0" text="Kategorie:" />
+                  <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="80.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
+                  <TextArea fx:id="MainScreen_TextProductDescription" editable="false" layoutX="14.0" layoutY="111.0" prefHeight="313.0" prefWidth="405.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="111.0" />
                </children>
             </AnchorPane>
         </items>

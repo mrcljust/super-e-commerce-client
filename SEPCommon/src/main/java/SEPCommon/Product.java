@@ -7,30 +7,36 @@ public class Product implements Serializable {
 	private int id;
 	private String name;
 	private double price;
+	private String priceString;
 	private Seller seller;
+	private String businessname; //wird ben�tigt, um den Verk�ufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
 	
 	
-	//Konstruktor mit ID
+	//Konstruktor mit ID (bestehende Produkte, die aus der DB gelesen werden)
 	public Product (int _id, String _name, double _price, Seller _seller, String _category, String _description )
 	{
 		id=_id;
 		name=_name;
 		price=_price;
+		priceString=String.valueOf(_price) + "$";
 		seller=_seller;
 		category=_category;
 		description=_description;
+		businessname = _seller.getBusinessname();
 	}
 
-	//Konstruktor ohne ID
+	//Konstruktor ohne ID (neues Produkt)
 	public Product (String _name, double _price, Seller _seller, String _category, String _description)
 	{
 		name=_name;
 		price=_price;
+		priceString=String.valueOf(_price) + "$";
 		seller=_seller;
 		category=_category;
 		description=_description;
+		businessname = _seller.getBusinessname();
 	}
 	
 	//Getter Methoden
@@ -63,6 +69,16 @@ public class Product implements Serializable {
 	public String getDescription()
 	{
 		return description;
+	}
+	
+	public String getBusinessname()
+	{
+		return businessname;
+	}
+	
+	public String getPriceString()
+	{
+		return priceString;
 	}
 	
 	//Setter Methoden
