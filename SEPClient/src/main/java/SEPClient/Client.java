@@ -30,7 +30,7 @@ public class Client {
 			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT); //alle Daten die Server und Client zugriff drauf haben OOP
 			clientSocket.setSoTimeout(SEPCommon.Constants.TIMEOUT); 		//Timeout damit bei langer Verbindungszeit exception geworfen wird
 			System.out.println(SuccesfulConnection);
-			
+		
             dos = new ObjectOutputStream(clientSocket.getOutputStream());		
             dis = new ObjectInputStream(clientSocket.getInputStream());			
             isStarted=true; //Client gestartet
@@ -61,7 +61,7 @@ public class Client {
 				return new ServerResponse(Response.Failure, null);
 			}
 			else
-			{		//
+			{		
 				return serverResponse;
 			}
 		} catch (IOException e) {
@@ -73,7 +73,7 @@ public class Client {
 		}
 	}
 
-	public void stop() {
+	/*public void stop() {
 		try {
 			if (dis != null)
 				dis.close();
@@ -89,6 +89,6 @@ public class Client {
 		}
 
 	}
-
+*/
 }
-//test
+

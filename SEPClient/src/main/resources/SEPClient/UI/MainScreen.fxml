@@ -97,18 +97,18 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="MainScreen_LabelProductTitle" layoutX="14.0" layoutY="25.0" prefHeight="20.0" prefWidth="405.0" text="TITEL">
+                  <Label fx:id="MainScreen_LabelProductTitle" layoutX="14.0" layoutY="25.0" prefHeight="20.0" prefWidth="405.0" text="Titel">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Label fx:id="MainScreen_LabelProductPrice" layoutX="14.0" layoutY="45.0" text="Preis: 99,99$">
+                  <Label fx:id="MainScreen_LabelProductPrice" layoutX="14.0" layoutY="45.0" text="Preis:">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkaeufer: abc123" />
-                  <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="84.0" text="Kategorie: Bücher" />
+                  <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkäufer:" />
+                  <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="84.0" text="Kategorie:" />
                   <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="80.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
                   <TextArea fx:id="MainScreen_TextProductDescription" editable="false" layoutX="14.0" layoutY="111.0" prefHeight="313.0" prefWidth="405.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="111.0" />
                </children>
