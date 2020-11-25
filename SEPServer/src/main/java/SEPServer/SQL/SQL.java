@@ -260,7 +260,6 @@ public class SQL {
 				{
 					//Gewerbekunde
 					Seller seller = (Seller)user;
-					Address sellerAddress = seller.getAddress();
 													
 					try {
 						PreparedStatement stmt;
@@ -303,7 +302,6 @@ public class SQL {
 				{
 					//Privatkunde
 					Customer customer = (Customer)user;
-					Address customerAddress = customer.getAddress();
 					
 					try {
 						PreparedStatement stmt;
@@ -1044,7 +1042,6 @@ public class SQL {
 				// Privatkunde
 				if(accountType.equals("Customer"))
 				{
-					int i = userDataQuery.getInt("id");
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
 					// Privatkunden-Objekt zur�ckgeben
 					return customer;

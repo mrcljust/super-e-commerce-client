@@ -22,7 +22,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -98,7 +97,7 @@ public class EditAccountController {
 	@FXML
 	private TextField EditAccount_txtCity;
 	@FXML
-	private ChoiceBox EditAccount_txtCountry;
+	private ChoiceBox<String> EditAccount_txtCountry;
 	@FXML
 	private Label EditAccount_LblBusinessname;
 	@FXML
@@ -140,7 +139,7 @@ public class EditAccountController {
 			image.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), bufImg, 0, w*4);
 		}
 		
-		//UngÃ¼ltige Abfragen abfangen: 
+		//Ungültige Abfragen abfangen: 
 		
 		if (username=="" || username==null || email=="" || email==null || password=="" || password==null || passwordRepeated=="" || passwordRepeated==null 
 				|| fullname=="" || fullname==null || street=="" || street==null || number=="" || number==null || zipcode=="" || zipcode==null 
