@@ -10,6 +10,8 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -29,6 +31,8 @@ import javafx.stage.Stage;
 public class MainScreenController {
 
 	static User user = null;
+	Product[] lastSearchResult;
+	boolean currentSearchEvent = false;
 	
 	public static void setUser(User _user)
 	{
@@ -42,6 +46,7 @@ public class MainScreenController {
     	LoadAllProducts();
     	loadLastViewedProducts();
     	selectionsChangedListener();
+    	categoryChangedListener();
     }
     
     public void refreshView()
@@ -122,8 +127,7 @@ public class MainScreenController {
 		}
     }
     
-    private void loadLastViewedProducts()
-    {
+    private void loadLastViewedProducts() {
     	MainScreen_ListLastViewed.getItems().clear();
         
         HashMap<String, Object> requestMap = new HashMap<String, Object>();
@@ -132,8 +136,7 @@ public class MainScreenController {
     	Client client = Client.getClient();
 		ServerResponse queryResponse = client.sendClientRequest(req);
 		
-		if(queryResponse.getResponseType() == Response.Success)
-		{
+		if(queryResponse.getResponseType() == Response.Success) {
 			//Product Array
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
@@ -142,11 +145,22 @@ public class MainScreenController {
 		}
     }
     
-    private void selectionsChangedListener()
-    {
+	//ChoiceBox Categories Selection Change Listener
+	//wird aufgerufen, wenn eine Kategorie ausgewählt wird
+    private void categoryChangedListener() {
+	    MainScreen_ChoiceBox_Category.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				categoryChangedEvent(newValue.intValue());
+			}
+	      });
+    }
+    
+    private void selectionsChangedListener() {
+
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-    		//was passiert, wenn ein Eintrag in der ListCatalog ausgew�hlt wird
+    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
     		if(newSelection != null)
     		{
     		updateArticleInfo(true);
@@ -156,7 +170,7 @@ public class MainScreenController {
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgew�hlt wird
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewählt wird
 	    	if(newSelection != null)
 	    	{
 		    	updateArticleInfo(false);
@@ -256,6 +270,124 @@ public class MainScreenController {
 			}
     	}
 	}
+    
+    private void categoryChangedEvent(int newValue) {
+    	//Katalog leeren
+    	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
+		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+		
+		//keine Kategorie, also alle Kategorien
+		if(newValue==0) {
+			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
+			if(currentSearchEvent) {
+				LoadAllProducts();
+				currentSearchEvent=false;
+			}
+			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
+			else {
+				searchChangedEvent();
+			}
+			
+		} else {
+			//Sonstige Kategorie ausgewählt
+			HashMap<String, Object> requestMap = new HashMap<String, Object>();
+	    	requestMap.put("Category", selectedCategoryString);
+	    	
+	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
+	    	Client client = Client.getClient();
+			ServerResponse queryResponse = client.sendClientRequest(req);
+			if(queryResponse.getResponseType() != null)	{
+				Product[] articleInCategory = (Product[])queryResponse.getResponseMap().get("Products"); //Produkte in Kategorie
+				Product[] articlesInCategoryAndSearch = null;
+				
+				if(lastSearchResult == null) {
+					//Letzte Suche war leer bzw. noch keine Suche getätigt
+					articlesInCategoryAndSearch=articleInCategory;
+				}
+				else {
+					//aktuelle Suche
+					int i=0;
+					for(Product p : lastSearchResult) {
+						i++;
+					}
+					if(i>0)	{
+						articlesInCategoryAndSearch = new Product[i];
+						int ii=0;
+						for(Product p : lastSearchResult) {
+							if(p.getCategory().equals(selectedCategoryString)) {
+								articlesInCategoryAndSearch[ii]=p; 
+								ii++;
+							}
+						}
+					}
+				}
+				ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
+				
+				MainScreen_ListCatalog.setItems(ObservableProducts);
+			}
+		}
+		currentSearchEvent=false;
+    }
+    
+    private void searchChangedEvent()
+    {
+    	//Katalog leeren
+		MainScreen_ListCatalog.getItems().clear();
+		
+		
+		Product[] articlesInSearch = null;
+		//Kein Suchbegriff eingegeben
+		if(MainScreen_txtSearch.getText()==null || MainScreen_txtSearch.getText().isEmpty() || MainScreen_txtSearch.getText().isBlank() || MainScreen_txtSearch.getText() == "") {
+			currentSearchEvent=true;
+			lastSearchResult=null;
+			categoryChangedEvent(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedIndex());
+		}
+		
+		//Suchbegriff eingegeben
+		else {
+			HashMap<String, Object> requestMap = new HashMap<String, Object>();
+	    	requestMap.put("SearchString", MainScreen_txtSearch.getText());
+	    	
+	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
+	    	Client client = Client.getClient();
+			ServerResponse queryResponse = client.sendClientRequest(req);
+			
+			
+			//wenn es keine Probleme gibt, kann Suche starten
+			if(queryResponse.getResponseType() != null)	{
+				//Verkapselte Suche (Kategorie und Suchbegriff)
+				articlesInSearch = (Product[])queryResponse.getResponseMap().get("Products");
+				Product[] articlesInSearchAndCategory = null;
+				//Alle Kategorien ausgewählt
+				if(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedIndex()==0)	{
+					articlesInSearchAndCategory = articlesInSearch;
+				}
+				else {
+					//bestimmte Kategorie ausgewählt
+					int i=0;
+					for(Product p : articlesInSearch) {
+						i++;
+					}
+					if(i>0)	{
+						articlesInSearchAndCategory = new Product[i];
+						int ii=0;
+						for(Product p : articlesInSearch) {
+							if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
+								articlesInSearchAndCategory[ii]=p; 
+								ii++;
+							}
+						}
+					}
+				}
+				
+				//Artikel in Katalog anzeigen
+				ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInSearchAndCategory);
+				
+				MainScreen_ListCatalog.setItems(ObservableProducts);
+			}
+		}
+		lastSearchResult=articlesInSearch;
+    }
 	
     @FXML
     private ChoiceBox<String> MainScreen_ChoiceBox_Category;
@@ -386,7 +518,7 @@ public class MainScreenController {
 
     @FXML
     void MainScreen_btnSearchOKClick(ActionEvent event) {
-
+    	searchChangedEvent();
     }
 
     @FXML
