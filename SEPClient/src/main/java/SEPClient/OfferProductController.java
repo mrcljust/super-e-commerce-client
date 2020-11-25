@@ -153,8 +153,99 @@ public class OfferProductController {
 
     @FXML
     void Sell_SellConfirmClick(ActionEvent event) {
-
-    }
+    	//Eingaben prüfen
+    	String articlename = Sell_txtName.getText();
+    	String description = Sell_txtDescription.getText();
+    	String priceString = Sell_txtPreis.getText();
+    	boolean categoryChosen = false;
+    	String category = "";
+    	double price;
+    	
+    	//Prüfen ob Kategorie ausgewählt ist und in Variable schreiben
+    	if(Sell_radioNoCategory.isSelected())
+    	{
+    		categoryChosen=true;
+    		category = "";
+    	}
+    	else if(Sell_radioUseCategory.isSelected() && Sell_choiceCategory.getSelectionModel().getSelectedItem() != null)
+    	{
+    		categoryChosen=true;
+    		category = Sell_choiceCategory.getSelectionModel().getSelectedItem();
+    	}
+    	else if(Sell_radioNewCategory.isSelected() && Sell_txtNewCategory.getText() != null && Sell_txtNewCategory.getText() != "")
+    	{
+    		categoryChosen=true;
+    		category = Sell_txtNewCategory.getText();
+    	}
+    	else
+    	{
+    		categoryChosen=false;
+    		category = "";
+    	}
+    	
+    	//Prüfen ob alle Felder ausgefüllt. Die Beschreibung ist keine Pflicht.
+    	if (articlename=="" || articlename==null || priceString=="" || priceString==null) {
+			FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return; //Methode beenden
+		}
+    	
+    	if(!categoryChosen)
+    	{
+    		//keine Kategorie eingegeben
+			FXMLHandler.ShowMessageBox("Bitte geben Sie eine Kategorie ein, oder wählen Sie 'Keine Kategorie'.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return; //Methode beenden
+    	}
+    	
+    	//Prüfen ob Preis double ist (vorher ggf. , durch . ersetzen)
+    	try
+    	{
+    		price = Double.parseDouble(priceString.replace(",", "."));
+    	}
+    	catch (NumberFormatException e)
+		{
+			FXMLHandler.ShowMessageBox("Bitte geben Sie den Preis im folgenden Format ein: ##.##" + System.lineSeparator() + "(Ohne Währungszeichen und mit .)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return; //Methode beenden
+		}
+    	
+    	//Eingaben ok, lege Produkt an
+    	//Sende ClientRequest
+    	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("User", user);
+    	Product newProduct = new Product(articlename, price, (Seller)user, category, description);
+    	requestMap.put("Product", newProduct);
+        ClientRequest req = new ClientRequest(Request.AddItem, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		// Wenn Produkt erfolgreich angelegt, Response.Success returnen
+		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		
+		if(queryResponse.getResponseType() == Response.NoDBConnection)
+		{
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Artikel inseriert.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.Failure)
+		{
+			FXMLHandler.ShowMessageBox("Beim Inserieren des Artikels ist ein unbekannter Fehler aufgetreten.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.Success)
+		{
+			FXMLHandler.ShowMessageBox("Der Artikel '" + articlename + "' wurde erfolgreich inseriert.",
+					"Artikel inseriert", "Artikel inseriert", AlertType.CONFIRMATION, true,
+					false);
+			//MainScreen oeffnen
+			MainScreenController.setUser(user);
+			FXMLHandler.OpenSceneInStage((Stage) Sell_ButtonSellCsv.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+			return ;
+		}
+		}
 
     @FXML
     void Sell_SellCsvClick(ActionEvent event) {
