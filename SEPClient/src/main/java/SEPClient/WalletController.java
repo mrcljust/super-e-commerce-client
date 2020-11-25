@@ -113,7 +113,7 @@ public class WalletController {
     		{
     			try
     	    	{
-    	        	int customAmountInt = Integer.parseInt(Wallet_txtCustomAmount.getText().trim());
+    	        	double customAmountInt = Double.parseDouble(Wallet_txtCustomAmount.getText().replace(",", ".").trim());
     	        	amount = customAmountInt;
     	    	}
     			catch (NumberFormatException nfe)
@@ -122,6 +122,7 @@ public class WalletController {
     				FXMLHandler.ShowMessageBox("Der Aufladebetrag darf nur Nummern enthalten.",
     						"Fehler", "Fehler", AlertType.ERROR, true,
     						false);
+    				Wallet_txtCustomAmount.setText("");
     				return;
     	    	}
     			
@@ -132,6 +133,7 @@ public class WalletController {
 				FXMLHandler.ShowMessageBox("Bitte geben Sie einen Aufladebetrag ein.",
 						"Fehler", "Fehler", AlertType.ERROR, true,
 						false);
+				Wallet_txtCustomAmount.setText("");
     			return;
     		}
     	}

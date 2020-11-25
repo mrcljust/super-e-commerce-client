@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
-
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
@@ -59,7 +58,7 @@ public class EditAccountController {
 		EditAccount_radioSeller.setSelected(true);
 		
 		if (user instanceof Seller) {
-			//fÃ¼r Gewerbekunden:
+			//für Gewerbekunden:
 			EditAccount_radioSeller.setSelected(true);
 			EditAccount_radioCustomer.setSelected(false);
 			EditAccount_LblBusinessname.setText("Gewerbename*");
@@ -70,10 +69,9 @@ public class EditAccountController {
 			EditAccount_radioCustomer.setSelected(true);
 			EditAccount_LblBusinessname.setText("Gewerbename");
 			EditAccount_txtBusinessname.setDisable(true);
-	
 		}
-	
 	}
+	
 	@FXML
 	private RadioButton EditAccount_radioCustomer;
 	@FXML
@@ -158,7 +156,7 @@ public class EditAccountController {
 			return; //nochmal versuchen
 		}
 		
-		if (!email.contains("@")) {
+		if (!email.contains("@") || !email.contains(".")) {
 			FXMLHandler.ShowMessageBox("Die E-Mail Adresse ist nicht gültig.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			EditAccount_txtEmail.setText("");
 			return;

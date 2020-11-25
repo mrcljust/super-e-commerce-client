@@ -41,6 +41,7 @@ public class LoginController {
     	{
         	Login_txtEmailOrUser.setText(preText);
         	Login_txtPassword.requestFocus();
+        	preText=null;
     	}
     	else
     	{

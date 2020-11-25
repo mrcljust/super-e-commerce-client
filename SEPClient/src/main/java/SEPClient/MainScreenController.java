@@ -51,7 +51,7 @@ public class MainScreenController {
     
     public void refreshView()
     {
-    	MainScreen_LabelWallet.setText("Guthaben: " + user.getWallet() + "$");
+    	MainScreen_LabelWallet.setText("Guthaben: " + SEPCommon.Methods.round(user.getWallet(), 2) + "$");
     	
     	if(user instanceof Seller)
     	{
@@ -97,6 +97,16 @@ public class MainScreenController {
     	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
     	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
     	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+    	
+    	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
+    	{
+	    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
+    	}
+		
+		if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
+    	{
+	    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
+    	}
     }
     
     public void LoadAllProducts()
@@ -119,7 +129,10 @@ public class MainScreenController {
 				String pCategory = p.getCategory();
 				if(!MainScreen_ChoiceBox_Category.getItems().contains(pCategory))
 				{
-					MainScreen_ChoiceBox_Category.getItems().add(pCategory);
+					if(pCategory!="") //leeren Kategorie-String nicht hinzufügen
+					{
+						MainScreen_ChoiceBox_Category.getItems().add(pCategory);
+					}
 				}
 			}
 			
@@ -192,7 +205,15 @@ public class MainScreenController {
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPrice() + "$");
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
-		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory());
+		    	String selectedCategory = MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory();
+		    	if(selectedCategory=="")
+		    	{
+			    	MainScreen_LabelProductCategory.setText("Kategorie: (keine Kategorie)");
+		    	}
+		    	else
+		    	{
+			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
+		    	}
 		    	MainScreen_TextProductDescription.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription());
 		    	
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
@@ -221,7 +242,15 @@ public class MainScreenController {
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPrice() + "$");
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
-		    	MainScreen_LabelProductCategory.setText("Kategorie: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory());
+		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
+		    	if(selectedCategory=="")
+		    	{
+			    	MainScreen_LabelProductCategory.setText("Kategorie: (keine Kategorie)");
+		    	}
+		    	else
+		    	{
+			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
+		    	}
 		    	MainScreen_TextProductDescription.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription());
 		    
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
@@ -484,7 +513,7 @@ public class MainScreenController {
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
 
-    	FXMLHandler.ShowMessageBox("(C) 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universitaet Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
     			"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
@@ -525,6 +554,12 @@ public class MainScreenController {
     //OfferProduct oeffnen
     void MainScreen_btnSellProductClick(ActionEvent event) {
     	OfferProductController.setUser(user);
+    	
+    	//ggf. Kategorien mit übergeben
+    	if(MainScreen_ChoiceBox_Category.getItems() != null)
+    	{
+    		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
+    	}
     	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", true, true);
     }
     

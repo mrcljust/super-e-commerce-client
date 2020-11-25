@@ -18,6 +18,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -87,6 +88,10 @@ public class RegisterController {
     	Register_txtCountry.getItems().addAll("Deutschland", "Österreich", "Schweiz");
     	Register_txtCountry.getSelectionModel().select("Deutschland");
     	Register_txtUsername.requestFocus();
+    	
+    	ToggleGroup radioGroup = new ToggleGroup();
+    	Register_radioCustomer.setToggleGroup(radioGroup);
+    	Register_radioSeller.setToggleGroup(radioGroup);
     }
     
     @FXML
@@ -144,7 +149,7 @@ public class RegisterController {
     		return;
     	}
     	
-    	if(!email.contains("@"))
+    	if(!email.contains("@") || !email.contains("."))
     	{
     		FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige E-Mail-Adresse ein.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
@@ -255,7 +260,6 @@ public class RegisterController {
 	void Register_CustomerSelected(ActionEvent event) {
     	if(Register_radioCustomer.isSelected())
     	{
-    		Register_radioSeller.setSelected(false);
     		Register_txtBusinessname.setDisable(true);
     		Register_LblBusinessname.setText("Gewerbename");
     		
@@ -264,7 +268,6 @@ public class RegisterController {
     	}
     	else
     	{
-    		Register_radioSeller.setSelected(true);
     		Register_txtBusinessname.setDisable(false);
     		Register_LblBusinessname.setText("Gewerbename*");
     	}
@@ -274,13 +277,11 @@ public class RegisterController {
 	void Register_SellerSelected(ActionEvent event) {
     	if(Register_radioSeller.isSelected())
     	{
-    		Register_radioCustomer.setSelected(false);
     		Register_txtBusinessname.setDisable(false);
     		Register_LblBusinessname.setText("Gewerbename*");
     	}
     	else
     	{
-    		Register_radioCustomer.setSelected(true);
     		Register_txtBusinessname.setDisable(true);
     		Register_LblBusinessname.setText("Gewerbename");
     		Register_txtBusinessname.setText("");

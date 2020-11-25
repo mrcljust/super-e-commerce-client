@@ -101,8 +101,8 @@ public class SQL {
 			try {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
-						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + seller.getWallet() + ", '" + seller.getBusinessname() + "', '')");
-				// Bild einfï¿½gen
+						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + SEPCommon.Methods.round(seller.getWallet(), 2) + ", '" + seller.getBusinessname() + "', '')");
+				// Bild einfügen
 				if(seller.getPicture()!=null)
 				{
 					stmt.setBytes(1, seller.getPicture());
@@ -161,7 +161,7 @@ public class SQL {
 			try {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
-						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + customer.getWallet() + ", '', '')");
+						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + SEPCommon.Methods.round(customer.getWallet(), 2) + ", '', '')");
 				// Bild einfï¿½gen
 				if(customer.getPicture()!=null)
 				{
@@ -276,7 +276,7 @@ public class SQL {
 						stmt.setInt(7, seller.getAddress().getZipcode());
 						stmt.setString(8, seller.getAddress().getCity());
 						stmt.setString(9, seller.getAddress().getCountry());
-						stmt.setDouble(11, seller.getWallet());
+						stmt.setDouble(11, SEPCommon.Methods.round(seller.getWallet(), 2));
 						stmt.setString(12, seller.getBusinessname());
 						
 						
@@ -318,7 +318,7 @@ public class SQL {
 						stmt.setInt(7, customer.getAddress().getZipcode());
 						stmt.setString(8, customer.getAddress().getCity());
 						stmt.setString(9, customer.getAddress().getCountry());
-						stmt.setDouble(11, customer.getWallet());
+						stmt.setDouble(11, SEPCommon.Methods.round(customer.getWallet(), 2));
 						
 						
 						if(customer.getPicture()!=null)
@@ -359,8 +359,8 @@ public class SQL {
 			{
 					// Zuerst Produkte des Anbieters und dann den Anbieter selbst lï¿½schen
 					Statement statement = connection.createStatement();
-					statement.executeQuery("DELETE FROM products WHERE seller_id ='" + userId + "'");
-					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
+					statement.execute("DELETE FROM products WHERE seller_id ='" + userId + "'");
+					statement.execute("DELETE FROM users WHERE id ='" + userId + "'");
 					return Response.Success;
 		   
 			} catch (SQLException e) {
@@ -411,7 +411,7 @@ public class SQL {
 			
 			double newBalance = wallettemp + MoreMoney;
 			
-			String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
+			String increaseWalletQuery = "UPDATE users SET wallet='" + SEPCommon.Methods.round(newBalance, 2) + "' WHERE id=" + userId;
 			statement.execute(increaseWalletQuery);
 
 			return Response.Success;
@@ -448,7 +448,7 @@ public class SQL {
 			
 			double newBalance = wallettemp - LessMoney;
 			
-			String increaseWalletQuery = "UPDATE users SET wallet='" + newBalance + "' WHERE id=" + userId;
+			String increaseWalletQuery = "UPDATE users SET wallet='" + SEPCommon.Methods.round(newBalance, 2) + "' WHERE id=" + userId;
 			statement.execute(increaseWalletQuery);
 
 			return Response.Success;
@@ -508,9 +508,7 @@ public class SQL {
 						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
 
 				counter++;
-
 			}
-
 			return allProducts;
 
 		} catch (SQLException e) {
@@ -828,7 +826,7 @@ public class SQL {
 		
 			insertProduct.setInt(1, seller.getId()); //An Stelle des 1. ? setzen
 			insertProduct.setString(2,  product.getName()); // ...
-			insertProduct.setDouble(3,  product.getPrice());
+			insertProduct.setDouble(3,  SEPCommon.Methods.round(product.getPrice(), 2));
 			insertProduct.setInt(4, categoryid);
 			insertProduct.setString(5, product.getDescription());
 			insertProduct.execute();
@@ -907,7 +905,7 @@ public class SQL {
 				
 				insertProduct.setInt(1, sellerid); //An Stelle des 1. ? setzen
 				insertProduct.setString(2,  p.getName()); // ...
-				insertProduct.setDouble(3,  p.getPrice());
+				insertProduct.setDouble(3,  SEPCommon.Methods.round(p.getPrice(), 2));
 				insertProduct.setInt(4, categoryid);
 				insertProduct.setString(5, p.getDescription());
 				insertProduct.execute();
@@ -935,8 +933,9 @@ public class SQL {
 		int buyerid = buyer.getId();
 		Seller seller = product.getSeller();
 		int sellerid = seller.getId();
-		String newOrder = "INSERT INTO orders\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
-				+ buyerid + "', '" + product.getPrice() + "')";
+		String newOrder = "INSERT INTO orders(product_id, seller_id, buyer_id, price)\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
+				+ buyerid + "', '" + SEPCommon.Methods.round(product.getPrice(), 2) + "')";
+
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
@@ -979,7 +978,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Email prï¿½fen
+			// Email prüfen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + email + "'");
 			if(userDataQuery.next())
 			{
@@ -991,7 +990,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Obejekt zurï¿½ckgeben
+					// Privatkunden-Obejekt zurückgeben
 					return customer;
 				}
 				
@@ -999,7 +998,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurï¿½ckgeben
+					// Gewerbekunden-Objekt zurückgeben
 					return seller;
 				}
 				// Kein Eintrag zur Email
@@ -1031,7 +1030,7 @@ public class SQL {
 		{
 			// SQL Abfrage
 			Statement statement = connection.createStatement();
-			// Username prï¿½fen
+			// Username prüfen
 			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + username + "'");
 			
 			if(userDataQuery.next())
@@ -1042,7 +1041,7 @@ public class SQL {
 				// Privatkunde
 				if(accountType.equals("Customer"))
 				{
-					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
+					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address);
 					// Privatkunden-Objekt zurï¿½ckgeben
 					return customer;
 				}
@@ -1050,7 +1049,7 @@ public class SQL {
 				// Gewerbekunde
 				else if(accountType.equals("Seller"))
 				{
-					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
+					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address, userDataQuery.getString("companyname"));
 					// Gewerbekunden-Objekt zurï¿½ckgeben
 					return seller;
 				}

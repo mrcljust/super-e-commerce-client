@@ -14,11 +14,15 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -26,16 +30,36 @@ import javafx.stage.Stage;
 public class OfferProductController {
 
 	static User user = null;
+	static ObservableList<String> productCategories = null;
 	
 	public static void setUser(User _user)
 	{
 		user = _user;
 	}
 	
+	public static void setCategoryList(ObservableList<String> list)
+	{
+		//Die Methode wird im MainScreen vor dem Aufruf des OfferProduct-Fensters aufgerufen. Anhand der ObservableList
+		//werden die vorgeschlagenen Kategorien gelistet.
+		productCategories = list;
+	}
+	
     @FXML
     public void initialize() {
     	//CSV-Verkaufen Button erst aktivieren, wenn Datei ausgewählt ist.
     	Sell_ButtonSellCsv.setDisable(true);
+    	
+    	ToggleGroup radioGroup = new ToggleGroup();
+    	Sell_radioNoCategory.setToggleGroup(radioGroup);
+    	Sell_radioUseCategory.setToggleGroup(radioGroup);
+    	Sell_radioNewCategory.setToggleGroup(radioGroup);
+    	
+    	//Kategorien vom MainScreenController übergeben, Alle Kategorien vorher entfernen
+    	if(productCategories!=null)
+    	{
+    		productCategories.remove("Alle Kategorien");
+    		Sell_choiceCategory.setItems(productCategories);
+    	}
     }
 	
     @FXML
@@ -46,9 +70,6 @@ public class OfferProductController {
 
     @FXML
     private Button Sell_ButtonSellConfirm;
-
-    @FXML
-    private TextField Sell_txtCategory;
 
     @FXML
     private TextArea Sell_txtDescription;
@@ -64,6 +85,49 @@ public class OfferProductController {
 
     @FXML
     private TextField Sell_txtCSV;
+    
+    @FXML
+    private TextField Sell_txtNewCategory;
+
+    @FXML
+    private RadioButton Sell_radioNewCategory;
+
+    @FXML
+    private RadioButton Sell_radioUseCategory;
+
+    @FXML
+    private RadioButton Sell_radioNoCategory;
+
+    @FXML
+    private ChoiceBox<String> Sell_choiceCategory;
+
+
+    @FXML
+    void Sell_RadioNewCategory_Click(ActionEvent event) {
+    	if(Sell_radioNewCategory.isSelected())
+    	{
+    		Sell_txtNewCategory.setDisable(false);
+    		Sell_choiceCategory.setDisable(true);
+    	}
+    }
+
+    @FXML
+    void Sell_RadioUseCategory_Click(ActionEvent event) {
+    	if(Sell_radioUseCategory.isSelected())
+    	{
+    		Sell_txtNewCategory.setDisable(true);
+    		Sell_choiceCategory.setDisable(false);
+    	}
+    }
+    
+    @FXML
+    void Sell_RadioNoCategory_Click(ActionEvent event) {
+    	if(Sell_radioNoCategory.isSelected())
+    	{
+    		Sell_txtNewCategory.setDisable(true);
+    		Sell_choiceCategory.setDisable(true);
+    	}
+    }
 
     @FXML
     void Sell_ChooseFile(ActionEvent event) {
@@ -167,14 +231,14 @@ public class OfferProductController {
 			
 			if(queryResponse.getResponseType() == Response.NoDBConnection)
 			{
-				FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Produkt inseriert.",
+				FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Artikel inseriert.",
 						"Fehler", "Fehler", AlertType.ERROR, true,
 						false);
 				return;
 			}
 			else if(queryResponse.getResponseType() == Response.Failure)
 			{
-				FXMLHandler.ShowMessageBox("Bei mindestens einem Produkt kam es zu einem Fehler beim Inserieren.",
+				FXMLHandler.ShowMessageBox("Bei mindestens einem Artikel kam es zu einem Fehler beim Inserieren. Ggf. wurde ein Teil der Artikel inseriert.",
 						"Fehler", "Fehler", AlertType.ERROR, true,
 						false);
 				return;
@@ -183,13 +247,13 @@ public class OfferProductController {
 			{
 				if(errorcount==0)
 				{
-					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Datensätze aus der .csv-Datei ausgelesen und erfolgreich inseriert.",
+					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Artikel aus der .csv-Datei ausgelesen und erfolgreich inseriert.",
 							"Erfolg", "Erfolg", AlertType.CONFIRMATION, true,
 							false);
 				}
 				else
 				{
-					FXMLHandler.ShowMessageBox("Es wurde(n) " + (lines.size()-1) + " Datensätze aus der .csv-Datei ausgelesen. Hiervon war(en) " + errorcount + " Datensätze fehlerhaft (zum Beispiel falsch formatiert), daher wurde(n) " + ((lines.size()-1)-errorcount) + " Datensätze inseriert.",
+			    	FXMLHandler.ShowMessageBox("Fehler beim Lesen der .csv-Datei, der Vorgang wird abgebrochen. Es wurde kein Artikel inseriert.",
 							"Erfolg", "Erfolg", AlertType.CONFIRMATION, true, false);
 				}
 				//MainScreen oeffnen
