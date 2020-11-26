@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 
@@ -50,9 +52,19 @@ public class LoginController {
     }
     
     @FXML
+    void txtPassword_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button OK Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+            Login_OKButton.fire();
+        }
+    }
+    
+    @FXML
 	void Login_OKClick(ActionEvent event) {
     	String userOrEmail = Login_txtEmailOrUser.getText();
-    	String password = Login_txtPassword.getText();
+    	String password = SEPCommon.Methods.getMd5Encryption(Login_txtPassword.getText());
     	
     	//Ungültige Eingaben abfangen
     	if(userOrEmail=="" || userOrEmail==null || password=="" || password==null)

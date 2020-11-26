@@ -15,7 +15,7 @@
       <RadioButton fx:id="Wallet_RadioAdd50" layoutX="22.0" layoutY="99.0" mnemonicParsing="false" onAction="#Wallet_Add50" text="50$" />
       <RadioButton fx:id="Wallet_RadioAdd100" layoutX="22.0" layoutY="121.0" mnemonicParsing="false" onAction="#Wallet_Add100" text="100$" />
       <RadioButton fx:id="Wallet_RadioAddCustom" layoutX="22.0" layoutY="143.0" mnemonicParsing="false" onAction="#Wallet_AddCustom" text="manuelle Eingabe:" />
-      <TextField fx:id="Wallet_txtCustomAmount" disable="true" layoutX="147.0" layoutY="138.0" onAction="#Wallet_CustomAmount" prefHeight="27.0" prefWidth="118.0" />
+      <TextField fx:id="Wallet_txtCustomAmount" disable="true" layoutX="147.0" layoutY="138.0" onAction="#Wallet_CustomAmount" onKeyPressed="#Wallet_txtCustomAmount_KeyPressed" prefHeight="27.0" prefWidth="118.0" />
       <Button fx:id="Wallet_ButtonIncrease" layoutX="219.0" layoutY="216.0" mnemonicParsing="false" onAction="#Wallet_IncreaseClick" prefHeight="25.0" prefWidth="87.0" text="Aufladen" />
       <Button fx:id="Wallet_ButtonReturn" layoutX="317.0" layoutY="216.0" mnemonicParsing="false" onAction="#Wallet_ReturnClick" text="Zurück" />
       <Label layoutX="267.0" layoutY="143.0" text="\$" />

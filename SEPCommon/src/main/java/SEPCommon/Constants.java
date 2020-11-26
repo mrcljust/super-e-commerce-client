@@ -1,5 +1,7 @@
 package SEPCommon;
 
+import java.text.DecimalFormat;
+
 public class Constants {
 	
 	//Konstante Adressen, Variablen, die an mehreren Klassen verwendet werden
@@ -15,4 +17,8 @@ public class Constants {
 	public final static int TIMEOUT= 60000;
 	
 	public final static String CLIENT_LOGO_RESOURCE_PATH = "/SEPClient/UI/sep-logo.png";
+	
+	public final static DecimalFormat doubleFormat = new DecimalFormat("#0.00");
+	
+	public final static String CURRENCY = "$";
 }

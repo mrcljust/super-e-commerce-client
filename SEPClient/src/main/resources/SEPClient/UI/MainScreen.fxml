@@ -80,7 +80,8 @@
                            </font>
                         </Label>
                         <ChoiceBox fx:id="MainScreen_ChoiceBox_Category" layoutX="4.0" layoutY="5.0" prefHeight="25.0" prefWidth="185.0" />
-                        <Button layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
+                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearch_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
+                        <Button fx:id="MainScreen_btnSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
                         <TableView fx:id="MainScreen_ListCatalog" layoutY="35.0" prefHeight="221.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
                            <columns>
                               <TableColumn fx:id="catalogIdColumn" editable="false" prefWidth="75.0" text="ID" />
@@ -90,7 +91,6 @@
                               <TableColumn fx:id="catalogCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
                            </columns>
                         </TableView>
-                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
                      </children>
                   </AnchorPane>
               </items>

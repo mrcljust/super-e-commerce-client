@@ -110,8 +110,8 @@ public class RegisterController {
 	void Register_OKClick(ActionEvent event) throws IOException {
     	String username = Register_txtUsername.getText();
     	String email = Register_txtEmail.getText();
-    	String password = Register_txtPassword.getText();
-    	String passwordRepeat = Register_txtPasswordRepeat.getText();
+    	String password = SEPCommon.Methods.getMd5Encryption(Register_txtPassword.getText());
+    	String passwordRepeat = SEPCommon.Methods.getMd5Encryption(Register_txtPasswordRepeat.getText());
     	boolean isSeller = Register_radioSeller.isSelected();
     	String fullname = Register_txtFullName.getText();
     	String street = Register_txtStreet.getText();

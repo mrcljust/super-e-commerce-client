@@ -933,27 +933,40 @@ public class SQL {
 				+ buyerid + "', '" + SEPCommon.Methods.round(product.getPrice(), 2) + "')";
 
 
+		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + buyerid + "'";
+
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
-
-		if (buyer.getWallet() - product.getPrice() < 0) {
-			return Response.Failure;
-		} else {
-			if(decreaseWallet(buyer, product.getPrice())==Response.Success)
+		
+		try{
+			//Guthaben aus der DB auslesen
+			double wallettemp = 0;
+			Statement statement = connection.createStatement();
+			ResultSet walletSet = statement.executeQuery(getCurrentWalletQuery);
+			if(walletSet.next())
 			{
-				if(increaseWallet(seller, product.getPrice())==Response.Success)
+				wallettemp = walletSet.getDouble("wallet");
+			}
+			
+			//in der DB prüfen, ob das Guthaben ausreicht
+			if (wallettemp - product.getPrice() < 0) {
+				return Response.Failure;
+			} else {
+				if(decreaseWallet(buyer, product.getPrice())==Response.Success)
 				{
-					try {
+					if(increaseWallet(seller, product.getPrice())==Response.Success)
+					{
 						PreparedStatement addNewOrder = connection.prepareStatement(newOrder);
 						addNewOrder.execute();
 						return Response.Success;
-					}catch (SQLException e) {
-						e.printStackTrace();
-						return Response.Failure;
-					}
+					} else { return Response.Failure;}
 				} else { return Response.Failure;}
-			} else { return Response.Failure;}
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return Response.Failure;
 		}
 	}
 

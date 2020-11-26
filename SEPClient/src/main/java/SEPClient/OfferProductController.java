@@ -211,7 +211,7 @@ public class OfferProductController {
     	}
     	catch (NumberFormatException e)
 		{
-			FXMLHandler.ShowMessageBox("Bitte geben Sie den Preis im folgenden Format ein: ##.##" + System.lineSeparator() + "(Ohne Währungszeichen und mit .)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			FXMLHandler.ShowMessageBox("Bitte geben Sie den Preis im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return; //Methode beenden
 		}
     	

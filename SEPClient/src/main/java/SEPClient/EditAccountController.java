@@ -127,8 +127,8 @@ public class EditAccountController {
 	void EditAccount_OKClick (ActionEvent event) throws IOException {
 		String username = EditAccount_txtUsername.getText();
 		String email = EditAccount_txtEmail.getText();
-		String password = EditAccount_txtPassword.getText();
-		String passwordRepeated = EditAccount_txtPasswordRepeat.getText();
+		String password = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPassword.getText());
+		String passwordRepeated = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPasswordRepeat.getText());
 		String fullname = EditAccount_txtFullName.getText();
 		String street = EditAccount_txtStreet.getText();
 		String number = EditAccount_txtNumber.getText(); //ich muss nicht typecasten?

@@ -11,6 +11,8 @@ import SEPCommon.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
@@ -97,6 +99,16 @@ public class WalletController {
     void Wallet_CustomAmount(ActionEvent event) {
     	
     }
+    
+    @FXML
+    void Wallet_txtCustomAmount_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button Wallet aufladen Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+            Wallet_ButtonIncrease.fire();
+        }
+    }
 
     @FXML
     void Wallet_IncreaseClick(ActionEvent event) {
@@ -115,8 +127,16 @@ public class WalletController {
     		{
     			try
     	    	{
-    	        	double customAmountInt = Double.parseDouble(Wallet_txtCustomAmount.getText().replace(",", ".").trim());
-    	        	amount = customAmountInt;
+    	        	double customAmountDouble = Double.parseDouble(Wallet_txtCustomAmount.getText().replace(",", ".").trim());
+    	        	amount = customAmountDouble;
+    	        	if(customAmountDouble<=0)
+    	        	{
+    	        		FXMLHandler.ShowMessageBox("Bitte geben Sie einen Aufladebetrag über 0$ ein.",
+        						"Fehler", "Fehler", AlertType.ERROR, true,
+        						false);
+        				Wallet_txtCustomAmount.setText("");
+        				return;
+    	        	}
     	    	}
     			catch (NumberFormatException nfe)
     	    	{

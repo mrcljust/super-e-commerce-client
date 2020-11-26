@@ -10,7 +10,7 @@
    <children>
       <Label layoutX="14.0" layoutY="18.0" text="Benutzername oder E-Mail-Adresse" />
       <TextField fx:id="Login_txtEmailOrUser" layoutX="214.0" layoutY="14.0" prefHeight="25.0" prefWidth="223.0" />
-      <PasswordField fx:id="Login_txtPassword" layoutX="215.0" layoutY="46.0" prefHeight="25.0" prefWidth="223.0" />
+      <PasswordField fx:id="Login_txtPassword" layoutX="215.0" layoutY="46.0" onKeyPressed="#txtPassword_KeyPressed" prefHeight="25.0" prefWidth="223.0" />
       <Button fx:id="Login_OKButton" layoutX="302.0" layoutY="86.0" mnemonicParsing="false" onAction="#Login_OKClick" text="Anmelden" />
       <Button fx:id="Login_ReturnButton" layoutX="382.0" layoutY="86.0" mnemonicParsing="false" onAction="#Login_ReturnClick" text="Zurück" />
       <Label layoutX="154.0" layoutY="50.0" text="Passwort" />

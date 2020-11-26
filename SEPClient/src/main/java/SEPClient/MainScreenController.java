@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import SEPCommon.ClientRequest;
+import SEPCommon.Constants;
 import SEPCommon.Customer;
 import SEPCommon.Product;
 import SEPCommon.Request;
@@ -27,6 +28,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
@@ -54,7 +57,7 @@ public class MainScreenController {
     
     public void refreshView()
     {
-    	MainScreen_LabelWallet.setText("Guthaben: " + SEPCommon.Methods.round(user.getWallet(), 2) + "$");
+    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.doubleFormat.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
     	
 		//Standardbild setzen
     	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
@@ -214,12 +217,12 @@ public class MainScreenController {
 		    	
 		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
-		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPrice() + "$");
+		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPriceString());
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	String selectedCategory = MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
-			    	MainScreen_LabelProductCategory.setText("Kategorie: (keine Kategorie)");
+			    	MainScreen_LabelProductCategory.setText("Kategorie: (Keine Kategorie)");
 		    	}
 		    	else
 		    	{
@@ -251,7 +254,7 @@ public class MainScreenController {
 		    	
 		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
-		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPrice() + "$");
+		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPriceString());
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
@@ -467,6 +470,9 @@ public class MainScreenController {
     private Button MainScreen_ButtonMyProducts;
 
     @FXML
+    private Button MainScreen_btnSearchOK;
+
+    @FXML
     private Button MainScreen_ButtonPurchases;
 
     @FXML
@@ -573,6 +579,16 @@ public class MainScreenController {
     void MainScreen_btnSearchOKClick(ActionEvent event) {
     	searchChangedEvent();
     }
+    
+    @FXML
+    void MainScreen_txtSearch_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button Search Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+    		MainScreen_btnSearchOK.fire();
+        }
+    }
 
     @FXML
     //OfferProduct oeffnen
@@ -607,7 +623,7 @@ public class MainScreenController {
 			return;
     	}
     	
-    	//Prüfen, ob genug Guthaben vorhanden ist
+    	//clienseitig Prüfen, ob genug Guthaben vorhanden ist
     	if(user.getWallet()<productToBuy.getPrice())
     	{
 			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.", "Fehler", "Fehler", AlertType.ERROR, true, false);
