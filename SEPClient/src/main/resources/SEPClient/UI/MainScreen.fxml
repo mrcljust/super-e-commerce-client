@@ -11,6 +11,7 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
@@ -42,7 +43,11 @@
             <Button fx:id="MainScreen_ButtonAddWallet" layoutX="337.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
             <Button fx:id="MainScreen_ButtonEditAccount" layoutX="461.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
             <Button fx:id="MainScreen_ButtonLogout" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
-            <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
+               <image>
+                  <Image url="@no-image.jpg" />
+               </image>
+            </ImageView>
          </children>
       </Pane>
       <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">

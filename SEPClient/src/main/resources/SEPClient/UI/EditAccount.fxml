@@ -7,14 +7,15 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="586.0" prefWidth="423.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.EditAccountController">
    <children>
-      <RadioButton fx:id="EditAccount_radioCustomer" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" selected="true" text="Privatkunde" />
-      <RadioButton fx:id="EditAccount_radioSeller" layoutX="114.0" layoutY="14.0" mnemonicParsing="false" text="Gewerbekunde" />
-      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="39.0" prefHeight="170.0" prefWidth="397.0" text="1. Allgemeine Daten">
+      <RadioButton fx:id="EditAccount_radioCustomer" disable="true" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Privatkunde" />
+      <RadioButton fx:id="EditAccount_radioSeller" disable="true" layoutX="114.0" layoutY="14.0" mnemonicParsing="false" text="Gewerbekunde" />
+      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="39.0" prefHeight="170.0" prefWidth="397.0" text="Allgemeine Daten">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="139.0" prefWidth="395.0">
                <children>
@@ -29,10 +30,15 @@
                </children></AnchorPane>
         </content>
       </TitledPane>
-      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="216.0" prefHeight="326.0" prefWidth="397.0" text="2. Ihr Profil">
+      <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="216.0" prefHeight="326.0" prefWidth="397.0" text="Ihr Profil">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="225.0" prefWidth="395.0">
                <children>
+                  <ImageView fx:id="EditAccount_imgPicture" fitHeight="110.0" fitWidth="110.0" layoutX="13.0" layoutY="176.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
+                     <image>
+                        <Image url="@no-image.jpg" />
+                     </image>
+                  </ImageView>
                   <TextField fx:id="EditAccount_txtFullName" layoutX="149.0" layoutY="11.0" prefHeight="25.0" prefWidth="239.0" />
                   <TextField fx:id="EditAccount_txtStreet" layoutX="149.0" layoutY="42.0" prefHeight="25.0" prefWidth="176.0" />
                   <TextField fx:id="EditAccount_txtNumber" layoutX="335.0" layoutY="42.0" prefHeight="25.0" prefWidth="51.0" />
@@ -44,15 +50,15 @@
                   <ChoiceBox fx:id="EditAccount_txtCountry" layoutX="149.0" layoutY="107.0" prefHeight="25.0" prefWidth="238.0" />
                	  <Label fx:id="EditAccount_LblBusinessname" layoutX="12.0" layoutY="147.0" text="Gewerbename" />
                   <TextField fx:id="EditAccount_txtBusinessname" disable="true" layoutX="149.0" layoutY="143.0" prefHeight="25.0" prefWidth="239.0" />
-                  <Button fx:id="EditAccount_ButtonChooseImage" layoutX="250.0" layoutY="261.0" mnemonicParsing="false" onAction="#EditAccount_OpenPictureClick" text="Profilbild auswählen..." />
-                  <ImageView fx:id="EditAccount_imgPicture" fitHeight="110.0" fitWidth="110.0" layoutX="13.0" layoutY="176.0" pickOnBounds="true" preserveRatio="true" />
                   <Label layoutX="13.0" layoutY="111.0" text="Land*" />
-                  <Button fx:id="EditAccount_ButtonDeleteAccount" layoutX="152.0" layoutY="261.0" mnemonicParsing="false" onAction="#EditAccount_DeleteAccountClick" text="Konto löschen" />
+                  <Button fx:id="EditAccount_ButtonChooseImage" layoutX="250.0" layoutY="231.0" mnemonicParsing="false" onAction="#EditAccount_OpenPictureClick" text="Profilbild auswählen..." />
+                  <Button fx:id="EditAccount_ButtonDeleteImage" layoutX="250.0" layoutY="261.0" mnemonicParsing="false" onAction="#EditAccount_DeletePictureClick" prefHeight="25.0" prefWidth="131.0" text="Profilbild löschen" />
                   </children>
             </AnchorPane>
          </content>
       </TitledPane>
       <Button fx:id="EditAccount_ButtonOK" layoutX="281.0" layoutY="549.0" mnemonicParsing="false" onAction="#EditAccount_OKClick" text="Speichern" />
    	  <Button fx:id="EditAccount_ButtonCancel" layoutX="356.0" layoutY="549.0" mnemonicParsing="false" onAction="#EditAccount_ReturnClick" text="Zurück" />
+      <Button fx:id="EditAccount_ButtonDeleteAccount" layoutX="15.0" layoutY="549.0" mnemonicParsing="false" onAction="#EditAccount_DeleteAccountClick" text="Konto löschen" />
       </children>
 </AnchorPane>

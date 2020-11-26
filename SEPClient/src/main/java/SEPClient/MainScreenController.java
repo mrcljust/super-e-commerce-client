@@ -1,5 +1,7 @@
 package SEPClient;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import SEPCommon.ClientRequest;
@@ -23,6 +25,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -53,6 +56,10 @@ public class MainScreenController {
     {
     	MainScreen_LabelWallet.setText("Guthaben: " + SEPCommon.Methods.round(user.getWallet(), 2) + "$");
     	
+		//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	MainScreen_ImgProfilePicture.setImage(defaultImage);
+    	
     	if(user instanceof Seller)
     	{
     		//Gewerbekunde
@@ -72,6 +79,10 @@ public class MainScreenController {
     		MainScreen_ButtonPurchases.setDisable(false);
     	}
     	
+    	InputStream in = new ByteArrayInputStream(user.getPicture());
+		Image img = new Image(in);
+		MainScreen_ImgProfilePicture.setImage(img);
+    	
     	//Aktuelle Produktinfos leeren
     	MainScreen_LabelProductTitle.setText("");
     	MainScreen_LabelProductPrice.setText("");
@@ -81,7 +92,7 @@ public class MainScreenController {
     	MainScreen_ButtonBuyProduct.setVisible(false);
     	MainScreen_TextProductDescription.setVisible(false);
     	
-    	//Alle Kategorien Item hinzufÃ¼gen
+    	//Alle Kategorien Item hinzufügen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
     	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
     	
@@ -123,7 +134,7 @@ public class MainScreenController {
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
 			
-			//Kategorien in Liste einfÃ¼gen
+			//Kategorien in Liste einfügen
 			for(Product p: products)
 			{
 				String pCategory = p.getCategory();
@@ -159,7 +170,7 @@ public class MainScreenController {
     }
     
 	//ChoiceBox Categories Selection Change Listener
-	//wird aufgerufen, wenn eine Kategorie ausgewÃ¤hlt wird
+	//wird aufgerufen, wenn eine Kategorie ausgewählt wird
     private void categoryChangedListener() {
 	    MainScreen_ChoiceBox_Category.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -173,7 +184,7 @@ public class MainScreenController {
 
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewÃ¤hlt wird
+    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
     		if(newSelection != null)
     		{
     		updateArticleInfo(true);
@@ -183,7 +194,7 @@ public class MainScreenController {
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewÃ¤hlt wird
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewählt wird
 	    	if(newSelection != null)
 	    	{
 		    	updateArticleInfo(false);
@@ -195,16 +206,16 @@ public class MainScreenController {
     {
     	if(selectionInCatalog==true)
     	{
-    		//Artikel in der ListCatalog ausgewÃ¤hlt
+    		//Artikel in der ListCatalog ausgewählt
     		if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
 	    	{
 		    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
-	    		//Item in der Katalog-Liste angewÃ¤hlt
+	    		//Item in der Katalog-Liste angewählt
 		    	
-		    	//Daten einfÃ¼gen
+		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPrice() + "$");
-		    	MainScreen_LabelProductSeller.setText("Verkï¿½ufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	String selectedCategory = MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
@@ -219,7 +230,7 @@ public class MainScreenController {
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
 		    	MainScreen_TextProductDescription.setVisible(true);
 		    	
-		    	//Kaufen Button nur fÃ¼r Customer enablen
+		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
 		    	{
 		    		MainScreen_ButtonBuyProduct.setDisable(false);
@@ -232,16 +243,16 @@ public class MainScreenController {
     	}
     	else
     	{
-    		//Artikel in ListLastViewed ausgewÃ¤hlt
+    		//Artikel in ListLastViewed ausgewählt
     		if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
 	    	{
 		    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
-	    		//Item in der zuletzt angesehen Liste angewÃ¤hlt
+	    		//Item in der zuletzt angesehen Liste angewählt
 		    	
-		    	//Daten einfÃ¼gen
+		    	//Daten einfügen
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPrice() + "$");
-		    	MainScreen_LabelProductSeller.setText("Verkï¿½ufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
 		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
@@ -256,7 +267,7 @@ public class MainScreenController {
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
 		    	MainScreen_TextProductDescription.setVisible(true);
 		    	
-		    	//Kaufen Button nur fÃ¼r Customer enablen
+		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
 		    	{
 		    		MainScreen_ButtonBuyProduct.setDisable(false);
@@ -307,18 +318,18 @@ public class MainScreenController {
 		
 		//keine Kategorie, also alle Kategorien
 		if(newValue==0) {
-			//Alle Kategorien ausgewÃ¤hlt und kein Suchbegriff ist eingegeben
+			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
 			if(currentSearchEvent) {
 				LoadAllProducts();
 				currentSearchEvent=false;
 			}
-			//Alle Kategorien ausgewÃ¤hlt und Suchbegriff ist eingegeben
+			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
 			else {
 				searchChangedEvent();
 			}
 			
 		} else {
-			//Sonstige Kategorie ausgewÃ¤hlt
+			//Sonstige Kategorie ausgewählt
 			HashMap<String, Object> requestMap = new HashMap<String, Object>();
 	    	requestMap.put("Category", selectedCategoryString);
 	    	
@@ -330,7 +341,7 @@ public class MainScreenController {
 				Product[] articlesInCategoryAndSearch = null;
 				
 				if(lastSearchResult == null) {
-					//Letzte Suche war leer bzw. noch keine Suche getÃ¤tigt
+					//Letzte Suche war leer bzw. noch keine Suche getätigt
 					articlesInCategoryAndSearch=articleInCategory;
 				}
 				else {
@@ -350,9 +361,13 @@ public class MainScreenController {
 						}
 					}
 				}
-				ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
 				
-				MainScreen_ListCatalog.setItems(ObservableProducts);
+				if(articlesInCategoryAndSearch!=null)
+				{
+					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
+					
+					MainScreen_ListCatalog.setItems(ObservableProducts);
+				}
 			}
 		}
 		currentSearchEvent=false;
@@ -386,33 +401,42 @@ public class MainScreenController {
 			if(queryResponse.getResponseType() != null)	{
 				//Verkapselte Suche (Kategorie und Suchbegriff)
 				articlesInSearch = (Product[])queryResponse.getResponseMap().get("Products");
+
 				Product[] articlesInSearchAndCategory = null;
-				//Alle Kategorien ausgewählt
-				if(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedIndex()==0)	{
-					articlesInSearchAndCategory = articlesInSearch;
-				}
-				else {
-					//bestimmte Kategorie ausgewählt
-					int i=0;
-					for(Product p : articlesInSearch) {
-						i++;
+				
+				if(articlesInSearch != null)
+				{
+					if(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedIndex()==0)	{
+						//Alle Kategorien ausgewählt
+						articlesInSearchAndCategory = articlesInSearch;
 					}
-					if(i>0)	{
-						articlesInSearchAndCategory = new Product[i];
-						int ii=0;
+					else {
+						//bestimmte Kategorie ausgewählt
+						int i=0;
 						for(Product p : articlesInSearch) {
-							if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
-								articlesInSearchAndCategory[ii]=p; 
-								ii++;
+							i++;
+						}
+						if(i>0)	{
+							articlesInSearchAndCategory = new Product[i];
+							int ii=0;
+							for(Product p : articlesInSearch) {
+								if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
+									articlesInSearchAndCategory[ii]=p; 
+									ii++;
+								}
 							}
 						}
 					}
 				}
+
 				
 				//Artikel in Katalog anzeigen
-				ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInSearchAndCategory);
-				
-				MainScreen_ListCatalog.setItems(ObservableProducts);
+				if(articlesInSearchAndCategory!=null)
+				{
+					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInSearchAndCategory);
+					
+					MainScreen_ListCatalog.setItems(ObservableProducts);
+				}
 			}
 		}
 		lastSearchResult=articlesInSearch;
@@ -513,7 +537,7 @@ public class MainScreenController {
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
 
-    	FXMLHandler.ShowMessageBox("ï¿½ 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universitï¿½t Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
     			"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
@@ -521,18 +545,18 @@ public class MainScreenController {
     @FXML
     void MainScreen_btnAddWalletClick(ActionEvent event) {
     	WalletController.setUser(user);
-		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "Wallet", "Guthaben aufladen", true, true);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "Wallet", "Guthaben aufladen", false, true);
     }
 
     @FXML
     void MainScreen_btnEditAccountClick(ActionEvent event) {
     	EditAccountController.setUser(user);
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "Konto bearbeiten", true, true);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "EditAccount", "Konto bearbeiten", false, true);
     }
 
     @FXML
     void MainScreen_btnLogoutClick(ActionEvent event) {
-		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonLogout.getScene().getWindow(), "Start", "Super-E-commerce-Platform", true, true);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonLogout.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
     }
 
     @FXML
@@ -560,7 +584,7 @@ public class MainScreenController {
     	{
     		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
     	}
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", true, true);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", false, true);
     }
     
     @FXML
@@ -579,20 +603,20 @@ public class MainScreenController {
     	}
     	else
     	{
-			FXMLHandler.ShowMessageBox("Es ist kein Produkt ausgewÃ¤hlt.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			FXMLHandler.ShowMessageBox("Es ist kein Produkt ausgewählt.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			return;
     	}
     	
-    	//PrÃ¼fen, ob genug Guthaben vorhanden ist
+    	//Prüfen, ob genug Guthaben vorhanden ist
     	if(user.getWallet()<productToBuy.getPrice())
     	{
-			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewÃ¤hlte Produkt zu kaufen.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			return;
     	}
     	
     	//Client BuyItem Request senden
-    	//Es wird bei dieser Request automatisch das KÃ¤uferkonto um den Produktpreis verringert
-    	//und das VerkÃ¤uferkonto um den Produktpreis erhÃ¶ht
+    	//Es wird bei dieser Request automatisch das Käuferkonto um den Produktpreis verringert
+    	//und das Verkäuferkonto um den Produktpreis erhöht
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
     	requestMap.put("Product", productToBuy);
@@ -604,7 +628,7 @@ public class MainScreenController {
 		//Antwort auslesen
 		if(queryResponse.getResponseType() == Response.NoDBConnection)
 		{
-			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Kauf durchgefÃ¼hrt.",
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Kauf durchgeführt.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			return;
@@ -618,7 +642,7 @@ public class MainScreenController {
 		}
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
-			FXMLHandler.ShowMessageBox("Sie haben den Artikel '" + productToBuy.getName() + "' erfolgreich fÃ¼r " + productToBuy.getPriceString() + " gekauft.",
+			FXMLHandler.ShowMessageBox("Sie haben den Artikel '" + productToBuy.getName() + "' erfolgreich für " + productToBuy.getPriceString() + " gekauft.",
 					"Kauf erfolgreich", "Kauf erfolgreich", AlertType.CONFIRMATION, true,
 					false);
 			//MainScreen oeffnen
@@ -629,4 +653,3 @@ public class MainScreenController {
     }
     
 }
-//push

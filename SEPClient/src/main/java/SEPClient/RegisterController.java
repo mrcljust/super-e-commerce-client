@@ -1,7 +1,11 @@
 package SEPClient;
-import java.io.File;
-import java.util.HashMap;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import javax.imageio.ImageIO;
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
@@ -10,6 +14,7 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -22,9 +27,9 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import net.coobird.thumbnailator.Thumbnails;
 
 public class RegisterController {
 	
@@ -72,6 +77,9 @@ public class RegisterController {
 
     @FXML
     private Button Register_ButtonCancel;
+    
+    @FXML
+    private Button Register_ButtonDeleteImage;
 
     @FXML
     private ImageView Register_imgPicture;
@@ -92,10 +100,14 @@ public class RegisterController {
     	ToggleGroup radioGroup = new ToggleGroup();
     	Register_radioCustomer.setToggleGroup(radioGroup);
     	Register_radioSeller.setToggleGroup(radioGroup);
+
+    	//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	Register_imgPicture.setImage(defaultImage);
     }
     
     @FXML
-	void Register_OKClick(ActionEvent event) {
+	void Register_OKClick(ActionEvent event) throws IOException {
     	String username = Register_txtUsername.getText();
     	String email = Register_txtEmail.getText();
     	String password = Register_txtPassword.getText();
@@ -111,21 +123,14 @@ public class RegisterController {
     	
     	//Bild zu byte Array umwandeln
     	Image image = Register_imgPicture.getImage();
-    	byte[] bufImg = null;
-    	if(image!=null)
-    	{
-    		int w = (int)image.getWidth();
-        	int h = (int)image.getHeight();
-
-        	// Create a new Byte Buffer, but we'll use BGRA (1 byte for each channel) //
-
-        	bufImg = new byte[w * h * 4];
-
-        	/* Since you can get the output in whatever format with a WritablePixelFormat,
-        	   we'll use an already created one for ease-of-use. */
-
-        	image.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), bufImg, 0, w * 4);
-    	}
+    	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
+    	
+    	//Skalieren unter Beibehaltung des Seitenverhältnisses
+    	BufferedImage imageResized = Thumbnails.of(imageBuffered).size(512, 512).asBufferedImage();
+    	ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+    	ImageIO.write(imageResized, "png", byteOutput);
+    	byte[] imageByteArray = byteOutput.toByteArray();
+    	byteOutput.close(); 
     	
     	
     	//Ungültige Eingaben abfangen
@@ -190,11 +195,11 @@ public class RegisterController {
     	Address address = new Address(fullname, country, postalint, city, street, number);
     	if(isSeller)
     	{
-    		user = new Seller(username, email, password, bufImg, 0, address, businessname);
+    		user = new Seller(username, email, password, imageByteArray, 0, address, businessname);
     	}
     	else
     	{
-    		user = new Customer(username, email, password, bufImg, 0, address);
+    		user = new Customer(username, email, password, imageByteArray, 0, address);
     	}
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
@@ -218,7 +223,7 @@ public class RegisterController {
 		}
 		if(queryResponse.getResponseType() == Response.ImageTooBig)
 		{
-			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß. Bitte wählen Sie ein anderes Bild aus.",
+			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
     		Register_txtPassword.setText("");
@@ -295,10 +300,10 @@ public class RegisterController {
     	File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
     	if(file!=null)
     	{
-    		if(!file.toURI().toString().contains(".png") && !file.toURI().toString().contains(".jpg"))
+			if(!file.toURI().toString().toLowerCase().contains(".png") && !file.toURI().toString().toLowerCase().contains(".jpg") && !file.toURI().toString().toLowerCase().contains(".jpeg"))
     	    {
-    			//Bild weder .jpg noch .png
-    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg- oder .png-Datei aus.",
+    			//Bild weder .jpg, .jpeg noch .png
+    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg-, .jpeg- oder .png-Datei aus.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
     	    	return;
@@ -307,4 +312,11 @@ public class RegisterController {
     	    Register_imgPicture.setImage(selectedImage);
 	    }
 	}
+    
+    @FXML
+    void Register_DeletePictureClick(ActionEvent event) {
+    	//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	Register_imgPicture.setImage(defaultImage);
+    }
 }

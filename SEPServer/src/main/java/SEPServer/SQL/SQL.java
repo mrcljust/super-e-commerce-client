@@ -364,7 +364,7 @@ public class SQL {
 					return Response.Success;
 		   
 			} catch (SQLException e) {
-				return Response.NoDBConnection;
+				return Response.Failure;
 			}
 		}
 		
@@ -375,11 +375,11 @@ public class SQL {
 				{
 					Statement statement = connection.createStatement();
 					// Bei Privatkunden muss nur der User selbst gel�scht werden
-					statement.executeQuery("DELETE FROM users WHERE id ='" + userId + "'");
+					statement.execute("DELETE FROM users WHERE id ='" + userId + "'");
 					return Response.Success;
 				
 				} catch (SQLException e) {
-					return Response.NoDBConnection;
+					return Response.Failure;
 				}
 		}
 	}
@@ -568,11 +568,7 @@ public class SQL {
 				allProductsSameCategory[counter] = new Product(AllProductsByCategory2.getInt("products.id"),
 						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), newSeller,
 						AllProductsByCategory2.getString("categories.title"), AllProductsByCategory2.getString("products.description"));
-				
-				
-			
 				counter++;
-	
 			}
 
 			return allProductsSameCategory;
@@ -633,7 +629,7 @@ public class SQL {
 				allProductsByString[counter] = new Product(AllProductsByFullString2.getInt("products.id"),
 						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
 						AllProductsByFullString2.getString("categories.title"), AllProductsByFullString2.getString("products.description"));
-			
+				counter++;
 			}
 			return allProductsByString;
 

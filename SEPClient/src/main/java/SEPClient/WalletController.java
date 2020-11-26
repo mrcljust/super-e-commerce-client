@@ -62,21 +62,23 @@ public class WalletController {
 
     @FXML
     void Wallet_Add10(ActionEvent event) {
+    	Wallet_txtCustomAmount.setDisable(true);
     }
 
     @FXML
     void Wallet_Add100(ActionEvent event) {
-
+    	Wallet_txtCustomAmount.setDisable(true);
     }
 
     @FXML
     void Wallet_Add25(ActionEvent event) {
+    	Wallet_txtCustomAmount.setDisable(true);
 
     }
 
     @FXML
     void Wallet_Add50(ActionEvent event) {
- 
+    	Wallet_txtCustomAmount.setDisable(true);
     }
 
     @FXML
@@ -109,7 +111,7 @@ public class WalletController {
     	} else if (Wallet_RadioAdd100.isSelected()) {
     		amount = 100.0;
     	} else if(Wallet_RadioAddCustom.isSelected()) {
-    		if(Wallet_txtCustomAmount.getText()!=null)
+    		if(Wallet_txtCustomAmount.getText()!=null && Wallet_txtCustomAmount.getText()!="")
     		{
     			try
     	    	{
@@ -174,7 +176,6 @@ public class WalletController {
 			//messagebox
 			FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich aufgeladen.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
-	    	//FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "Login", "Super-E-commerce-Platform", true, true);
 	    	MainScreenController.setUser(newUser);
 			FXMLHandler.OpenSceneInStage((Stage) Wallet_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 		

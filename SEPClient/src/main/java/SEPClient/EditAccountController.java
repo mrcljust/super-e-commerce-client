@@ -1,11 +1,16 @@
 package SEPClient;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Optional;
+
+import javax.imageio.ImageIO;
+
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
@@ -14,6 +19,7 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert.AlertType;
@@ -26,9 +32,9 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import net.coobird.thumbnailator.Thumbnails;
 
 public class EditAccountController {
 
@@ -40,6 +46,10 @@ public class EditAccountController {
 	}
 
 	public void initialize() throws IOException {
+		//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	EditAccount_imgPicture.setImage(defaultImage);
+		
 		EditAccount_txtUsername.setText(user.getUsername());
 		EditAccount_txtEmail.setText(user.getEmail());
 		EditAccount_txtFullName.setText(user.getAddress().getFullname());
@@ -107,12 +117,14 @@ public class EditAccountController {
 	@FXML
 	private Button EditAccount_ButtonDeleteAccount;
 	@FXML
+	private Button EditAccount_ButtonDeleteImage;
+	@FXML
 	private Button EditAccount_ButtonOK;
 	@FXML
 	private Button EditAccount_ButtonCancel;
 	
 	@FXML
-	void EditAccount_OKClick (ActionEvent event) {
+	void EditAccount_OKClick (ActionEvent event) throws IOException {
 		String username = EditAccount_txtUsername.getText();
 		String email = EditAccount_txtEmail.getText();
 		String password = EditAccount_txtPassword.getText();
@@ -126,18 +138,16 @@ public class EditAccountController {
 		String businessname = EditAccount_txtBusinessname.getText();
 		boolean isSeller = EditAccount_radioSeller.isSelected();
 		
-		Image image = EditAccount_imgPicture.getImage();
+    	//Bild zu byte Array umwandeln
+    	Image image = EditAccount_imgPicture.getImage();
+    	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
 
-		byte [] bufImg = null; //erst null, weil wir h und w noch nicht kennen; nachtraeglich kann array-größŸe nicht einfach angepasst werden
-		if (image != null) {
-
-			int w = (int) image.getWidth();
-			int h = (int) image.getHeight();
-			
-			bufImg = new byte [w*h*4];
-			
-			image.getPixelReader().getPixels(0, 0, w, h, PixelFormat.getByteBgraInstance(), bufImg, 0, w*4);
-		}
+    	//Skalieren unter Beibehaltung des Seitenverhältnisses
+    	BufferedImage imageResized = Thumbnails.of(imageBuffered).size(512, 512).asBufferedImage();
+    	ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+    	ImageIO.write(imageResized, "png", byteOutput);
+    	byte[] imageByteArray = byteOutput.toByteArray();
+    	byteOutput.close(); 
 		
 		//Ungültige Abfragen abfangen: 
 		
@@ -180,9 +190,9 @@ public class EditAccountController {
 		User newUser;
 		Address address = new Address (fullname, country, postalcode, city, street, number);
 		if (isSeller) {
-			newUser = new Seller(user.getId(), username, email, password, bufImg, 0, address, businessname);
+			newUser = new Seller(user.getId(), username, email, password, imageByteArray, 0, address, businessname);
 		} else {
-			newUser = new Customer(user.getId(), username, email, password, bufImg, 0, address);
+			newUser = new Customer(user.getId(), username, email, password, imageByteArray, 0, address);
 		}
 		HashMap <String, Object> requestMap = new HashMap<String, Object>();
 		requestMap.put("User", newUser);
@@ -201,7 +211,7 @@ public class EditAccountController {
 
 		//Bild zu großŸ
 		if(queryResponse.getResponseType() == Response.ImageTooBig) {
-			FXMLHandler.ShowMessageBox("Die DateigrößŸe des ausgewählten Profilbildes ist zu groß. Bitte wählen Sie ein anderes Bild aus.",
+			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			EditAccount_imgPicture.setImage(null);
@@ -240,10 +250,10 @@ public class EditAccountController {
 		fileChooser.setTitle("Profilbild auswählen...");
 		File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
 		if (file != null) {
-			if(!file.toURI().toString().contains(".png") && !file.toURI().toString().contains(".jpg"))
+			if(!file.toURI().toString().toLowerCase().contains(".png") && !file.toURI().toString().toLowerCase().contains(".jpg") && !file.toURI().toString().toLowerCase().contains(".jpeg"))
     	    {
-    			//Bild weder .jpg noch .png
-    	    	FXMLHandler.ShowMessageBox("Bitte wÃ¤hlen Sie eine .jpg- oder .png-Datei aus.",
+    			//Bild weder .jpg, .jpeg noch .png
+    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg-, .jpeg- oder .png-Datei aus.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
     	    	return;
@@ -273,7 +283,7 @@ public class EditAccountController {
     					"Fehler", "Fehler", AlertType.ERROR, true,false);
 			} else if (queryResponse.getResponseType() == Response.Success) {
 				FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich gelöscht.",
-    					"Konto gelöscht", "Konto gelöscht", AlertType.ERROR, true,false);
+    					"Konto gelöscht", "Konto gelöscht", AlertType.CONFIRMATION, true,false);
 				FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 			}
 			
@@ -285,5 +295,10 @@ public class EditAccountController {
 		FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 	}
 	
-	
+    @FXML
+    void EditAccount_DeletePictureClick(ActionEvent event) {
+    	//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	EditAccount_imgPicture.setImage(defaultImage);
+    }
 }

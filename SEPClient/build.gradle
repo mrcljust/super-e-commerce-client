@@ -15,12 +15,12 @@ dependencies {
     
 	//SEPCommon einbinden
     compile project(':SEPCommon')
-    
+	compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.13'
 }
 
 javafx {
 	//JavaFX
-	modules = [ 'javafx.controls', 'javafx.fxml' ]
+	modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
 	version = '15.0.1'
 }
 
