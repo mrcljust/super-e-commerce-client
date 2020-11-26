@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 24. Nov 2020 um 14:42
+-- Erstellungszeit: 26. Nov 2020 um 02:00
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -43,7 +43,8 @@ CREATE TABLE `orders` (
   `product_id` int(11) NOT NULL,
   `seller_id` int(11) NOT NULL,
   `buyer_id` int(11) NOT NULL,
-  `price` decimal(10,0) NOT NULL
+  `price` decimal(10,0) NOT NULL,
+  `purchasedate` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -58,7 +59,8 @@ CREATE TABLE `products` (
   `title` varchar(255) NOT NULL,
   `price` double NOT NULL,
   `category_id` int(11) NOT NULL,
-  `description` text NOT NULL
+  `description` text NOT NULL,
+  `insertdate` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -79,10 +81,11 @@ CREATE TABLE `users` (
   `postalcode` int(11) NOT NULL,
   `city` varchar(255) NOT NULL,
   `country` varchar(255) NOT NULL,
-  `image` longblob NOT NULL,
+  `image` longblob NOT NULL COMMENT 'bis zu 16mb',
   `wallet` double NOT NULL,
   `companyname` varchar(255) NOT NULL,
-  `lastviewed` varchar(255) NOT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte'
+  `lastviewed` varchar(255) NOT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte, max. 10',
+  `registerdate` date NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -94,6 +97,12 @@ CREATE TABLE `users` (
 --
 ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indizes für die Tabelle `orders`
+--
+ALTER TABLE `orders`
+  ADD PRIMARY KEY (`order_id`);
 
 --
 -- Indizes für die Tabelle `products`
@@ -116,6 +125,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `orders`
+--
+ALTER TABLE `orders`
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `products`
