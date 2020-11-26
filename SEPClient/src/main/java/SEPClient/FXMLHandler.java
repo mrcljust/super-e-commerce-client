@@ -11,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
+import javafx.scene.layout.Region;
 import javafx.stage.*;
 import javafx.geometry.Rectangle2D;
 
@@ -113,6 +114,7 @@ public class FXMLHandler extends Application {
 		alert.setTitle(title);
 		alert.setHeaderText(header);
 		alert.setContentText(message);
+		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Größe anpassen, da bei Yannis z.B. die Meldungen gekürzt wurden
 		
 		//Icon hinzufügen
 		((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));		
@@ -132,6 +134,7 @@ public class FXMLHandler extends Application {
 		alert.setTitle(title);
 		alert.setHeaderText(header);
 		alert.setContentText(message);
+		alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE); //Größe anpassen, da bei Yannis z.B. die Meldungen gekürzt wurden
 		
 		//Icon hinzufügen
 		((Stage)alert.getDialogPane().getScene().getWindow()).getIcons().add(new Image(FXMLHandler.class.getResourceAsStream(Constants.CLIENT_LOGO_RESOURCE_PATH)));		
