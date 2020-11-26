@@ -407,7 +407,9 @@ public class MainScreenController {
     					//aktuelle Suche
     					int i=0;
     					for(Product p : lastSearchResult) {
-    						i++;
+    						if(p.getCategory().equals(selectedCategoryString)) {
+        						i++;
+    						}
     					}
     					if(i>0)	{
     						articlesInCategoryAndSearch = new Product[i];
@@ -472,9 +474,13 @@ public class MainScreenController {
 					}
 					else {
 						//bestimmte Kategorie ausgewählt
+						
+						//Arraygröße bestimmen
 						int i=0;
 						for(Product p : articlesInSearch) {
-							i++;
+							if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
+								i++;
+							}
 						}
 						if(i>0)	{
 							articlesInSearchAndCategory = new Product[i];
