@@ -221,7 +221,7 @@ public class RegisterController {
     		Register_txtPassword.setText("");
     		Register_txtPasswordRepeat.setText("");
 		}
-		if(queryResponse.getResponseType() == Response.ImageTooBig)
+		else if(queryResponse.getResponseType() == Response.ImageTooBig)
 		{
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,

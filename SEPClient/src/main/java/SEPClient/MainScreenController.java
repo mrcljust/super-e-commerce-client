@@ -69,7 +69,7 @@ public class MainScreenController {
         	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
     		MainScreen_ButtonAddWallet.setDisable(true);
     		MainScreen_ButtonSellProduct.setDisable(false);
-    		MainScreen_ButtonMyProducts.setDisable(false);
+    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
     		MainScreen_ButtonPurchases.setDisable(true);
     	}
     	else
@@ -79,7 +79,7 @@ public class MainScreenController {
     		MainScreen_ButtonAddWallet.setDisable(false);
     		MainScreen_ButtonSellProduct.setDisable(true);
     		MainScreen_ButtonMyProducts.setDisable(true);
-    		MainScreen_ButtonPurchases.setDisable(false);
+    		MainScreen_ButtonPurchases.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
     	}
     	
     	InputStream in = new ByteArrayInputStream(user.getPicture());

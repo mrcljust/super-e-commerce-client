@@ -36,7 +36,7 @@ public class Server {
 		} 
 		catch (IOException e)
 		{
-			System.out.println("Fehler beim Initialisieren des Server-Sockets: " + e.getMessage());
+			System.out.println("Fehler beim Initialisieren des Server-Sockets: " + e.getLocalizedMessage() + " (l‰uft der Server bereits?");
 		}
 		finally
 		{
@@ -52,7 +52,9 @@ public class Server {
 				System.out.println("Server-Socket geschlossen");
 			}
 			
-			//10 Sekunden warten, um alle Threads zu beenden, ansonsten Shutdown erzwingen
+			pool.shutdown();
+			
+			//10 Sekunden warten, ob alle Threads beendet wurden, ansonsten Shutdown erzwingen
 			if (pool.awaitTermination(10, TimeUnit.SECONDS))
 			{
 				  System.out.println("Alle Client-Sockets geschlossen");
@@ -65,11 +67,11 @@ public class Server {
 		}
 		catch (IOException e)
 		{
-			System.out.println("Fehler beim Schlieﬂen des Server-Sockets: " + e.getMessage());
+			System.out.println("Fehler beim Schlieﬂen des Server-Sockets: " + e.getLocalizedMessage());
 		}
 		catch (InterruptedException e)
 		{
-			System.out.println("Fehler beim Schlieﬂen der Client-Sockets: " + e.getMessage());
+			System.out.println("Fehler beim Schlieﬂen der Client-Sockets: " + e.getLocalizedMessage());
 		}
 	}
 }

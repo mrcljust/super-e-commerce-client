@@ -1,4 +1,4 @@
-package SEPServer.SQL;
+package SEPServer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

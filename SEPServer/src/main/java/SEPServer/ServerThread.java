@@ -12,12 +12,11 @@ import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
-import SEPServer.SQL.SQL;
 
 public class ServerThread implements Runnable {
 	private Socket client;
 	private int clientID;
-	private SEPServer.SQL.SQL sql = new SQL();
+	private SEPServer.SQL sql;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	
@@ -25,6 +24,7 @@ public class ServerThread implements Runnable {
 	{
 		this.client = clientSocket;
 		this.clientID = _clientID;
+		sql = new SQL();
 		System.out.println("Client-Verbindung (ID " + this.clientID + ") angenommen.");
 	}
 	

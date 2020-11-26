@@ -209,8 +209,8 @@ public class EditAccountController {
 		}
 		
 
-		//Bild zu groﬂü
-		if(queryResponse.getResponseType() == Response.ImageTooBig) {
+		//Bild zu groﬂ
+		else if(queryResponse.getResponseType() == Response.ImageTooBig) {
 			FXMLHandler.ShowMessageBox("Die Dateigrˆﬂe des ausgew‰hlten Profilbildes ist zu groﬂ (max. 16MB). Bitte w‰hlen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
