@@ -125,17 +125,17 @@ public class EditAccountController {
 	
 	@FXML
 	void EditAccount_OKClick (ActionEvent event) throws IOException {
-		String username = EditAccount_txtUsername.getText();
-		String email = EditAccount_txtEmail.getText();
+		String username = EditAccount_txtUsername.getText().trim();
+		String email = EditAccount_txtEmail.getText().trim();
 		String password = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPassword.getText());
 		String passwordRepeated = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPasswordRepeat.getText());
-		String fullname = EditAccount_txtFullName.getText();
-		String street = EditAccount_txtStreet.getText();
-		String number = EditAccount_txtNumber.getText(); //ich muss nicht typecasten?
-		String zipcode = EditAccount_txtPostalcode.getText();	
-		String city = EditAccount_txtCity.getText();
-		String country = (String) EditAccount_txtCountry.getValue(); //richtig so?
-		String businessname = EditAccount_txtBusinessname.getText();
+		String fullname = EditAccount_txtFullName.getText().trim();
+		String street = EditAccount_txtStreet.getText().trim();
+		String number = EditAccount_txtNumber.getText().trim(); //ich muss nicht typecasten?
+		String zipcode = EditAccount_txtPostalcode.getText().trim();	
+		String city = EditAccount_txtCity.getText().trim();
+		String country = (String) EditAccount_txtCountry.getValue().trim(); //richtig so?
+		String businessname = EditAccount_txtBusinessname.getText().trim();
 		boolean isSeller = EditAccount_radioSeller.isSelected();
 		
     	//Bild zu byte Array umwandeln

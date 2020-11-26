@@ -123,7 +123,7 @@ public class WalletController {
     	} else if (Wallet_RadioAdd100.isSelected()) {
     		amount = 100.0;
     	} else if(Wallet_RadioAddCustom.isSelected()) {
-    		if(Wallet_txtCustomAmount.getText()!=null && Wallet_txtCustomAmount.getText()!="")
+    		if(Wallet_txtCustomAmount.getText()!=null && Wallet_txtCustomAmount.getText().trim()!="")
     		{
     			try
     	    	{

@@ -3,7 +3,6 @@ package SEPClient;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
-
 import SEPCommon.ClientRequest;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
@@ -20,6 +19,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
@@ -100,17 +100,69 @@ public class MainScreenController {
     	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
     	
     	//Werte an die Spalten der Kataloglisten zuweisen
-    	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        catalogProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-        catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
-        catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+    	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
+        catalogProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
+        //Anzeigewert für Preis anpassen
+        catalogPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.doubleFormat.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+        catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
+        //Anzeigewert für Kategorie anpassen
+        catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
+        catalogCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
+    	    @Override
+    	    protected void updateItem(String category, boolean empty) {
+    	        super.updateItem(category, empty);
+    	        if (empty) {
+    	            setText(null);
+    	        } else if(category=="" || category==null) {
+    	        	setText("(Keine Kategorie)");
+    	        }else {
+    	            setText(category);
+    	        }
+    	    }
+    	});
 
-        lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
-    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
+    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+        //Anzeigewert für Preis anpassen
+    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
+    	lastviewedPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.doubleFormat.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
+    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
+        //Anzeigewert für Kategorie anpassen
+    	lastviewedCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
+    	    @Override
+    	    protected void updateItem(String category, boolean empty) {
+    	        super.updateItem(category, empty);
+    	        if (empty) {
+    	            setText(null);
+    	        } else if(category=="" || category==null) {
+    	        	setText("(Keine Kategorie)");
+    	        }else {
+    	            setText(category);
+    	        }
+    	    }
+    	});
     	
     	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
     	{
@@ -136,6 +188,7 @@ public class MainScreenController {
 			//Product Array
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			ObservableProducts.removeIf(n -> (n==null));
 			
 			//Kategorien in Liste einfügen
 			for(Product p: products)
@@ -167,6 +220,7 @@ public class MainScreenController {
 			//Product Array
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			ObservableProducts.removeIf(n -> (n==null));
 			
 			MainScreen_ListLastViewed.setItems(ObservableProducts);
 		}
@@ -259,7 +313,7 @@ public class MainScreenController {
 		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
-			    	MainScreen_LabelProductCategory.setText("Kategorie: (keine Kategorie)");
+			    	MainScreen_LabelProductCategory.setText("Kategorie: (Keine Kategorie)");
 		    	}
 		    	else
 		    	{
@@ -316,64 +370,67 @@ public class MainScreenController {
     
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
-    	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
-		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
-		
-		//keine Kategorie, also alle Kategorien
-		if(newValue==0) {
-			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
-			if(currentSearchEvent) {
-				LoadAllProducts();
-				currentSearchEvent=false;
-			}
-			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
-			else {
-				searchChangedEvent();
-			}
-			
-		} else {
-			//Sonstige Kategorie ausgewählt
-			HashMap<String, Object> requestMap = new HashMap<String, Object>();
-	    	requestMap.put("Category", selectedCategoryString);
-	    	
-	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
-	    	Client client = Client.getClient();
-			ServerResponse queryResponse = client.sendClientRequest(req);
-			if(queryResponse.getResponseType() != null)	{
-				Product[] articleInCategory = (Product[])queryResponse.getResponseMap().get("Products"); //Produkte in Kategorie
-				Product[] articlesInCategoryAndSearch = null;
-				
-				if(lastSearchResult == null) {
-					//Letzte Suche war leer bzw. noch keine Suche getätigt
-					articlesInCategoryAndSearch=articleInCategory;
-				}
-				else {
-					//aktuelle Suche
-					int i=0;
-					for(Product p : lastSearchResult) {
-						i++;
-					}
-					if(i>0)	{
-						articlesInCategoryAndSearch = new Product[i];
-						int ii=0;
-						for(Product p : lastSearchResult) {
-							if(p.getCategory().equals(selectedCategoryString)) {
-								articlesInCategoryAndSearch[ii]=p; 
-								ii++;
-							}
-						}
-					}
-				}
-				
-				if(articlesInCategoryAndSearch!=null)
-				{
-					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
-					
-					MainScreen_ListCatalog.setItems(ObservableProducts);
-				}
-			}
-		}
-		currentSearchEvent=false;
+    	if(newValue>-1)
+    	{
+    		String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
+    		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+    		
+    		//keine Kategorie, also alle Kategorien
+    		if(newValue==0) {
+    			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
+    			if(currentSearchEvent) {
+    				LoadAllProducts();
+    				currentSearchEvent=false;
+    			}
+    			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
+    			else {
+    				searchChangedEvent();
+    			}
+    			
+    		} else {
+    			//Sonstige Kategorie ausgewählt
+    			HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	    	requestMap.put("Category", selectedCategoryString);
+    	    	
+    	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
+    	    	Client client = Client.getClient();
+    			ServerResponse queryResponse = client.sendClientRequest(req);
+    			if(queryResponse.getResponseType() != null)	{
+    				Product[] articleInCategory = (Product[])queryResponse.getResponseMap().get("Products"); //Produkte in Kategorie
+    				Product[] articlesInCategoryAndSearch = null;
+    				
+    				if(lastSearchResult == null) {
+    					//Letzte Suche war leer bzw. noch keine Suche getätigt
+    					articlesInCategoryAndSearch=articleInCategory;
+    				}
+    				else {
+    					//aktuelle Suche
+    					int i=0;
+    					for(Product p : lastSearchResult) {
+    						i++;
+    					}
+    					if(i>0)	{
+    						articlesInCategoryAndSearch = new Product[i];
+    						int ii=0;
+    						for(Product p : lastSearchResult) {
+    							if(p.getCategory().equals(selectedCategoryString)) {
+    								articlesInCategoryAndSearch[ii]=p; 
+    								ii++;
+    							}
+    						}
+    					}
+    				}
+    				
+    				if(articlesInCategoryAndSearch!=null)
+    				{
+    					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
+    					
+    					MainScreen_ListCatalog.setItems(ObservableProducts);
+    				}
+    			}
+    		}
+    		currentSearchEvent=false;
+    	}
     }
     
     private void searchChangedEvent()
@@ -488,34 +545,34 @@ public class MainScreenController {
     private TableView<Product> MainScreen_ListCatalog;
     
     @FXML
-    private TableColumn<?, ?> lastviewedIdColumn;
+    private TableColumn<Product, Integer> lastviewedIdColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedProductColumn;
+    private TableColumn<Product, String> lastviewedProductColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedPriceColumn;
+    private TableColumn<Product, Double> lastviewedPriceColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedSellerColumn;
+    private TableColumn<Product, String> lastviewedSellerColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedCategoryColumn;
+    private TableColumn<Product, String> lastviewedCategoryColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogIdColumn;
+    private TableColumn<Product, Integer> catalogIdColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogProductColumn;
+    private TableColumn<Product, String> catalogProductColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogPriceColumn;
+    private TableColumn<Product, Double> catalogPriceColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogSellerColumn;
+    private TableColumn<Product, String> catalogSellerColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogCategoryColumn;
+    private TableColumn<Product, String> catalogCategoryColumn;
 
     @FXML
     private Label MainScreen_LabelProductTitle;

@@ -9,7 +9,7 @@ public class Product implements Serializable {
 	private double price;
 	private String priceString;
 	private Seller seller;
-	private String businessname; //wird benï¿½tigt, um den Verkï¿½ufer in den Katalog-TableViews im MainScreen anzuzeigen
+	private String businessname; //wird benötigt, um den Verkäufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
 	

@@ -63,7 +63,7 @@ public class LoginController {
     
     @FXML
 	void Login_OKClick(ActionEvent event) {
-    	String userOrEmail = Login_txtEmailOrUser.getText();
+    	String userOrEmail = Login_txtEmailOrUser.getText().trim();
     	String password = SEPCommon.Methods.getMd5Encryption(Login_txtPassword.getText());
     	
     	//Ungültige Eingaben abfangen
