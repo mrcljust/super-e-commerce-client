@@ -14,6 +14,11 @@ public class Server {
 	//ExecutorService zum Ausführen der Client-Threads. 999 maximale Threads gleichzeitig.
 	private static ExecutorService pool = Executors.newFixedThreadPool(999);
 	
+	public static void main(String[] args) {
+		Server server = new Server();
+		server.start();
+	}
+	
 	public void start() {
 
 		int clientid=1;

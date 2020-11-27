@@ -1,6 +1,6 @@
 package SEPClient;
 
-public class Main {
+public class StartClient {
 
 	public static void main(String[] args) {
 		FXMLHandler.main(args);

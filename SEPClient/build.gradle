@@ -32,9 +32,9 @@ jar {
     manifest {
         attributes(
         		'Implementation-Title':  'Super-E-commerce-Platform Client',
-                'Main-Class': 'SEPClient.Main'
+                'Main-Class': 'SEPClient.StartClient'
         )
     }
 }
 
-mainClassName = 'SEPClient.Main'
+mainClassName = 'SEPClient.StartClient'
