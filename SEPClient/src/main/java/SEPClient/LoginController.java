@@ -1,6 +1,7 @@
 package SEPClient;
 
 import java.util.HashMap;
+import java.util.prefs.*;
 import SEPCommon.ClientRequest;
 import SEPCommon.Request;
 import SEPCommon.Response;
@@ -130,6 +131,7 @@ public class LoginController {
                 MainScreenController.setUser(user);
 				FXMLHandler.OpenSceneInStage((Stage) Login_OKButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 			}
+			
 		} 
 	}
 

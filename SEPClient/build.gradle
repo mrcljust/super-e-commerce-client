@@ -20,7 +20,7 @@ dependencies {
 
 javafx {
 	//JavaFX
-	modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+	modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web' ]
 	version = '15.0.1'
 }
 

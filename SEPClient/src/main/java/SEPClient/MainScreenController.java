@@ -22,7 +22,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
@@ -30,6 +29,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.web.WebView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
@@ -91,9 +91,9 @@ public class MainScreenController {
     	MainScreen_LabelProductPrice.setText("");
     	MainScreen_LabelProductSeller.setText("");
     	MainScreen_LabelProductCategory.setText("");
-    	MainScreen_TextProductDescription.setText("");
+    	MainScreen_WebVIewProductDescription.getEngine().loadContent("");
     	MainScreen_ButtonBuyProduct.setVisible(false);
-    	MainScreen_TextProductDescription.setVisible(false);
+    	MainScreen_WebVIewProductDescription.setVisible(false);
     	
     	//Alle Kategorien Item hinzufügen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
@@ -261,6 +261,8 @@ public class MainScreenController {
     
     private void updateArticleInfo(boolean selectionInCatalog)
     {
+    	//selectionInCatalog = true --> Selektion im Katalog geändert
+    	//selectionInCatalog = false --> Selektion in LastViewed geändert
     	if(selectionInCatalog==true)
     	{
     		//Artikel in der ListCatalog ausgewählt
@@ -282,10 +284,10 @@ public class MainScreenController {
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_TextProductDescription.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription());
+		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
 		    	
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_TextProductDescription.setVisible(true);
+		    	MainScreen_WebVIewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
@@ -319,10 +321,10 @@ public class MainScreenController {
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_TextProductDescription.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription());
-		    
+		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+		    	
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_TextProductDescription.setVisible(true);
+		    	MainScreen_WebVIewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
@@ -545,6 +547,9 @@ public class MainScreenController {
     private TextField MainScreen_txtSearch;
     
     @FXML
+    private WebView MainScreen_WebVIewProductDescription;
+    
+    @FXML
     private TableView<Product> MainScreen_ListLastViewed;
 
     @FXML
@@ -591,9 +596,6 @@ public class MainScreenController {
 
     @FXML
     private Label MainScreen_LabelProductCategory;
-
-    @FXML
-    private TextArea MainScreen_TextProductDescription;
     
     @FXML
     private ImageView MainScreen_ImgProfilePicture;
@@ -686,16 +688,10 @@ public class MainScreenController {
 			return;
     	}
     	
-    	//clienseitig Prüfen, ob genug Guthaben vorhanden ist
-    	if(user.getWallet()<productToBuy.getPrice())
-    	{
-			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.", "Fehler", "Fehler", AlertType.ERROR, true, false);
-			return;
-    	}
-    	
     	//Client BuyItem Request senden
     	//Es wird bei dieser Request automatisch das Käuferkonto um den Produktpreis verringert
     	//und das Verkäuferkonto um den Produktpreis erhöht
+    	//In der Request wird geprüft, ob genug Guthaben vorhanden ist.
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
     	requestMap.put("Product", productToBuy);
@@ -708,6 +704,13 @@ public class MainScreenController {
 		if(queryResponse.getResponseType() == Response.NoDBConnection)
 		{
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Kauf durchgeführt.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.InsufficientBalance)
+		{
+			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			return;

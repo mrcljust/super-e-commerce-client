@@ -18,9 +18,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.web.HTMLEditor;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
@@ -75,7 +75,7 @@ public class OfferProductController {
     private Button Sell_ButtonSellConfirm;
 
     @FXML
-    private TextArea Sell_txtDescription;
+    private HTMLEditor Sell_txtDescription;
 
     @FXML
     private Button Sell_ButtonSellCsv;
@@ -158,7 +158,7 @@ public class OfferProductController {
     void Sell_SellConfirmClick(ActionEvent event) {
     	//Eingaben prüfen
     	String articlename = Sell_txtName.getText().trim();
-    	String description = Sell_txtDescription.getText().trim();
+    	String description = Sell_txtDescription.getHtmlText().trim();
     	String priceString = Sell_txtPreis.getText().trim();
     	boolean categoryChosen = false;
     	String category = "";
@@ -207,6 +207,7 @@ public class OfferProductController {
     	catch (NumberFormatException e)
 		{
 			FXMLHandler.ShowMessageBox("Bitte geben Sie den Preis im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			Sell_txtPreis.setText("");
 			return; //Methode beenden
 		}
     	

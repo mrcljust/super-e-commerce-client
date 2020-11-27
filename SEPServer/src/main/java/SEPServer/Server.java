@@ -36,7 +36,7 @@ public class Server {
 		} 
 		catch (IOException e)
 		{
-			System.out.println("Fehler beim Initialisieren des Server-Sockets: " + e.getLocalizedMessage() + " (läuft der Server bereits?");
+			System.out.println("Fehler beim Initialisieren des Server-Sockets: " + e.getLocalizedMessage() + " (Läuft der Server bereits?)");
 		}
 		finally
 		{

@@ -206,6 +206,8 @@ public class EditAccountController {
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
 
@@ -214,23 +216,29 @@ public class EditAccountController {
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 			EditAccount_imgPicture.setImage(null);
 		}
 		
 		//Username bereits vergeben
 		else if(queryResponse.getResponseType() == Response.UsernameTaken) {
-			FXMLHandler.ShowMessageBox("Der Benutzername ist bereits vergeben.",
+			FXMLHandler.ShowMessageBox("Der Benutzername wird bereits von einem anderen Benutzer verwendet.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
-			EditAccount_txtUsername.setText("");
+			EditAccount_txtUsername.setText(user.getUsername()); //ursprünglichen Nutzernamen setzen
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
 		//Email bereits vergeben
 		else if(queryResponse.getResponseType() == Response.EmailTaken) {
-			FXMLHandler.ShowMessageBox("Die E-Mail-Adresse ist bereits vergeben.",
+			FXMLHandler.ShowMessageBox("Die E-Mail-Adresse wird bereits von einem anderen Benutzer verwendet.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
-			EditAccount_txtEmail.setText("");
+			EditAccount_txtEmail.setText(user.getEmail()); //ursprüngliche Email setzen
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
 		//Ä„nderungen erfolgreich

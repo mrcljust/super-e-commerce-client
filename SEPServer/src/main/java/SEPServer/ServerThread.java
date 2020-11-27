@@ -42,7 +42,7 @@ public class ServerThread implements Runnable {
 				//ClientRequest clientreq = (ClientRequest)_in.readObject();
 				SEPCommon.Request requestType = clientreq.getRequestType();
 				Map<String, Object> requestMap = clientreq.getRequestMap();
-				System.out.println("ClientRequest - " + clientreq.getRequestType() + " - " + clientreq.getRequestMap());
+				System.out.println("ClientRequest - Client-ID " + this.clientID + " - " + clientreq.getRequestType() + " - " + clientreq.getRequestMap());
 				
 				
 				//Verschiedene Requests handlen
@@ -57,7 +57,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.registerUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -72,7 +72,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.loginUser(userOrEmail, password);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -86,7 +86,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.editUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -100,7 +100,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.deleteUser(argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -115,7 +115,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.increaseWallet(argUser, amount);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -130,7 +130,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.decreaseWallet(argUser, amount);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -188,7 +188,7 @@ public class ServerThread implements Runnable {
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -217,7 +217,7 @@ public class ServerThread implements Runnable {
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -233,7 +233,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.addLastViewedProduct(viewedProductId, argUser);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -248,7 +248,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.addItem(argUser, argProduct);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -263,7 +263,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.addItems(argUser, argProducts);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -278,7 +278,7 @@ public class ServerThread implements Runnable {
 					Response responseType = sql.buyItem(argUser, argProduct);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 				
@@ -321,7 +321,7 @@ public class ServerThread implements Runnable {
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
 					
-					System.out.println("Sende ServerResponse - " + response.getResponseType() + " - " + response.getResponseMap());
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
 			}

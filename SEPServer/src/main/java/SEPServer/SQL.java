@@ -44,14 +44,14 @@ public class SQL {
 	}
 
 	public Response registerUser(User user) {
-		// Die Methode ermï¿½glicht eine Registrierung auf der Plattform
-		// Passwort, Emailvorgaben usw. werden clientseitig geprï¿½ft
+		// Die Methode ermöglicht eine Registrierung auf der Plattform
+		// Passwort, Emailvorgaben usw. werden clientseitig geprüft
 		
-		// wenn User erfolgreich registriert wurde wird Response.Success zurï¿½ck gegeben
-		// wenn Email vergeben: Response.Emailtaken zurï¿½ckgeben
-		// wenn User vergeben: Response.UsernameTaken zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
-		// wenn Bild zu groï¿½: Response.ImageTooBig zurï¿½ckgeben
+		// wenn User erfolgreich registriert wurde wird Response.Success zurück gegeben
+		// wenn Email vergeben: Response.Emailtaken zurückgeben
+		// wenn User vergeben: Response.UsernameTaken zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn Bild zu groß: Response.ImageTooBig zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -63,16 +63,16 @@ public class SQL {
 		{
 			// Registrierung Gewerbekunde
 			
-			// User- und Adress-Objekt ï¿½bergeben
+			// User- und Adress-Objekt übergeben
 			Seller seller = (Seller)user;
-			Address sellerAddress = seller.getAddress();
 			
-			// Prï¿½fen, ob Email oder Username schon existieren
+			// Prüfen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
-				Statement statement = connection.createStatement();
-				ResultSet emailQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + seller.getEmail() + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				statement.setString(1, seller.getEmail());
+				ResultSet emailQuery = statement.executeQuery();
 				boolean emailHasEntries = emailQuery.next();
 				if(emailHasEntries)
 				{
@@ -80,14 +80,16 @@ public class SQL {
 					return Response.EmailTaken;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 			
 			try
 			{
 				// SQL Abfrage 
-				Statement statement = connection.createStatement();
-				ResultSet usernameQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + seller.getUsername() + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				statement.setString(1, seller.getUsername());
+				ResultSet usernameQuery = statement.executeQuery();
 				boolean usernameHasEntries = usernameQuery.next();
 				if(usernameHasEntries)
 				{
@@ -95,21 +97,37 @@ public class SQL {
 					return Response.UsernameTaken;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 			
 			try {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
-						+ "VALUES ('Seller', '" + seller.getUsername() + "', '" + seller.getPassword() + "', '" + seller.getEmail() + "', '" + sellerAddress.getFullname() + "', '" + sellerAddress.getStreet() + "', '" + sellerAddress.getNumber() + "', " + sellerAddress.getZipcode() + ", '" + sellerAddress.getCity() + "', '" + sellerAddress.getCountry() + "',?, " + SEPCommon.Methods.round(seller.getWallet(), 2) + ", '" + seller.getBusinessname() + "', '')");
-				// Bild einfügen
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				
+				stmt.setString(1, "Seller");
+				stmt.setString(2, seller.getUsername());
+				stmt.setString(3, seller.getPassword());
+				stmt.setString(4, seller.getEmail());
+				stmt.setString(5, seller.getAddress().getFullname());
+				stmt.setString(6, seller.getAddress().getStreet());
+				stmt.setString(7, seller.getAddress().getNumber());
+				stmt.setInt(8, seller.getAddress().getZipcode());
+				stmt.setString(9, seller.getAddress().getCity());
+				stmt.setString(10, seller.getAddress().getCountry());
+				stmt.setDouble(12, SEPCommon.Methods.round(seller.getWallet(), 2));
+				stmt.setString(13, seller.getBusinessname());
+				stmt.setString(14, ""); //keine bisher angesehenen Artikel
+				
+				//Bild einfügen
 				if(seller.getPicture()!=null)
 				{
-					stmt.setBytes(1, seller.getPicture());
+					stmt.setBytes(11, seller.getPicture());
 				}
 				else
 				{
-					stmt.setString(1, "");
+					stmt.setString(11, "");
 				}
 				stmt.execute();
                 // 3. Fall: Erfolgreiche Registrierung Gewerbekunde
@@ -123,16 +141,16 @@ public class SQL {
 		else
 		{
 			// Registrierung Privatkunde
-			// User- und Adress-Objekt ï¿½bergeben
+			// User- und Adress-Objekt übergeben
 			Customer customer = (Customer)user;
-			Address customerAddress = customer.getAddress();
 			
-			//Prï¿½fen, ob Email oder Username schon existieren
+			//Prüfen, ob Email oder Username schon existieren
 			try
 			{
 				// SQL Abfrage 
-				Statement statement = connection.createStatement();
-				ResultSet emailQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + customer.getEmail() + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				statement.setString(1, customer.getEmail());
+				ResultSet emailQuery = statement.executeQuery();
 				boolean emailHasEntries = emailQuery.next();
 				if(emailHasEntries)
 				{
@@ -140,14 +158,16 @@ public class SQL {
 					return Response.EmailTaken;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 			
 			try
 			{
 				// SQL Abfrage 
-				Statement statement = connection.createStatement();
-				ResultSet usernameQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + customer.getUsername() + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				statement.setString(1, customer.getUsername());
+				ResultSet usernameQuery = statement.executeQuery();
 				boolean usernameHasEntries = usernameQuery.next();
 				if(usernameHasEntries)
 				{
@@ -155,21 +175,37 @@ public class SQL {
 					return Response.UsernameTaken;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 			
 			try {
 				// Eintrag in Datenbank
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
-						+ "VALUES ('Customer', '" + customer.getUsername() + "', '" + customer.getPassword() + "', '" + customer.getEmail() + "', '" + customerAddress.getFullname() + "', '" + customerAddress.getStreet() + "', '" + customerAddress.getNumber() + "', " + customerAddress.getZipcode() + ", '" + customerAddress.getCity() + "', '" + customerAddress.getCountry() + "', ?, " + SEPCommon.Methods.round(customer.getWallet(), 2) + ", '', '')");
-				// Bild einfï¿½gen
+						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				
+				stmt.setString(1, "Customer");
+				stmt.setString(2, customer.getUsername());
+				stmt.setString(3, customer.getPassword());
+				stmt.setString(4, customer.getEmail());
+				stmt.setString(5, customer.getAddress().getFullname());
+				stmt.setString(6, customer.getAddress().getStreet());
+				stmt.setString(7, customer.getAddress().getNumber());
+				stmt.setInt(8, customer.getAddress().getZipcode());
+				stmt.setString(9, customer.getAddress().getCity());
+				stmt.setString(10, customer.getAddress().getCountry());
+				stmt.setDouble(12, SEPCommon.Methods.round(customer.getWallet(), 2));
+				stmt.setString(13, ""); //kein Gewerbename
+				stmt.setString(14, ""); //keine bisher angesehenen Artikel
+				
+				//Bild einfügen
 				if(customer.getPicture()!=null)
 				{
-					stmt.setBytes(1, customer.getPicture());
+					stmt.setBytes(11, customer.getPicture());
 				}
 				else
 				{
-					stmt.setString(1, "");
+					stmt.setString(11, "");
 				}
 				
 				stmt.execute();
@@ -177,15 +213,16 @@ public class SQL {
 				return Response.Success;
 			} catch (SQLException e) {
 				// Ausnahme: Bilddatei passt nicht
+				e.printStackTrace();
 				return Response.ImageTooBig;
 			}
 		}
 	}
 
 	public Response loginUser(String emailOrUsername, String password) {
-		// wenn User erfolgreich eingeloggt wurde Response.Success zurï¿½ckgeben
-		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// wenn User erfolgreich eingeloggt wurde Response.Success zurückgeben
+		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -200,8 +237,11 @@ public class SQL {
 			try
 			{
 				// SQL Abfrage
-				Statement statement = connection.createStatement();
-				ResultSet loginQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + emailOrUsername + "' AND password='" + password + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=? AND password=?");
+				statement.setString(1, emailOrUsername);
+				statement.setString(2, password);
+				ResultSet loginQuery = statement.executeQuery();
+				
 				boolean hasEntries = loginQuery.next();
 				if(hasEntries)
 				{
@@ -214,6 +254,7 @@ public class SQL {
 					return Response.Failure;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 		}
@@ -223,8 +264,11 @@ public class SQL {
 			try
 			{
 				// SQL Abfrage
-				Statement statement = connection.createStatement();
-				ResultSet loginQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + emailOrUsername + "' AND password='" + password + "'");
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=? AND password=?");
+				statement.setString(1, emailOrUsername);
+				statement.setString(2, password);
+				ResultSet loginQuery = statement.executeQuery();
+				
 				boolean hasEntries = loginQuery.next();
 				if(hasEntries)
 				{
@@ -237,114 +281,207 @@ public class SQL {
 					return Response.Failure;
 				}
 			} catch (SQLException e) {
+				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
 		}
 	}
 
 	public Response editUser(User user) {
-		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users ï¿½berschreiben 
+		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben 
  
-		// Wenn User erfolgreich abgeï¿½ndert wurden Response.Success zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurï¿½ckgeben
+		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. Response.Failure zurückgeben
 
 		//Verbindung herstellen, wenn keine Verbindung besteht
-				if (!checkConnection())
-				{
-					return Response.NoDBConnection;
-				}
-				int userId = user.getId();
-				
-				if(user instanceof Seller)
-				{
-					//Gewerbekunde
-					Seller seller = (Seller)user;
-													
-					try {
-						PreparedStatement stmt;
-						stmt = connection.prepareStatement("UPDATE users "
-								+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
-								+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ?, companyname = ? "
-								+ "WHERE id=" + userId);
-						stmt.setString(1, seller.getUsername());
-						stmt.setString(2, seller.getPassword());
-						stmt.setString(3, seller.getEmail());
-						stmt.setString(4, seller.getAddress().getFullname());
-						stmt.setString(5, seller.getAddress().getStreet());
-						stmt.setString(6, seller.getAddress().getNumber());
-						stmt.setInt(7, seller.getAddress().getZipcode());
-						stmt.setString(8, seller.getAddress().getCity());
-						stmt.setString(9, seller.getAddress().getCountry());
-						stmt.setDouble(11, SEPCommon.Methods.round(seller.getWallet(), 2));
-						stmt.setString(12, seller.getBusinessname());
-						
-						
-						if(seller.getPicture()!=null)
-						{
-							stmt.setBytes(10, seller.getPicture());
-						}
-						else
-						{
-							stmt.setString(10, "");
-						}
-						stmt.execute();
-
-						return Response.Success;
-
-					} catch (SQLException e) {
-						e.printStackTrace();
-						return Response.Failure;
-					} 
-				}
-				
-				else
-				{
-					//Privatkunde
-					Customer customer = (Customer)user;
+		if (!checkConnection())
+		{
+			return Response.NoDBConnection;
+		}
+		int userId = user.getId();
+		
+		if(user instanceof Seller)
+		{
+			//Gewerbekunde
+			Seller seller = (Seller)user;
 					
-					try {
-						PreparedStatement stmt;
-						stmt = connection.prepareStatement("UPDATE users "
-								+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
-								+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ? "
-								+ "WHERE id=" + userId);
-						stmt.setString(1, customer.getUsername());
-						stmt.setString(2, customer.getPassword());
-						stmt.setString(3, customer.getEmail());
-						stmt.setString(4, customer.getAddress().getFullname());
-						stmt.setString(5, customer.getAddress().getStreet());
-						stmt.setString(6, customer.getAddress().getNumber());
-						stmt.setInt(7, customer.getAddress().getZipcode());
-						stmt.setString(8, customer.getAddress().getCity());
-						stmt.setString(9, customer.getAddress().getCountry());
-						stmt.setDouble(11, SEPCommon.Methods.round(customer.getWallet(), 2));
-						
-						
-						if(customer.getPicture()!=null)
-						{
-							stmt.setBytes(10, customer.getPicture());
-						}
-						else
-						{
-							stmt.setString(10, "");
-						}
-						System.out.println(stmt);
-						stmt.execute();
-
-						return Response.Success;
-					} catch (SQLException e) {
-						e.printStackTrace();
-						return Response.Failure;
+			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren
+			try
+			{
+				// SQL Abfrage 
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				statement.setString(1, seller.getEmail());
+				ResultSet emailQuery = statement.executeQuery();
+				boolean emailHasEntries = emailQuery.next();
+				if(emailHasEntries)
+				{
+					//Prüfen, ob Email für diesen User oder für anderen vergeben
+					if(emailQuery.getInt("id") != userId)
+					{
+						//anderer Benutzer verwendet die Email
+						// 1. Fall: Email vergeben
+						return Response.EmailTaken;
 					}
 				}
-			}  
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.NoDBConnection;
+			}
+			
+			try
+			{
+				// SQL Abfrage 
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				statement.setString(1, seller.getUsername());
+				ResultSet usernameQuery = statement.executeQuery();
+				boolean usernameHasEntries = usernameQuery.next();
+				if(usernameHasEntries)
+				{
+					//Prüfen, ob Email für diesen User oder für anderen vergeben
+					if(usernameQuery.getInt("id") != userId)
+					{
+						//anderer Benutzer verwendet den Benutzernamen
+						// 2. Fall: Benutzername vergeben
+						return Response.UsernameTaken;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.NoDBConnection;
+			}
+			
+			//Eintrag in Datenbank
+			try {
+				PreparedStatement stmt;
+				stmt = connection.prepareStatement("UPDATE users "
+						+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
+						+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ?, companyname = ? "
+						+ "WHERE id=" + userId);
+				stmt.setString(1, seller.getUsername());
+				stmt.setString(2, seller.getPassword());
+				stmt.setString(3, seller.getEmail());
+				stmt.setString(4, seller.getAddress().getFullname());
+				stmt.setString(5, seller.getAddress().getStreet());
+				stmt.setString(6, seller.getAddress().getNumber());
+				stmt.setInt(7, seller.getAddress().getZipcode());
+				stmt.setString(8, seller.getAddress().getCity());
+				stmt.setString(9, seller.getAddress().getCountry());
+				stmt.setDouble(11, SEPCommon.Methods.round(seller.getWallet(), 2));
+				stmt.setString(12, seller.getBusinessname());
+				
+				
+				if(seller.getPicture()!=null)
+				{
+					stmt.setBytes(10, seller.getPicture());
+				}
+				else
+				{
+					stmt.setString(10, "");
+				}
+				stmt.execute();
+
+				return Response.Success;
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.ImageTooBig;
+			} 
+		}
+		
+		else
+		{
+			//Privatkunde
+			Customer customer = (Customer)user;
+			
+			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren
+			try
+			{
+				// SQL Abfrage 
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				statement.setString(1, customer.getEmail());
+				ResultSet emailQuery = statement.executeQuery();
+				boolean emailHasEntries = emailQuery.next();
+				if(emailHasEntries)
+				{
+					//Prüfen, ob Email für diesen User oder für anderen vergeben
+					if(emailQuery.getInt("id") != userId)
+					{
+						//anderer Benutzer verwendet die Email
+						// 1. Fall: Email vergeben
+						return Response.EmailTaken;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.NoDBConnection;
+			}
+			
+			try
+			{
+				// SQL Abfrage 
+				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				statement.setString(1, customer.getUsername());
+				ResultSet usernameQuery = statement.executeQuery();
+				boolean usernameHasEntries = usernameQuery.next();
+				if(usernameHasEntries)
+				{
+					//Prüfen, ob Email für diesen User oder für anderen vergeben
+					if(usernameQuery.getInt("id") != userId)
+					{
+						//anderer Benutzer verwendet den Benutzernamen
+						// 2. Fall: Benutzername vergeben
+						return Response.UsernameTaken;
+					}
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.NoDBConnection;
+			}
+			
+			//Eintrag in Datenbank
+			try {
+				PreparedStatement stmt;
+				stmt = connection.prepareStatement("UPDATE users "
+						+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
+						+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ? "
+						+ "WHERE id=" + userId);
+				stmt.setString(1, customer.getUsername());
+				stmt.setString(2, customer.getPassword());
+				stmt.setString(3, customer.getEmail());
+				stmt.setString(4, customer.getAddress().getFullname());
+				stmt.setString(5, customer.getAddress().getStreet());
+				stmt.setString(6, customer.getAddress().getNumber());
+				stmt.setInt(7, customer.getAddress().getZipcode());
+				stmt.setString(8, customer.getAddress().getCity());
+				stmt.setString(9, customer.getAddress().getCountry());
+				stmt.setDouble(11, SEPCommon.Methods.round(customer.getWallet(), 2));
+				
+				
+				if(customer.getPicture()!=null)
+				{
+					stmt.setBytes(10, customer.getPicture());
+				}
+				else
+				{
+					stmt.setString(10, "");
+				}
+				System.out.println(stmt);
+				stmt.execute();
+
+				return Response.Success;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return Response.ImageTooBig;
+			}
+		}
+	}  
 
 	public Response deleteUser(User user) {
-		// User anhand ID aus der Datenbank lï¿½schen
+		// User anhand ID aus der Datenbank löschen
 
-		// Wenn User erfolgreich gelï¿½scht Response.Success zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: Response.NoDBConnection zurï¿½ckgeben
+		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
+		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		int userId = user.getId();
 		
@@ -357,7 +494,7 @@ public class SQL {
 		{ 
 			try
 			{
-					// Zuerst Produkte des Anbieters und dann den Anbieter selbst lï¿½schen
+					// Zuerst Produkte des Anbieters und dann den Anbieter selbst löschen
 					Statement statement = connection.createStatement();
 					statement.execute("DELETE FROM products WHERE seller_id ='" + userId + "'");
 					statement.execute("DELETE FROM users WHERE id ='" + userId + "'");
@@ -374,7 +511,7 @@ public class SQL {
 				try
 				{
 					Statement statement = connection.createStatement();
-					// Bei Privatkunden muss nur der User selbst gelï¿½scht werden
+					// Bei Privatkunden muss nur der User selbst gelöscht werden
 					statement.execute("DELETE FROM users WHERE id ='" + userId + "'");
 					return Response.Success;
 				
@@ -385,9 +522,9 @@ public class SQL {
 	}
 
 	public Response increaseWallet(User user, double MoreMoney) {
-		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhÃƒÂ¶hen
+		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhöhen
 
-		// Wenn Wallet erfolgreich erhÃƒÂ¶ht Response.Success returnen
+		// Wenn Wallet erfolgreich erhöht Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
@@ -466,29 +603,27 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String allProductsQuery = "SELECT * \r\n" 
-				+ "FROM products\r\n" 
-				+ "JOIN categories\r\n"
-				+ "ON categories.id=products.category_id\r\n"
-				+ "JOIN users\r\n"
-				+ "ON users.id=products.seller_id";
 
-		int counter = 0;
 		if (!checkConnection()) {
 		
 
 			return null;
 		}
 		try {
-			PreparedStatement pstmt = connection.prepareStatement(allProductsQuery);
+			PreparedStatement pstmt = connection.prepareStatement("SELECT * \r\n" 
+					+ "FROM products\r\n" 
+					+ "JOIN categories\r\n"
+					+ "ON categories.id=products.category_id\r\n"
+					+ "JOIN users\r\n"
+					+ "ON users.id=products.seller_id");
 			ResultSet AllProducts = pstmt.executeQuery();
 
+			int arrayCounter = 0;
 			int sqlcounter = 0;
-			while (AllProducts.next()) {  //Tupel Zï¿½hlen
+			while (AllProducts.next()) {  //Tupel Zählen
 				sqlcounter++;
 			}
-			PreparedStatement pstmt2= connection.prepareStatement(allProductsQuery); // nach der 1 Schleife pointer zeigt auf Null -> ggf kï¿½nnte man pointer resetten glaueb aber nien, weil Statement danach closed
-			ResultSet AllProducts2= pstmt2.executeQuery();
+			ResultSet AllProducts2= pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			
 
 			Product[] allProducts = new Product[sqlcounter];
@@ -503,11 +638,11 @@ public class SQL {
 						AllProducts2.getString("users.email"), AllProducts2.getString("users.password"),
 						AllProducts2.getBytes("users.image"), AllProducts2.getDouble("users.wallet"), newAddress,
 						AllProducts2.getString("users.companyname"));
-				allProducts[counter] = new Product(AllProducts2.getInt("products.id"),
+				allProducts[arrayCounter] = new Product(AllProducts2.getInt("products.id"),
 						AllProducts2.getString("products.title"), AllProducts2.getDouble("products.price"), newSeller,
 						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
 
-				counter++;
+				arrayCounter++;
 			}
 			return allProducts;
 
@@ -527,29 +662,31 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String queryByCategory = "SELECT *\r\n" 
-					 		   + "FROM products \r\n" 
-					 		   + "JOIN categories\r\n"
-					 		   + "ON (products.category_ID = categories.ID)\r\n" 
-					 		   + "JOIN users\r\n"
-					 		   + "ON users.id=products.seller_id\r\n"
-					 		   + "WHERE categories.title='" + category+ "'";
 		if (!checkConnection()) {
 			System.out.println("connection probleme");
 			return null;
 		}
+		
+		
 		try {
-			int counter = 0;
+			int arrayCounter = 0;
 			int sqlcounter = 0;
-			PreparedStatement statement = connection.prepareStatement(queryByCategory);
+			PreparedStatement statement;
+			statement = connection.prepareStatement("SELECT *\r\n" 
+			 		   + "FROM products \r\n" 
+			 		   + "JOIN categories\r\n"
+			 		   + "ON (products.category_ID = categories.ID)\r\n" 
+			 		   + "JOIN users\r\n"
+			 		   + "ON users.id=products.seller_id\r\n"
+			 		   + "WHERE categories.title='?'");
+			statement.setString(1, category);
 			ResultSet AllProductsByCategory = statement.executeQuery();
 
 			while (AllProductsByCategory.next()) {
 				sqlcounter++;
 			}
 
-			PreparedStatement pstmt2 = connection.prepareStatement(queryByCategory);
-			ResultSet AllProductsByCategory2 = pstmt2.executeQuery();
+			ResultSet AllProductsByCategory2 = statement.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			
 
 			Product[] allProductsSameCategory = new Product[sqlcounter];
@@ -565,10 +702,10 @@ public class SQL {
 						AllProductsByCategory2.getString("users.email"), AllProductsByCategory2.getString("users.password"),
 						AllProductsByCategory2.getBytes("users.image"), AllProductsByCategory2.getDouble("users.wallet"), newAddress,
 						AllProductsByCategory2.getString("users.companyname"));
-				allProductsSameCategory[counter] = new Product(AllProductsByCategory2.getInt("products.id"),
+				allProductsSameCategory[arrayCounter] = new Product(AllProductsByCategory2.getInt("products.id"),
 						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), newSeller,
 						AllProductsByCategory2.getString("categories.title"), AllProductsByCategory2.getString("products.description"));
-				counter++;
+				arrayCounter++;
 			}
 
 			return allProductsSameCategory;
@@ -588,32 +725,31 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt ggf. null returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		String query = "SELECT * \r\n"
-					 + "FROM Products\r\n"
-					 + "JOIN Categories\r\n"
-					 + "ON (Products.category_ID = Categories.ID)\r\n"
-					 + "JOIN users\r\n"
-			 		 + "ON users.id=products.seller_id\r\n"
-					 + "WHERE Products.Title LIKE '%"+ searchString+"%'";
-		
-					// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
-					// + "OR Categories.Title LIKE" + searchString+"%\r\n";
 		
 		if (!checkConnection()) {
 			return null;
 		}
 		try {
-			int counter = 0;
+			int arrayCounter = 0;
 			int sqlcounter = 0;
-			PreparedStatement pstmt = connection.prepareStatement(query);
+			PreparedStatement pstmt;
+			pstmt = connection.prepareStatement("SELECT * \r\n"
+					 + "FROM Products\r\n"
+					 + "JOIN Categories\r\n"
+					 + "ON (Products.category_ID = Categories.ID)\r\n"
+					 + "JOIN users\r\n"
+			 		 + "ON users.id=products.seller_id\r\n"
+					 + "WHERE Products.Title LIKE '%?%'");
+			// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
+			// + "OR Categories.Title LIKE" + searchString+"%\r\n";
+			pstmt.setString(1, searchString);
 			ResultSet AllProductsByFullString = pstmt.executeQuery();
 
 			while (AllProductsByFullString.next()) {
 				sqlcounter++;
 			}
 			
-			PreparedStatement pstmt2 = connection.prepareStatement(query);
-			ResultSet AllProductsByFullString2 = pstmt2.executeQuery();
+			ResultSet AllProductsByFullString2 = pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
 			
 			
 			Product[] allProductsByString = new Product[sqlcounter];
@@ -626,15 +762,15 @@ public class SQL {
 						AllProductsByFullString2.getString("users.email"), AllProductsByFullString2.getString("users.password"),
 						AllProductsByFullString2.getBytes("users.image"), AllProductsByFullString2.getDouble("users.wallet"), newAddress,
 						AllProductsByFullString2.getString("users.companyname"));
-				allProductsByString[counter] = new Product(AllProductsByFullString2.getInt("products.id"),
+				allProductsByString[arrayCounter] = new Product(AllProductsByFullString2.getInt("products.id"),
 						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
 						AllProductsByFullString2.getString("categories.title"), AllProductsByFullString2.getString("products.description"));
-				counter++;
+				arrayCounter++;
 			}
 			return allProductsByString;
 
 		} catch (SQLException e) {
-			
+			e.printStackTrace();
 			return null;
 		}
 
@@ -642,11 +778,11 @@ public class SQL {
 	
 	public Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
-		//Anschlieï¿½end Produkt-Array der betroffenen Produkt-IDs ausgeben
+		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
 		
 		//Wenn erfolgreich gefetcht, Product-Array returnen
 		//wenn keine Verbindung zu DB: null returnen
-		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ï¿½.) ggf. null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
 		
 		//Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -661,14 +797,14 @@ public class SQL {
 			ResultSet fetchLastViewedProductIdsResult = fetchLastViewedProductIds.executeQuery();
 			
 			
-			if(fetchLastViewedProductIdsResult.next())
+			if(fetchLastViewedProductIdsResult.next()) //wenn eine Spalte lastviewed gefunden wurde
 			{
 				String lastviewed = fetchLastViewedProductIdsResult.getString("lastviewed");
 				if(lastviewed=="" || lastviewed==null || lastviewed.isEmpty() || lastviewed.isBlank())
-					return null;
+					return null; //keine Produkte bisher geviewed
 				
-				String[] lastViewedIds = lastviewed.split(",");
-				lastViewedProducts = new Product[lastViewedIds.length];
+				String[] lastViewedIds = lastviewed.split(","); //in der DB sind die IDs durch , seppariert, daher splitten und Array der IDs erstellen
+				lastViewedProducts = new Product[lastViewedIds.length]; //Rückgabearray mit Größe der Anzahl der IDs im Array
 				
 				int newArrayCounter = 0;
 				for(String viewedIdStr : lastViewedIds)
@@ -676,7 +812,9 @@ public class SQL {
 					try {
 					int viewedId = Integer.parseInt(viewedIdStr);
 					
-					//Produkt-Daten aus DB holen
+					//Für jede ID im Array lastViewedIds, die Produkdaten aus der DB holen
+					//anschließend jeweils ein Product-Object anhand der gefetchten Daten aus der DB erstellen
+					//und in das Array lastViewedProducts, welches am Ende zurückgegeben wird schreiben
 					PreparedStatement fetchProductInfo = connection.prepareStatement("SELECT * FROM products JOIN users ON (products.seller_id=users.id) JOIN categories ON (products.category_id = categories.id) WHERE products.id='" + viewedId + "'");
 					ResultSet fetchProductsInfoResult = fetchProductInfo.executeQuery();
 					if(fetchProductsInfoResult.next())
@@ -690,13 +828,15 @@ public class SQL {
 								fetchProductsInfoResult.getBytes("users.image"), fetchProductsInfoResult.getDouble("users.wallet"), address,
 								fetchProductsInfoResult.getString("users.companyname"));
 						
-						Product product = new Product(viewedId, fetchProductsInfoResult.getString("products.title"), fetchProductsInfoResult.getDouble("products.price"), seller, fetchProductsInfoResult.getString("categories.title"), fetchProductsInfoResult.getString("products.description"));
+						Product product = new Product(viewedId, fetchProductsInfoResult.getString("products.title"),
+								fetchProductsInfoResult.getDouble("products.price"), seller,
+								fetchProductsInfoResult.getString("categories.title"),fetchProductsInfoResult.getString("products.description"));
 						lastViewedProducts[newArrayCounter] = product;
 					}
 					newArrayCounter++;
 					} catch (NumberFormatException e) {
 						//Produkt mittlerweile gelöscht
-						//ignorieren, nichts ausgeben
+						//ignorieren, für diese ID kein Produkt (null) in das Array schreiben.
 						lastViewedProducts[newArrayCounter] = null;
 					}
 				}
@@ -704,18 +844,19 @@ public class SQL {
 			}
 			else
 			{
-				//kein Entry mit der UserId - eigentlich nicht mï¿½glich.
+				//kein Entry mit der UserId - eigentlich nicht möglich.
 				return null;
 			}
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 	
 	public Response addLastViewedProduct(int viewedProductId, User user) {
-		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufï¿½gen (max. 10 zuletzt betrachtete IDs).
+		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
 		
-		//Wenn erfolgreich hinzugefï¿½gt, Response.Success returnen
+		//Wenn erfolgreich hinzugefügt, Response.Success returnen
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 		
@@ -725,7 +866,7 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefï¿½gt werden muss
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
 		Product[] currentLastViewedProducts = fetchLastViewedProducts(user);
 		
 		String newLastViewedProductsString = "";
@@ -733,7 +874,7 @@ public class SQL {
 		{
 			if(currentLastViewedProducts.length==10)
 			{
-				//Maximale Lï¿½nge (10), setze viewedProductId an den Anfang und ersetze die letzte Id
+				//Maximale Lünge (10), setze viewedProductId an den Anfang und ersetze die letzte Id
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=0;i<9;i++)
@@ -747,7 +888,7 @@ public class SQL {
 			}
 			else
 			{
-				//Maximale Lï¿½nge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
 				newLastViewedProductsString += String.valueOf(viewedProductId);
 				
 				for(int i=0;i<currentLastViewedProducts.length;i++)
@@ -773,6 +914,7 @@ public class SQL {
 			return Response.Success;
 		} catch (SQLException e) {
 			//Fehler aufgetreten
+			e.printStackTrace();
 			return Response.Failure;
 		}
 	}
@@ -791,7 +933,7 @@ public class SQL {
 		
 		int categoryid;
 		
-		//zunÃ¤chst Ã¼berprÃ¼fen, ob Kategorie bereits existiert:
+		//zunächst überprüfen, ob Kategorie bereits existiert:
 		try {
 			PreparedStatement selectCategoryID = connection.prepareStatement("SELECT id, title FROM categories WHERE title=?");
 			selectCategoryID.setString(1, product.getCategory());
@@ -851,13 +993,13 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 		
-		//Ungï¿½ltigkeit usw. wird clientseitig geprï¿½ft
+		//Ungültigkeit usw. wird clientseitig geprüft
 		
 		int sellerid = seller.getId();
 		
 		for(Product p : products)
 		{
-			//Fï¿½r jedes Produkt p prï¿½fen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
+			//Für jedes Produkt p prüfen ob Kategorie existiert, wenn ja ID auslesen, ansonsten Kategorie anlegen
 			int categoryid;
 			
 			try {
@@ -889,7 +1031,7 @@ public class SQL {
 					}
 					else
 					{
-						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wï¿½re)
+						//Kategorie existiert immer noch nicht (sollte nicht auftreten, da schon eine Exception aufgetreten wäre)
 						return Response.Failure;
 					}
 				}
@@ -916,12 +1058,11 @@ public class SQL {
 
 	public Response buyItem(User buyer, Product product) {
 		// Neuen Datenbankeintrag in die Tabelle orders. buyer_id ist die ID vom Objekt
-		// buyer, die seller_id, Preis, Produktinfos kÃ¯Â¿Â½nnen dem Objekt product
-		// entnommen
-		// werden
+		// buyer, die seller_id, Preis, Produktinfos können dem Objekt product entnommen werden
 
 		// Wenn Produkte erfolgreich gekauft, Response.Success returnen
 		// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+		// wenn nicht genug Guthaben: Response.InsufficientBalance returnen
 		// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
@@ -931,7 +1072,6 @@ public class SQL {
 		int sellerid = seller.getId();
 		String newOrder = "INSERT INTO orders(product_id, seller_id, buyer_id, price)\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
 				+ buyerid + "', '" + SEPCommon.Methods.round(product.getPrice(), 2) + "')";
-
 
 		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + buyerid + "'";
 
@@ -951,8 +1091,11 @@ public class SQL {
 			
 			//in der DB prüfen, ob das Guthaben ausreicht
 			if (wallettemp - product.getPrice() < 0) {
-				return Response.Failure;
+				return Response.InsufficientBalance;
 			} else {
+				//Guthaben reicht aus.
+				//Guthaben beim Käufer vermindern
+				//Guthaben beim Verkäufer erhöhen
 				if(decreaseWallet(buyer, product.getPrice())==Response.Success)
 				{
 					if(increaseWallet(seller, product.getPrice())==Response.Success)
@@ -971,11 +1114,11 @@ public class SQL {
 	}
 
 	public User getUserDataByEmail(String email) {
-		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -986,9 +1129,12 @@ public class SQL {
 		try
 		{
 			// SQL Abfrage
-			Statement statement = connection.createStatement();
+			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+
+			userDataStatement.setString(1, email);
+			ResultSet userDataQuery = userDataStatement.executeQuery();
+			
 			// Email prüfen
-			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE email='" + email + "'");
 			if(userDataQuery.next())
 			{
 				// Privat- oder Gewerbekunde?
@@ -1018,16 +1164,17 @@ public class SQL {
 			}
 			return null;
 		} catch (SQLException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
 
 	public User getUserDataByUsername(String username){
-		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollstï¿½ndiges User-Objekt mit id und allen anderen Werten aus der DB zurï¿½ckgeben
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
 		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurï¿½ckgeben
-		// wenn keine Verbindung zu DB: null zurï¿½ckgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurï¿½ckgeben
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
 		
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection())
@@ -1038,9 +1185,10 @@ public class SQL {
 		try
 		{
 			// SQL Abfrage
-			Statement statement = connection.createStatement();
-			// Username prüfen
-			ResultSet userDataQuery = statement.executeQuery("SELECT * FROM users WHERE username='" + username + "'");
+			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+
+			userDataStatement.setString(1, username);
+			ResultSet userDataQuery = userDataStatement.executeQuery();
 			
 			if(userDataQuery.next())
 			{
@@ -1051,7 +1199,7 @@ public class SQL {
 				if(accountType.equals("Customer"))
 				{
 					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address);
-					// Privatkunden-Objekt zurï¿½ckgeben
+					// Privatkunden-Objekt zurückgeben
 					return customer;
 				}
 				
@@ -1059,7 +1207,7 @@ public class SQL {
 				else if(accountType.equals("Seller"))
 				{
 					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurï¿½ckgeben
+					// Gewerbekunden-Objekt zurückgeben
 					return seller;
 				}
 				else
