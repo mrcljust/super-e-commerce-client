@@ -20,7 +20,7 @@ public class Product implements Serializable {
 		id=_id;
 		name=_name;
 		price=_price;
-		priceString=Constants.doubleFormat.format(_price) + Constants.CURRENCY;
+		priceString=Constants.DOUBLEFORMAT.format(_price) + Constants.CURRENCY;
 		seller=_seller;
 		category=_category;
 		description=_description;

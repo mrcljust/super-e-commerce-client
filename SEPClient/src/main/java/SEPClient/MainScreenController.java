@@ -57,7 +57,7 @@ public class MainScreenController {
     
     public void refreshView()
     {
-    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.doubleFormat.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
+    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.DOUBLEFORMAT.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
     	
 		//Standardbild setzen
     	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
@@ -111,7 +111,7 @@ public class MainScreenController {
     	        if (empty || price==null) {
     	            setText(null);
     	        } else {
-    	            setText(Constants.doubleFormat.format(price) + Constants.CURRENCY);
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
     	        }
     	    }
     	});
@@ -143,7 +143,7 @@ public class MainScreenController {
     	        if (empty || price==null) {
     	            setText(null);
     	        } else {
-    	            setText(Constants.doubleFormat.format(price) + Constants.CURRENCY);
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
     	        }
     	    }
     	});
@@ -175,7 +175,7 @@ public class MainScreenController {
     	}
     }
     
-    public void LoadAllProducts()
+    private void LoadAllProducts()
     {
     	MainScreen_ListCatalog.getItems().clear();
     	

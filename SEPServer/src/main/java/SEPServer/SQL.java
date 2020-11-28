@@ -19,7 +19,7 @@ public class SQL {
 	private boolean isConnected;
 	private static Connection connection;
 
-	public boolean connect() {
+	private boolean connect() {
 		try {
 			connection = DriverManager.getConnection(Constants.SQLCONNECTIONSTRING, Constants.SQLUSER, null);
 			isConnected = true;
@@ -43,7 +43,7 @@ public class SQL {
 		}
 	}
 
-	public Response registerUser(User user) {
+	protected Response registerUser(User user) {
 		// Die Methode ermöglicht eine Registrierung auf der Plattform
 		// Passwort, Emailvorgaben usw. werden clientseitig geprüft
 		
@@ -219,7 +219,7 @@ public class SQL {
 		}
 	}
 
-	public Response loginUser(String emailOrUsername, String password) {
+	protected Response loginUser(String emailOrUsername, String password) {
 		// wenn User erfolgreich eingeloggt wurde Response.Success zurückgeben
 		// wenn Username / Email nicht gefunden, oder wenn das eingegebene Passwort dazu nicht passt Response.Failure zurückgeben
 		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
@@ -286,8 +286,118 @@ public class SQL {
 			}
 		}
 	}
+	
+	protected User getUserDataByEmail(String email) {
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		
+		// Verbindung herstellen, wenn keine Verbindung besteht
+		if (!checkConnection())
+		{
+			return null;
+		}
+		
+		try
+		{
+			// SQL Abfrage
+			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
 
-	public Response editUser(User user) {
+			userDataStatement.setString(1, email);
+			ResultSet userDataQuery = userDataStatement.executeQuery();
+			
+			// Email prüfen
+			if(userDataQuery.next())
+			{
+				// Privat- oder Gewerbekunde?
+				String accountType = userDataQuery.getString("type");
+				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
+				
+				// Privatkunde
+				if(accountType.equals("Customer"))
+				{
+					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
+					// Privatkunden-Obejekt zurückgeben
+					return customer;
+				}
+				
+				// Gewerbekunde
+				else if(accountType.equals("Seller"))
+				{
+					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
+					// Gewerbekunden-Objekt zurückgeben
+					return seller;
+				}
+				// Kein Eintrag zur Email
+				else
+				{
+					return null;
+				}
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	protected User getUserDataByUsername(String username){
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		
+		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
+		// wenn keine Verbindung zu DB: null zurückgeben
+		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
+		
+		// Verbindung herstellen, wenn keine Verbindung besteht
+		if (!checkConnection())
+		{
+			return null;
+		}
+		
+		try
+		{
+			// SQL Abfrage
+			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+
+			userDataStatement.setString(1, username);
+			ResultSet userDataQuery = userDataStatement.executeQuery();
+			
+			if(userDataQuery.next())
+			{
+				String accountType = userDataQuery.getString("type");
+				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
+				
+				// Privatkunde
+				if(accountType.equals("Customer"))
+				{
+					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address);
+					// Privatkunden-Objekt zurückgeben
+					return customer;
+				}
+				
+				// Gewerbekunde
+				else if(accountType.equals("Seller"))
+				{
+					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address, userDataQuery.getString("companyname"));
+					// Gewerbekunden-Objekt zurückgeben
+					return seller;
+				}
+				else
+				{
+					// Kein Eintrag zum Username
+					return null;
+				}
+			}
+			return null;
+		} catch (SQLException e) {
+			e.printStackTrace(); 
+			return null; 
+		} 
+	}
+
+	protected Response editUser(User user) {
 		// User anhand ID in Datenbank finden und alle Werte mit den Werten des Objekts users überschreiben 
  
 		// Wenn User erfolgreich abgeändert wurden Response.Success zurückgeben
@@ -477,7 +587,7 @@ public class SQL {
 		}
 	}  
 
-	public Response deleteUser(User user) {
+	protected Response deleteUser(User user) {
 		// User anhand ID aus der Datenbank löschen
 
 		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
@@ -521,7 +631,7 @@ public class SQL {
 		}
 	}
 
-	public Response increaseWallet(User user, double MoreMoney) {
+	protected Response increaseWallet(User user, double MoreMoney) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount erhöhen
 
 		// Wenn Wallet erfolgreich erhöht Response.Success returnen
@@ -558,7 +668,7 @@ public class SQL {
 		}
 	}
 
-	public Response decreaseWallet(User user, double LessMoney) {
+	protected Response decreaseWallet(User user, double lessMoney) {
 		// Wallet anhand User-ID in der Datenbank um den Betrag amount vermindern
 
 		// Wenn Wallet erfolgreich vermindert Response.Success returnen
@@ -583,7 +693,7 @@ public class SQL {
 				wallettemp = walletSet.getDouble("wallet");
 			}
 			
-			double newBalance = wallettemp - LessMoney;
+			double newBalance = wallettemp - lessMoney;
 			
 			String increaseWalletQuery = "UPDATE users SET wallet='" + SEPCommon.Methods.round(newBalance, 2) + "' WHERE id=" + userId;
 			statement.execute(increaseWalletQuery);
@@ -595,7 +705,7 @@ public class SQL {
 		}
 	}
 
-	public Product[] fetchAllProducts() {
+	protected Product[] fetchAllProducts() {
 		// Alle in der DB vorhandenen Produkte in einem ProductArray ausgeben
 
 		// Wenn erfolgreich gefetcht, Product-Array returnen
@@ -653,7 +763,7 @@ public class SQL {
 
 	}
 
-	public Product[] fetchProductsByCategory(String category) { //Array ausgelesen in Mainscreen
+	protected Product[] fetchProductsByCategory(String category) { //Array ausgelesen in Mainscreen
 		// Produkte mit der Kategorie category in der DB suchen und als Product-Array
 		// ausgeben
 
@@ -716,7 +826,7 @@ public class SQL {
 
 	}
 
-	public Product[] fetchProductsByString(String searchString) {
+	protected Product[] fetchProductsByString(String searchString) {
 		// Produkte mit dem Begriff searchString im Namen, Beschreibung oder Kategorie
 		// in der DB suchen und als Product-Array ausgeben
 
@@ -776,7 +886,7 @@ public class SQL {
 
 	}
 	
-	public Product[] fetchLastViewedProducts(User user) {
+	protected Product[] fetchLastViewedProducts(User user) {
 		//Zuletzt betrachtete Produkt-IDs des Users user aus der DB abfragen.
 		//Anschließend Produkt-Array der betroffenen Produkt-IDs ausgeben
 		
@@ -919,7 +1029,7 @@ public class SQL {
 		}
 	}
 
-	public Response addItem(User seller, Product product) {
+	protected Response addItem(User seller, Product product) {
 		// Neues Produkt in der Datenbank anlegen. Die seller_id ist die ID des Objekts seller
 
 		// Wenn Produkt erfolgreich angelegt, Response.Success returnen
@@ -977,7 +1087,7 @@ public class SQL {
 		}
 	}
 
-	public Response addItems(User seller, Product[] products) {
+	protected Response addItems(User seller, Product[] products) {
 		//Neue Produkte in der Datenbank anhand des Arrays products anlegen. Die seller_id ist die ID des Objekts seller
 		
 		//Wenn alle Produkte erfolgreich angelegt, Response.Success returnen
@@ -1056,7 +1166,7 @@ public class SQL {
 		return Response.Success;
 	}
 
-	public Response buyItem(User buyer, Product product) {
+	protected Response buyItem(User buyer, Product product) {
 		// Neuen Datenbankeintrag in die Tabelle orders. buyer_id ist die ID vom Objekt
 		// buyer, die seller_id, Preis, Produktinfos können dem Objekt product entnommen werden
 
@@ -1111,129 +1221,5 @@ public class SQL {
 			e.printStackTrace();
 			return Response.Failure;
 		}
-	}
-
-	public User getUserDataByEmail(String email) {
-		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
-		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
-		// wenn keine Verbindung zu DB: null zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
-		
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection())
-		{
-			return null;
-		}
-		
-		try
-		{
-			// SQL Abfrage
-			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
-
-			userDataStatement.setString(1, email);
-			ResultSet userDataQuery = userDataStatement.executeQuery();
-			
-			// Email prüfen
-			if(userDataQuery.next())
-			{
-				// Privat- oder Gewerbekunde?
-				String accountType = userDataQuery.getString("type");
-				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
-				
-				// Privatkunde
-				if(accountType.equals("Customer"))
-				{
-					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address);
-					// Privatkunden-Obejekt zurückgeben
-					return customer;
-				}
-				
-				// Gewerbekunde
-				else if(accountType.equals("Seller"))
-				{
-					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), userDataQuery.getDouble("wallet"), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurückgeben
-					return seller;
-				}
-				// Kein Eintrag zur Email
-				else
-				{
-					return null;
-				}
-			}
-			return null;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public User getUserDataByUsername(String username){
-		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
-		
-		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
-		// wenn keine Verbindung zu DB: null zurückgeben
-		// wenn sonstiger Fehler auftritt ggf. null zurückgeben
-		
-		// Verbindung herstellen, wenn keine Verbindung besteht
-		if (!checkConnection())
-		{
-			return null;
-		}
-		
-		try
-		{
-			// SQL Abfrage
-			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
-
-			userDataStatement.setString(1, username);
-			ResultSet userDataQuery = userDataStatement.executeQuery();
-			
-			if(userDataQuery.next())
-			{
-				String accountType = userDataQuery.getString("type");
-				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
-				
-				// Privatkunde
-				if(accountType.equals("Customer"))
-				{
-					Customer customer = new Customer(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address);
-					// Privatkunden-Objekt zurückgeben
-					return customer;
-				}
-				
-				// Gewerbekunde
-				else if(accountType.equals("Seller"))
-				{
-					Seller seller = new Seller(userDataQuery.getInt("id"), userDataQuery.getString("username"), userDataQuery.getString("email"), userDataQuery.getString("password"), userDataQuery.getBytes("image"), SEPCommon.Methods.round(userDataQuery.getDouble("wallet"), 2), address, userDataQuery.getString("companyname"));
-					// Gewerbekunden-Objekt zurückgeben
-					return seller;
-				}
-				else
-				{
-					// Kein Eintrag zum Username
-					return null;
-				}
-			}
-			return null;
-		} catch (SQLException e) {
-			e.printStackTrace(); 
-			return null; 
-		} 
-	}
-	
-	public static void main(String[] args) {
-		//Zum testen
-		SQL testObject= new SQL(); 
-		testObject.connect();
-	
-
-	
-		User testUser = new Customer(23, "Yannis", "yannisbromby@gmx.de", "abc123", null, 0, new Address("Yannis Bromby", "Deutschland", 12345, "neueStadt", "beispielstrasse", "1234"));
-		testObject.deleteUser(testUser);
-	
-		User testUser1 = new Customer(23, "test", "marcel@test", "pw123", null, 23.0, new Address("test", "test", 0, "test", "test", "a"));
-		testObject.fetchLastViewedProducts(testUser1);
 	}
 }
