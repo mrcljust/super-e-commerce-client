@@ -39,7 +39,7 @@ import net.coobird.thumbnailator.Thumbnails;
 
 public class EditAccountController {
 
-	static User user = null;
+	private static User user = null;
 	
 	public static void setUser(User _user)
 	{

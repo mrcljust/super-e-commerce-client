@@ -36,9 +36,9 @@ import javafx.stage.Stage;
 
 public class MainScreenController {
 
-	static User user = null;
-	Product[] lastSearchResult;
-	boolean currentSearchEvent = false;
+	private static User user = null;
+	private Product[] lastSearchResult;
+	private boolean currentSearchEvent = false;
 	
 	public static void setUser(User _user)
 	{

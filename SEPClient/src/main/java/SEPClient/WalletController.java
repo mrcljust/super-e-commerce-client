@@ -21,7 +21,7 @@ import javafx.stage.Stage;
 
 public class WalletController {
 
-	static User user = null;
+	private static User user = null;
 	
 	public static void setUser(User _user)
 	{
@@ -193,7 +193,7 @@ public class WalletController {
 			System.out.println(user.getWallet() + " --  " + amount);
 			user.setWallet(user.getWallet() + amount);
 			User newUser = user;
-			//messagebox
+			
 			FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich aufgeladen.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
 	    	MainScreenController.setUser(newUser);

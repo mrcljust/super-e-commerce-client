@@ -29,8 +29,8 @@ import javafx.stage.Stage;
 
 public class OfferProductController {
 
-	static User user = null;
-	static ObservableList<String> productCategories = null;
+	private static User user = null;
+	private static ObservableList<String> productCategories = null;
 	
 	public static void setUser(User _user)
 	{

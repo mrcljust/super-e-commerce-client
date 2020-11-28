@@ -19,7 +19,7 @@ import javafx.stage.Stage;
 
 public class LoginController {
 	
-	static String preText = null;
+	private static String preText = null;
 	
 	
 	@FXML
