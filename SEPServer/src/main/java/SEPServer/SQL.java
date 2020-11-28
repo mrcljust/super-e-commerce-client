@@ -17,7 +17,7 @@ import SEPCommon.Product;
 public class SQL {
 
 	private boolean isConnected;
-	private static Connection connection;
+	private static Connection connection;			//Connection zum connecten mit DB
 
 	private boolean connect() {
 		try {
