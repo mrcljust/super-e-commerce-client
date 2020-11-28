@@ -1206,15 +1206,17 @@ public class SQL {
 				//Guthaben reicht aus.
 				//Guthaben beim Käufer vermindern
 				//Guthaben beim Verkäufer erhöhen
-				if(decreaseWallet(buyer, product.getPrice())==Response.Success)
-				{
-					if(increaseWallet(seller, product.getPrice())==Response.Success)
-					{
+				if (decreaseWallet(buyer, product.getPrice()) == Response.Success) {
+					if (increaseWallet(seller, product.getPrice()) == Response.Success) {
 						PreparedStatement addNewOrder = connection.prepareStatement(newOrder);
 						addNewOrder.execute();
 						return Response.Success;
-					} else { return Response.Failure;}
-				} else { return Response.Failure;}
+					} else {
+						return Response.Failure;
+					}
+				} else {
+					return Response.Failure;
+				}
 			}
 		}
 		catch (SQLException e) {

@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
+import SEPCommon.Preferences;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.Seller;
@@ -137,6 +138,7 @@ public class EditAccountController {
 		String country = (String) EditAccount_txtCountry.getValue().trim(); //richtig so?
 		String businessname = EditAccount_txtBusinessname.getText().trim();
 		boolean isSeller = EditAccount_radioSeller.isSelected();
+		double wallet = user.getWallet();
 		
     	//Bild zu byte Array umwandeln
     	Image image = EditAccount_imgPicture.getImage();
@@ -190,9 +192,9 @@ public class EditAccountController {
 		User newUser;
 		Address address = new Address (fullname, country, postalcode, city, street, number);
 		if (isSeller) {
-			newUser = new Seller(user.getId(), username, email, password, imageByteArray, 0, address, businessname);
+			newUser = new Seller(user.getId(), username, email, password, imageByteArray, wallet, address, businessname);
 		} else {
-			newUser = new Customer(user.getId(), username, email, password, imageByteArray, 0, address);
+			newUser = new Customer(user.getId(), username, email, password, imageByteArray, wallet, address);
 		}
 		HashMap <String, Object> requestMap = new HashMap<String, Object>();
 		requestMap.put("User", newUser);
@@ -245,6 +247,8 @@ public class EditAccountController {
 		else if(queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
+			Preferences.removePref("Username");											//löscht gespeicherten Username
+			Preferences.removePref("Password");											//löscht gespeichertes Passwort
 			LoginController.setPreText(EditAccount_txtUsername.getText());
 			FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Login", "Anmeldung", false, true);
 		}
