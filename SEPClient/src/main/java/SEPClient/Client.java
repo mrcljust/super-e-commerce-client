@@ -12,16 +12,15 @@ public class Client {
 	private Socket clientSocket;
 	private ObjectInputStream dis; // Daten empfangen
 	private ObjectOutputStream dos; // Daten schicken
-	public boolean startSuccess = false;
-	private static Client client; //von anderen Klassen auf Client zuzugreifen 
-	public boolean isStarted = false;
-	private String SuccesfulConnection="Verbindung zum Server hergestellt.";
 
-	public static Client getClient()		//Methode in Controlle aufgerufen, um ueber Client zu schicken
-	{										//kommt an Client Objekt um Request zu schicken
+	private static Client client; // von anderen Klassen auf Client zuzugreifen
+	public boolean isStarted = false;
+
+	public static Client getClient() // Methode in Controlle aufgerufen, um ueber Client zu schicken
+	{ // kommt an Client Objekt um Request zu schicken
 		return client;
 	}
-	
+
 	public void start() {
 		// Socket-Verbindung zum Server herstellen
 		client=this;
@@ -29,20 +28,20 @@ public class Client {
 			// Client Socket erstellen
 			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT); //alle Daten die Server und Client zugriff drauf haben OOP
 			clientSocket.setSoTimeout(SEPCommon.Constants.TIMEOUT); 		//Timeout damit bei langer Verbindungszeit exception geworfen wird
-			System.out.println(SuccesfulConnection);
+			System.out.println("Verbindung zum Server hergestellt.");
 		
             dos = new ObjectOutputStream(clientSocket.getOutputStream());		
             dis = new ObjectInputStream(clientSocket.getInputStream());			
             isStarted=true; //Client gestartet
             
 		} catch (IOException e) {
-			startSuccess=false;
+	
 			e.printStackTrace();
 			isStarted=false;
 		}
 	}
 	
-	@SuppressWarnings("unused")
+
 	public ServerResponse sendClientRequest(ClientRequest req)		//req übergeben von Controllern bspw. RegisterController Zeile 197
 	{
 		ServerResponse serverResponse = null;						//vor jedem Aufruf Initialisierung ServerResponse null
@@ -55,15 +54,9 @@ public class Client {
 			//Antwort auslesen
 			serverResponse = (ServerResponse)dis.readObject(); //Casten damit serverresponse in ServerResponse gespeichert wird, ohne Cast einfach normales Objekt
 			System.out.println("ServerResponse - " + serverResponse.getResponseType() + " - " + serverResponse.getResponseMap());
-			
-			if(serverResponse==null)
-			{
-				return new ServerResponse(Response.Failure, null);
-			}
-			else
-			{		
-				return serverResponse;
-			}
+
+			return serverResponse;
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			return new ServerResponse(Response.Failure, null);

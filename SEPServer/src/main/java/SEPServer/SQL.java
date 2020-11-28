@@ -1180,7 +1180,7 @@ public class SQL {
 		int buyerid = buyer.getId();
 		Seller seller = product.getSeller();
 		int sellerid = seller.getId();
-		String newOrder = "INSERT INTO orders(product_id, seller_id, buyer_id, price)\r\n" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
+		String newOrder = "INSERT INTO orders(product_id, seller_id, buyer_id, price)" + " VALUES('" + product.getId() + "', '" + sellerid + "', '"
 				+ buyerid + "', '" + SEPCommon.Methods.round(product.getPrice(), 2) + "')";
 
 		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + buyerid + "'";
