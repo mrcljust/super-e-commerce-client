@@ -788,7 +788,7 @@ public class SQL {
 			 		   + "ON (products.category_ID = categories.ID)\r\n" 
 			 		   + "JOIN users\r\n"
 			 		   + "ON users.id=products.seller_id\r\n"
-			 		   + "WHERE categories.title='?'");
+			 		   + "WHERE categories.title=?");
 			statement.setString(1, category);
 			ResultSet AllProductsByCategory = statement.executeQuery();
 
@@ -849,10 +849,10 @@ public class SQL {
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
 					 + "JOIN users\r\n"
 			 		 + "ON users.id=products.seller_id\r\n"
-					 + "WHERE Products.Title LIKE '%?%'");
+					 + "WHERE Products.Title LIKE ?");
 			// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
 			// + "OR Categories.Title LIKE" + searchString+"%\r\n";
-			pstmt.setString(1, searchString);
+			pstmt.setString(1,"%"+ searchString+"%");
 			ResultSet AllProductsByFullString = pstmt.executeQuery();
 
 			while (AllProductsByFullString.next()) {
