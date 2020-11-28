@@ -245,12 +245,12 @@ public class EditAccountController {
     		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
-		//Ä„nderungen erfolgreich
+		//Änderungen erfolgreich
 		else if(queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
-			Preferences.removePref("Username");											//löscht gespeicherten Username
-			Preferences.removePref("Password");											//löscht gespeichertes Passwort
+			Preferences.removePref("Username");											//löscht gespeicherten Username, wenn gesetzt
+			Preferences.removePref("Password");											//löscht gespeichertes Passwort, wenn gesetzt
 			LoginController.setPreText(EditAccount_txtUsername.getText());
 			FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Login", "Anmeldung", false, true);
 		}
@@ -298,6 +298,8 @@ public class EditAccountController {
 			} else if (queryResponse.getResponseType() == Response.Success) {
 				FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich gelöscht.",
     					"Konto gelöscht", "Konto gelöscht", AlertType.CONFIRMATION, true,false);
+				Preferences.removePref("Username");											//löscht gespeicherten Username, wenn gesetzt
+				Preferences.removePref("Password");											//löscht gespeichertes Passwort, wenn gesetzt
 				FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 			}
 			
