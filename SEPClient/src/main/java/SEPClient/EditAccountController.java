@@ -141,6 +141,8 @@ public class EditAccountController {
 		double wallet = user.getWallet();
 		
     	//Bild zu byte Array umwandeln
+    	//Codeteil mit Hilfe der folgenden Quelle geschrieben: https://stackoverflow.com/questions/9417356/bufferedimage-resize
+    	//(Antwort von coobird, Feb 23 '12 at 17:23)
     	Image image = EditAccount_imgPicture.getImage();
     	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
 

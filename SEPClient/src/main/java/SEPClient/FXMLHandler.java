@@ -28,7 +28,6 @@ public class FXMLHandler extends Application {
 		// Zeige Start-Szene in neuem Fenster
 		
 		OpenSceneAndStage("Start", "Super-E-commerce-Platform", false, true);
-		//OpenSceneAndStage("OfferProduct", "Super-E-commerce-Platform", false, true);
 
 		Client client = new Client();
 		client.start();
@@ -55,7 +54,6 @@ public class FXMLHandler extends Application {
 		try {
 			return FXMLLoader.load(FXMLHandler.class.getResource("/SEPClient/UI/" + sceneName + ".fxml"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

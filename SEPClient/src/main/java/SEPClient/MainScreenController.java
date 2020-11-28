@@ -228,6 +228,9 @@ public class MainScreenController {
     
 	//ChoiceBox Categories Selection Change Listener
 	//wird aufgerufen, wenn eine Kategorie ausgewählt wird
+    
+    //Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/14522680/javafx-choicebox-events
+    //Antwort von zhujik, Jan 25 '13 at 14:08
     private void categoryChangedListener() {
 	    MainScreen_ChoiceBox_Category.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -238,7 +241,9 @@ public class MainScreenController {
     }
     
     private void selectionsChangedListener() {
-
+    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	//Antwort von James_D, Oct 17 '14 at 14:11
+    	
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
@@ -248,6 +253,9 @@ public class MainScreenController {
     		addToLastViewedItems();
     		}
     	});
+    	
+    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	//Antwort von James_D, Oct 17 '14 at 14:11
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
