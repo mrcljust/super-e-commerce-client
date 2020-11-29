@@ -849,10 +849,10 @@ public class SQL {
 					 + "ON (Products.category_ID = Categories.ID)\r\n"
 					 + "JOIN users\r\n"
 			 		 + "ON users.id=products.seller_id\r\n"
-					 + "WHERE Products.Title LIKE ?");
+					 + "WHERE Products.Title LIKE ?");				//? Wildcard
 			// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
 			// + "OR Categories.Title LIKE" + searchString+"%\r\n";
-			pstmt.setString(1,"%"+ searchString+"%");
+			pstmt.setString(1,"%"+ searchString+"%");				//1, erstes Wildcard
 			ResultSet AllProductsByFullString = pstmt.executeQuery();
 
 			while (AllProductsByFullString.next()) {

@@ -9,7 +9,7 @@ public class Preferences {
 			.node("SEPCommon.Preferences");
 
 	public static void savePref(String prefName, String prefValue) {		//zu speichernde Strings, Name womit man das identifzieren kann (beliebige Wahl) wie Maps sozusagen
-		prefs.put(prefName, prefValue);
+		prefs.put(prefName, prefValue);										
 	}
 
 	public static String getPref(String prefName) {			//gespeicherte Strings zu bekommen

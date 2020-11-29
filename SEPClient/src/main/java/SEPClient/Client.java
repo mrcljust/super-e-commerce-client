@@ -14,33 +14,33 @@ public class Client {
 	private ObjectOutputStream dos; // Daten schicken
 
 	private static Client client; // von anderen Klassen auf Client zuzugreifen
-	public boolean isStarted = false;
+	public boolean isStarted = false; // FXMLHandler nötig (L.34)
 
-	public static Client getClient() // Methode in Controlle aufgerufen, um ueber Client zu schicken
+	public static Client getClient() // Methode in Controlle aufgerufen, um ueber Client zu schicken, Cllient zu
+										// erhalten
 	{ // kommt an Client Objekt um Request zu schicken
 		return client;
 	}
 
 	public void start() {
 		// Socket-Verbindung zum Server herstellen
-		client=this;
+		client = this;
 		try {
 			// Client Socket erstellen
-			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT); //alle Daten die Server und Client zugriff drauf haben OOP
-			clientSocket.setSoTimeout(SEPCommon.Constants.TIMEOUT); 		//Timeout damit bei langer Verbindungszeit exception geworfen wird
+			clientSocket = new Socket(SEPCommon.Constants.SERVERIP, SEPCommon.Constants.PORT); // alle Daten die Server und Client zugriff drauf haben OOP
+			clientSocket.setSoTimeout(SEPCommon.Constants.TIMEOUT); // Timeout damit bei langer Verbindungszeit exception geworfen wird
 			System.out.println("Verbindung zum Server hergestellt.");
-		
-            dos = new ObjectOutputStream(clientSocket.getOutputStream());		
-            dis = new ObjectInputStream(clientSocket.getInputStream());			
-            isStarted=true; //Client gestartet
-            
+
+			dos = new ObjectOutputStream(clientSocket.getOutputStream());
+			dis = new ObjectInputStream(clientSocket.getInputStream());
+			isStarted = true; // Client gestartet
+
 		} catch (IOException e) {
-	
+
 			e.printStackTrace();
-			isStarted=false;
+			isStarted = false;
 		}
 	}
-	
 
 	public ServerResponse sendClientRequest(ClientRequest req)		//req übergeben von Controllern bspw. RegisterController Zeile 197
 	{
@@ -53,6 +53,7 @@ public class Client {
 			
 			//Antwort auslesen
 			serverResponse = (ServerResponse)dis.readObject(); //Casten damit serverresponse in ServerResponse gespeichert wird, ohne Cast einfach normales Objekt
+																//readObject liest Objekt vom Inputstream
 			System.out.println("ServerResponse - " + serverResponse.getResponseType() + " - " + serverResponse.getResponseMap());
 
 			return serverResponse;
