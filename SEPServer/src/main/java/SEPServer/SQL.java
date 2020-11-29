@@ -63,7 +63,7 @@ public class SQL {
 		{
 			// Registrierung Gewerbekunde
 			
-			// User- und Adress-Objekt übergeben
+			// User-Objekt übergeben
 			Seller seller = (Seller)user;
 			
 			// Prüfen, ob Email oder Username schon existieren
@@ -71,6 +71,7 @@ public class SQL {
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				// Für Email ? die übergebene Email einsetzten und schauen ob ein Eintrag schon vorliegt
 				statement.setString(1, seller.getEmail());
 				ResultSet emailQuery = statement.executeQuery();
 				boolean emailHasEntries = emailQuery.next();
@@ -80,6 +81,7 @@ public class SQL {
 					return Response.EmailTaken;
 				}
 			} catch (SQLException e) {
+				// Fehlerfall dokumentieren und Fehlermeldung zurückgeben
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -88,6 +90,7 @@ public class SQL {
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				// Gleiche Prüfung für Username
 				statement.setString(1, seller.getUsername());
 				ResultSet usernameQuery = statement.executeQuery();
 				boolean usernameHasEntries = usernameQuery.next();
@@ -106,6 +109,7 @@ public class SQL {
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				
+				// ? Values mit übergebenen Daten füllen (auch Adress wird gefüllt)
 				stmt.setString(1, "Seller");
 				stmt.setString(2, seller.getUsername());
 				stmt.setString(3, seller.getPassword());
@@ -120,13 +124,14 @@ public class SQL {
 				stmt.setString(13, seller.getBusinessname());
 				stmt.setString(14, ""); //keine bisher angesehenen Artikel
 				
-				//Bild einfügen
+				//Bild einfügen (Bild ist optional)
 				if(seller.getPicture()!=null)
 				{
 					stmt.setBytes(11, seller.getPicture());
 				}
 				else
 				{
+					// Seller möchte kein Profilbild
 					stmt.setString(11, "");
 				}
 				stmt.execute();
@@ -141,7 +146,7 @@ public class SQL {
 		else
 		{
 			// Registrierung Privatkunde
-			// User- und Adress-Objekt übergeben
+			// User-Objekt übergeben
 			Customer customer = (Customer)user;
 			
 			//Prüfen, ob Email oder Username schon existieren
@@ -184,6 +189,7 @@ public class SQL {
 				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
 						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 				
+				// ? Values mit übergebenen Daten füllen (auch Adresse wird gefüllt)
 				stmt.setString(1, "Customer");
 				stmt.setString(2, customer.getUsername());
 				stmt.setString(3, customer.getPassword());
@@ -198,9 +204,10 @@ public class SQL {
 				stmt.setString(13, ""); //kein Gewerbename
 				stmt.setString(14, ""); //keine bisher angesehenen Artikel
 				
-				//Bild einfügen
+				//Bild einfügen (ist optional)
 				if(customer.getPicture()!=null)
 				{
+					// Seller möchte kein Profilbild
 					stmt.setBytes(11, customer.getPicture());
 				}
 				else
@@ -238,10 +245,12 @@ public class SQL {
 			{
 				// SQL Abfrage
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=? AND password=?");
+				// Email und Passwort übergeben
 				statement.setString(1, emailOrUsername);
 				statement.setString(2, password);
 				ResultSet loginQuery = statement.executeQuery();
 				
+				// Eingabedaten prüfen
 				boolean hasEntries = loginQuery.next();
 				if(hasEntries)
 				{
@@ -254,6 +263,7 @@ public class SQL {
 					return Response.Failure;
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -265,10 +275,12 @@ public class SQL {
 			{
 				// SQL Abfrage
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=? AND password=?");
+				// Username und Üasswort übergeben
 				statement.setString(1, emailOrUsername);
 				statement.setString(2, password);
 				ResultSet loginQuery = statement.executeQuery();
 				
+				// Eingabedaten prüfen
 				boolean hasEntries = loginQuery.next();
 				if(hasEntries)
 				{
@@ -281,6 +293,7 @@ public class SQL {
 					return Response.Failure;
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -288,7 +301,8 @@ public class SQL {
 	}
 	
 	protected User getUserDataByEmail(String email) {
-		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		// Login kann mit Email oder Username erfolgen
+		// Anhand der Email in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit Id und allen anderen Werten aus der DB zurückgeben
 		
 		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
 		// wenn keine Verbindung zu DB: null zurückgeben
@@ -304,7 +318,8 @@ public class SQL {
 		{
 			// SQL Abfrage
 			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
-
+			
+			// ? Values füllen
 			userDataStatement.setString(1, email);
 			ResultSet userDataQuery = userDataStatement.executeQuery();
 			
@@ -338,13 +353,15 @@ public class SQL {
 			}
 			return null;
 		} catch (SQLException e) {
+			// Fehler abfangen
 			e.printStackTrace();
 			return null;
 		}
 	}
 
 	protected User getUserDataByUsername(String username){
-		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit id und allen anderen Werten aus der DB zurückgeben
+		// Login kann mit Email oder Username erfolgen
+		// Analog zur vorherigen Methode: Anhand des Username in der DB das entsprechende User-Objekt suchen und ein vollständiges User-Objekt mit Id und allen anderen Werten aus der DB zurückgeben
 		
 		// Wenn Userdaten erfolgreich gefetcht, User-Objekt zurückgeben
 		// wenn keine Verbindung zu DB: null zurückgeben
@@ -361,11 +378,14 @@ public class SQL {
 			// SQL Abfrage
 			PreparedStatement userDataStatement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
 
+
+			// ? Values füllen
 			userDataStatement.setString(1, username);
 			ResultSet userDataQuery = userDataStatement.executeQuery();
 			
 			if(userDataQuery.next())
 			{
+				// Privat- oder Gewerbekunde?
 				String accountType = userDataQuery.getString("type");
 				Address address = new Address(userDataQuery.getString("fullname"), userDataQuery.getString("country"), userDataQuery.getInt("postalcode"), userDataQuery.getString("city"), userDataQuery.getString("street"), userDataQuery.getString("number"));
 				
@@ -392,6 +412,7 @@ public class SQL {
 			}
 			return null;
 		} catch (SQLException e) {
+			// Fehler abfangen
 			e.printStackTrace(); 
 			return null; 
 		} 
@@ -409,6 +430,7 @@ public class SQL {
 		{
 			return Response.NoDBConnection;
 		}
+		// User Id speichern
 		int userId = user.getId();
 		
 		if(user instanceof Seller)
@@ -416,11 +438,12 @@ public class SQL {
 			//Gewerbekunde
 			Seller seller = (Seller)user;
 					
-			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren
+			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren, da diese beiden unique sind
 			try
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				// ? Values füllen
 				statement.setString(1, seller.getEmail());
 				ResultSet emailQuery = statement.executeQuery();
 				boolean emailHasEntries = emailQuery.next();
@@ -435,6 +458,7 @@ public class SQL {
 					}
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -443,6 +467,7 @@ public class SQL {
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				// ? Values füllen
 				statement.setString(1, seller.getUsername());
 				ResultSet usernameQuery = statement.executeQuery();
 				boolean usernameHasEntries = usernameQuery.next();
@@ -457,6 +482,7 @@ public class SQL {
 					}
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -468,6 +494,7 @@ public class SQL {
 						+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
 						+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ?, companyname = ? "
 						+ "WHERE id=" + userId);
+				// Neue Angaben bekommen
 				stmt.setString(1, seller.getUsername());
 				stmt.setString(2, seller.getPassword());
 				stmt.setString(3, seller.getEmail());
@@ -480,7 +507,7 @@ public class SQL {
 				stmt.setDouble(11, SEPCommon.Methods.round(seller.getWallet(), 2));
 				stmt.setString(12, seller.getBusinessname());
 				
-				
+				// Bild ist optional
 				if(seller.getPicture()!=null)
 				{
 					stmt.setBytes(10, seller.getPicture());
@@ -494,6 +521,7 @@ public class SQL {
 				return Response.Success;
 
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.ImageTooBig;
 			} 
@@ -504,11 +532,12 @@ public class SQL {
 			//Privatkunde
 			Customer customer = (Customer)user;
 			
-			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren
+			// Prüfen, ob Email oder Username bei einem anderen Benutzer schon existieren, da diese beiden unique sind
 			try
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE email=?");
+				// ? Values füllen
 				statement.setString(1, customer.getEmail());
 				ResultSet emailQuery = statement.executeQuery();
 				boolean emailHasEntries = emailQuery.next();
@@ -523,6 +552,7 @@ public class SQL {
 					}
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -531,6 +561,7 @@ public class SQL {
 			{
 				// SQL Abfrage 
 				PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username=?");
+				// ? Values füllen
 				statement.setString(1, customer.getUsername());
 				ResultSet usernameQuery = statement.executeQuery();
 				boolean usernameHasEntries = usernameQuery.next();
@@ -545,6 +576,7 @@ public class SQL {
 					}
 				}
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.NoDBConnection;
 			}
@@ -556,6 +588,7 @@ public class SQL {
 						+ "SET username = ?, password = ?, email = ?, fullname = ?, street = ?, number = ?, "
 						+ "postalcode = ?, city = ?, country = ?, image = ?, wallet = ? "
 						+ "WHERE id=" + userId);
+				// Neue Angaben bekommen
 				stmt.setString(1, customer.getUsername());
 				stmt.setString(2, customer.getPassword());
 				stmt.setString(3, customer.getEmail());
@@ -567,7 +600,7 @@ public class SQL {
 				stmt.setString(9, customer.getAddress().getCountry());
 				stmt.setDouble(11, SEPCommon.Methods.round(customer.getWallet(), 2));
 				
-				
+				// Bild ist optional
 				if(customer.getPicture()!=null)
 				{
 					stmt.setBytes(10, customer.getPicture());
@@ -581,6 +614,7 @@ public class SQL {
 
 				return Response.Success;
 			} catch (SQLException e) {
+				// Fehler abfangen
 				e.printStackTrace();
 				return Response.ImageTooBig;
 			}
@@ -593,6 +627,8 @@ public class SQL {
 		// Wenn User erfolgreich gelöscht Response.Success zurückgeben
 		// wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		
+		// User Id speichern 
 		int userId = user.getId();
 		
 		if (!checkConnection()) {
@@ -611,6 +647,7 @@ public class SQL {
 					return Response.Success;
 		   
 			} catch (SQLException e) {
+				// Fehler zurückgeben
 				return Response.Failure;
 			}
 		}
@@ -626,6 +663,7 @@ public class SQL {
 					return Response.Success;
 				
 				} catch (SQLException e) {
+					// Fehler zurückgeben
 					return Response.Failure;
 				}
 		}

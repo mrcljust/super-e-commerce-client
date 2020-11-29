@@ -18,11 +18,14 @@ public class StartController {
     	Start_LoginButton.requestFocus();
     }
     
+    // Login wird ausgewählt --> Login Scene wird geöffnet
     @FXML
     void Start_LoginClick(ActionEvent event) {
     	FXMLHandler.OpenSceneInStage((Stage) Start_LoginButton.getScene().getWindow(), "Login", "Anmeldung", false, true);
 	}
 
+    
+    // Registrierung wird ausgewählt --> Register Scene wird geöffnet
     @FXML
     void Start_RegisterClick(ActionEvent event) {
     	FXMLHandler.OpenSceneInStage((Stage) Start_RegisterButton.getScene().getWindow(), "Register", "Registrierung", false, true);
