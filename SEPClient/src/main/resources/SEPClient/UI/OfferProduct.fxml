@@ -4,36 +4,36 @@
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.web.HTMLEditor?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="611.0" prefWidth="628.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.OfferProductController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="663.0" prefWidth="972.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.OfferProductController">
    <children>
-      <TitledPane animated="false" collapsible="false" layoutX="10.0" layoutY="14.0" prefHeight="448.0" prefWidth="608.0" text="Einzelnes Produkt anbieten" AnchorPane.rightAnchor="10.0">
+      <TitledPane animated="false" collapsible="false" layoutX="11.0" layoutY="14.0" prefHeight="502.0" prefWidth="772.0" text="Einzelnes Produkt anbieten" AnchorPane.bottomAnchor="147.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="14.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="357.0" prefWidth="578.0">
                <children>
-                  <TextField fx:id="Sell_txtName" layoutX="198.0" layoutY="10.0" prefHeight="27.0" prefWidth="398.0" />
-                  <TextField fx:id="Sell_txtPreis" layoutX="198.0" layoutY="41.0" prefHeight="27.0" prefWidth="66.0" />
+                  <TextField fx:id="Sell_txtName" layoutX="166.0" layoutY="10.0" prefHeight="27.0" prefWidth="398.0" />
+                  <TextField fx:id="Sell_txtPreis" layoutX="166.0" layoutY="41.0" prefHeight="27.0" prefWidth="66.0" />
                   <RadioButton fx:id="Sell_radioNoCategory" layoutX="11.0" layoutY="80.0" mnemonicParsing="false" onAction="#Sell_RadioNoCategory_Click" selected="true" text="Keine Kategorie" />
                   <RadioButton fx:id="Sell_radioNewCategory" layoutX="11.0" layoutY="110.0" mnemonicParsing="false" onAction="#Sell_RadioNewCategory_Click" text="Neue Kategorie" />
-                  <TextField fx:id="Sell_txtNewCategory" disable="true" layoutX="198.0" layoutY="105.0" prefHeight="27.0" prefWidth="219.0" />
+                  <TextField fx:id="Sell_txtNewCategory" disable="true" layoutX="166.0" layoutY="105.0" prefHeight="27.0" prefWidth="222.0" />
                   <RadioButton fx:id="Sell_radioUseCategory" layoutX="11.0" layoutY="140.0" mnemonicParsing="false" onAction="#Sell_RadioUseCategory_Click" text="Bestehende Kategorie" />
-                  <ChoiceBox fx:id="Sell_choiceCategory" disable="true" layoutX="198.0" layoutY="136.0" prefHeight="25.0" prefWidth="221.0" />
-                  <TextArea fx:id="Sell_txtDescription" layoutX="198.0" layoutY="193.0" prefHeight="181.0" prefWidth="396.0" />
+                  <ChoiceBox fx:id="Sell_choiceCategory" disable="true" layoutX="165.0" layoutY="136.0" prefHeight="25.0" prefWidth="221.0" />
                   <Label layoutX="14.0" layoutY="15.0" text="Produktbezeichnung*" />
                   <Label layoutX="14.0" layoutY="46.0" text="Preis*" />
                   <Label layoutX="14.0" layoutY="110.0" />
-                  <Button fx:id="Sell_ButtonSellConfirm" layoutX="479.0" layoutY="388.0" mnemonicParsing="false" onAction="#Sell_SellConfirmClick" text="Produkt inserieren" />
-                  <Label layoutX="15.0" layoutY="193.0" text="Produktbeschreibung" />
-                  <Label layoutX="268.0" layoutY="46.0" text="\$" />
+                  <Button fx:id="Sell_ButtonSellConfirm" layoutX="643.0" layoutY="437.0" mnemonicParsing="false" onAction="#Sell_SellConfirmClick" text="Produkt inserieren" AnchorPane.bottomAnchor="1.0" AnchorPane.rightAnchor="1.0" />
+                  <Label layoutX="15.0" layoutY="171.0" text="Produktbeschreibung" />
+                  <Label layoutX="234.0" layoutY="46.0" text="\$" />
+                  <HTMLEditor fx:id="Sell_txtDescription" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" layoutX="165.0" layoutY="171.0" prefHeight="265.0" prefWidth="594.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="156.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="171.39999999999998" />
                </children>
             </AnchorPane>
          </content>
       </TitledPane>
-      <TitledPane animated="false" collapsible="false" layoutX="10.0" layoutY="472.0" prefHeight="86.0" prefWidth="608.0" text="Mehrere Produkte anbieten (.csv)" AnchorPane.rightAnchor="10.0">
+      <TitledPane animated="false" collapsible="false" layoutX="11.0" layoutY="527.0" prefHeight="86.0" prefWidth="772.0" text="Mehrere Produkte anbieten (.csv)" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="10.0">
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="61.0" prefWidth="395.0">
                <children>
@@ -44,6 +44,6 @@
             </AnchorPane>
          </content>
       </TitledPane>
-      <Button fx:id="Sell_ReturnButton" layoutX="561.0" layoutY="572.0" mnemonicParsing="false" onAction="#Sell_ReturnButtonClick" text="Zurück" />
+      <Button fx:id="Sell_ReturnButton" layoutX="730.0" layoutY="624.0" mnemonicParsing="false" onAction="#Sell_ReturnButtonClick" text="Zurück" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="10.0" />
    </children>
 </AnchorPane>

@@ -18,9 +18,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.web.HTMLEditor;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
@@ -29,8 +29,8 @@ import javafx.stage.Stage;
 
 public class OfferProductController {
 
-	static User user = null;
-	static ObservableList<String> productCategories = null;
+	private static User user = null;
+	private static ObservableList<String> productCategories = null;
 	
 	public static void setUser(User _user)
 	{
@@ -48,7 +48,7 @@ public class OfferProductController {
     public void initialize() {
     	//CSV-Verkaufen Button erst aktivieren, wenn Datei ausgewählt ist.
     	Sell_ButtonSellCsv.setDisable(true);
-    	
+
     	ToggleGroup radioGroup = new ToggleGroup();
     	Sell_radioNoCategory.setToggleGroup(radioGroup);
     	Sell_radioUseCategory.setToggleGroup(radioGroup);
@@ -57,16 +57,11 @@ public class OfferProductController {
     	//Kategorien vom MainScreenController übergeben, Alle Kategorien vorher entfernen
     	if(productCategories!=null)
     	{
+    		//"Alle Kategorien" aus der Liste löschen
+    		productCategories.removeIf(n -> n == "Alle Kategorien");
+    		
+    		//Liste setzen
     		Sell_choiceCategory.setItems(productCategories);
-    		//Alle Kategorien aus der Liste löschen
-    		if(Sell_choiceCategory.getItems().contains("Alle Kategorien"))
-    		{
-    			try {
-        		Sell_choiceCategory.getItems().remove("Alle Kategorien");
-				} catch (IndexOutOfBoundsException e) {
-					//zu ignorieren.
-				}
-    		}
     	}
     }
 	
@@ -80,7 +75,7 @@ public class OfferProductController {
     private Button Sell_ButtonSellConfirm;
 
     @FXML
-    private TextArea Sell_txtDescription;
+    private HTMLEditor Sell_txtDescription;
 
     @FXML
     private Button Sell_ButtonSellCsv;
@@ -162,9 +157,9 @@ public class OfferProductController {
     @FXML
     void Sell_SellConfirmClick(ActionEvent event) {
     	//Eingaben prüfen
-    	String articlename = Sell_txtName.getText();
-    	String description = Sell_txtDescription.getText();
-    	String priceString = Sell_txtPreis.getText();
+    	String articlename = Sell_txtName.getText().trim();
+    	String description = Sell_txtDescription.getHtmlText().trim();
+    	String priceString = Sell_txtPreis.getText().trim();
     	boolean categoryChosen = false;
     	String category = "";
     	double price;
@@ -183,7 +178,7 @@ public class OfferProductController {
     	else if(Sell_radioNewCategory.isSelected() && Sell_txtNewCategory.getText() != null && Sell_txtNewCategory.getText() != "")
     	{
     		categoryChosen=true;
-    		category = Sell_txtNewCategory.getText();
+    		category = Sell_txtNewCategory.getText().trim();
     	}
     	else
     	{
@@ -212,6 +207,7 @@ public class OfferProductController {
     	catch (NumberFormatException e)
 		{
 			FXMLHandler.ShowMessageBox("Bitte geben Sie den Preis im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			Sell_txtPreis.setText("");
 			return; //Methode beenden
 		}
     	
@@ -280,16 +276,17 @@ public class OfferProductController {
 				try
 				{
 					String[] lineValues = lines.get(i).split(";");
-					String productName = lineValues[0]; //1. Spalte
-					String category = lineValues[1]; //2. Spalte
+					String productName = lineValues[0].trim(); //1. Spalte
+					String category = lineValues[1].trim(); //2. Spalte
 					double price = Double.parseDouble(lineValues[2].replace(",", ".")); //3. Spalte. , wird durch . ersetzt, damit hier kein Fehler beim Erstellen eines Doubles auftritt.
-					String description = lineValues[3]; //4. Spalte
+					String description = lineValues[3].trim(); //4. Spalte
 					//ggf extra Spalten mit in die Beschreibung schreiben
 					for(int ii=4;ii<lineValues.length;ii++)
 					{
 						String descriptionTemp = description;
-						description = csvIdentifier[ii] + ": " + lineValues[ii] + System.lineSeparator() + descriptionTemp; 
+						description = csvIdentifier[ii].trim() + ": " + lineValues[ii] + System.lineSeparator() + descriptionTemp; 
 					}
+					
 					Product newProduct = new Product(productName, price, seller, category, description);
 					csvProducts.add(newProduct);
 				}
@@ -375,4 +372,3 @@ public class OfferProductController {
     }
 
 }
-//push

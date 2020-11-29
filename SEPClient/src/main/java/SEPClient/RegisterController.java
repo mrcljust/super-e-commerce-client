@@ -111,20 +111,22 @@ public class RegisterController {
     
     @FXML
 	void Register_OKClick(ActionEvent event) throws IOException {
-    	String username = Register_txtUsername.getText();
-    	String email = Register_txtEmail.getText();
+    	String username = Register_txtUsername.getText().trim();
+    	String email = Register_txtEmail.getText().trim();
     	String password = SEPCommon.Methods.getMd5Encryption(Register_txtPassword.getText());
     	String passwordRepeat = SEPCommon.Methods.getMd5Encryption(Register_txtPasswordRepeat.getText());
     	boolean isSeller = Register_radioSeller.isSelected();
-    	String fullname = Register_txtFullName.getText();
-    	String street = Register_txtStreet.getText();
-    	String number = Register_txtNumber.getText();
-    	String postalcode = Register_txtPostalcode.getText();
-    	String city = Register_txtCity.getText();
-    	String country = Register_txtCountry.getValue();
-    	String businessname = Register_txtBusinessname.getText();
+    	String fullname = Register_txtFullName.getText().trim();
+    	String street = Register_txtStreet.getText().trim();
+    	String number = Register_txtNumber.getText().trim();
+    	String postalcode = Register_txtPostalcode.getText().trim();
+    	String city = Register_txtCity.getText().trim();
+    	String country = Register_txtCountry.getValue().trim();
+    	String businessname = Register_txtBusinessname.getText().trim();
     	
     	//Bild zu byte Array umwandeln
+    	//Codeteil mit Hilfe der folgenden Quelle geschrieben: https://stackoverflow.com/questions/9417356/bufferedimage-resize
+    	//(Antwort von coobird, Feb 23 '12 at 17:23)
     	Image image = Register_imgPicture.getImage();
     	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
     	
@@ -224,7 +226,7 @@ public class RegisterController {
     		Register_txtPassword.setText("");
     		Register_txtPasswordRepeat.setText("");
 		}
-		if(queryResponse.getResponseType() == Response.ImageTooBig)
+		else if(queryResponse.getResponseType() == Response.ImageTooBig)
 		{
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,

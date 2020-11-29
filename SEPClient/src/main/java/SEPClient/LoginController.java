@@ -9,6 +9,7 @@ import SEPCommon.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
@@ -18,7 +19,8 @@ import javafx.stage.Stage;
 
 public class LoginController {
 	
-	static String preText = null;
+	private static String preText = null;
+	
 	
 	@FXML
     private Button Login_ReturnButton;
@@ -32,6 +34,9 @@ public class LoginController {
     @FXML
     private Button Login_OKButton;
     
+    @FXML
+    private CheckBox Login_checkSaveLogin;
+    
     public static void setPreText(String _preText)
 	{
 		preText = _preText;
@@ -39,7 +44,7 @@ public class LoginController {
     
     @FXML
     public void initialize() {
-    	if(preText!=null)
+    	if(preText!=null) //preText wird ggf. im Registrierungsprozess gesetzt
     	{
         	Login_txtEmailOrUser.setText(preText);
         	Login_txtPassword.requestFocus();
@@ -48,6 +53,15 @@ public class LoginController {
     	else
     	{
     		Login_txtEmailOrUser.requestFocus();
+    		
+    		String savedUsername = SEPCommon.Preferences.getPref("Username");		//Value vom Key
+    		String savedPassword = SEPCommon.Preferences.getPref("Password");
+			if(savedUsername!="" && savedPassword!="")
+			{
+				Login_txtEmailOrUser.setText(savedUsername);			//in Feld kommt Value
+				Login_txtPassword.setText(savedPassword);
+				Login_checkSaveLogin.setSelected(true);
+			}
     	}
     }
     
@@ -63,9 +77,9 @@ public class LoginController {
     
     @FXML
 	void Login_OKClick(ActionEvent event) {
-    	String userOrEmail = Login_txtEmailOrUser.getText();
-    	String password = SEPCommon.Methods.getMd5Encryption(Login_txtPassword.getText());
-    	
+    	String userOrEmail = Login_txtEmailOrUser.getText().trim();
+    	String password = SEPCommon.Methods.getMd5Encryption(Login_txtPassword.getText()); //verschlüssle das PW
+    			
     	//Ungültige Eingaben abfangen
     	if(userOrEmail=="" || userOrEmail==null || password=="" || password==null)
     	{
@@ -126,10 +140,24 @@ public class LoginController {
 			{
 				user = (User)queryResponse.getResponseMap().get("User");
 				
+				
+				if(Login_checkSaveLogin.isSelected())
+				{
+					//Wenn die Checkbox selected ist, Daten speichern, sonst leeren String speichern
+					SEPCommon.Preferences.savePref("Username", userOrEmail);
+					SEPCommon.Preferences.savePref("Password", Login_txtPassword.getText());		//login_txt eingegebens Passwort im Client
+				}
+				else
+				{
+					SEPCommon.Preferences.savePref("Username", "");					//checkbox nicht selected -> nichts speichern
+					SEPCommon.Preferences.savePref("Password", "");
+				}
+				
 				//MainScreen öffnen
                 MainScreenController.setUser(user);
 				FXMLHandler.OpenSceneInStage((Stage) Login_OKButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 			}
+			
 		} 
 	}
 

@@ -15,6 +15,7 @@ import javax.imageio.ImageIO;
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
+import SEPCommon.Preferences;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.Seller;
@@ -41,7 +42,7 @@ import net.coobird.thumbnailator.Thumbnails;
 
 public class EditAccountController {
 
-	static User user = null;
+	private static User user = null;
 	
 	public static void setUser(User _user)
 	{
@@ -128,20 +129,23 @@ public class EditAccountController {
 	
 	@FXML
 	void EditAccount_OKClick (ActionEvent event) throws IOException {
-		String username = EditAccount_txtUsername.getText();
-		String email = EditAccount_txtEmail.getText();
+		String username = EditAccount_txtUsername.getText().trim();
+		String email = EditAccount_txtEmail.getText().trim();
 		String password = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPassword.getText());
 		String passwordRepeated = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPasswordRepeat.getText());
-		String fullname = EditAccount_txtFullName.getText();
-		String street = EditAccount_txtStreet.getText();
-		String number = EditAccount_txtNumber.getText(); //ich muss nicht typecasten?
-		String zipcode = EditAccount_txtPostalcode.getText();	
-		String city = EditAccount_txtCity.getText();
-		String country = (String) EditAccount_txtCountry.getValue(); //richtig so?
-		String businessname = EditAccount_txtBusinessname.getText();
+		String fullname = EditAccount_txtFullName.getText().trim();
+		String street = EditAccount_txtStreet.getText().trim();
+		String number = EditAccount_txtNumber.getText().trim(); //ich muss nicht typecasten?
+		String zipcode = EditAccount_txtPostalcode.getText().trim();	
+		String city = EditAccount_txtCity.getText().trim();
+		String country = (String) EditAccount_txtCountry.getValue().trim(); //richtig so?
+		String businessname = EditAccount_txtBusinessname.getText().trim();
 		boolean isSeller = EditAccount_radioSeller.isSelected();
+		double wallet = user.getWallet();
 		
     	//Bild zu byte Array umwandeln
+    	//Codeteil mit Hilfe der folgenden Quelle geschrieben: https://stackoverflow.com/questions/9417356/bufferedimage-resize
+    	//(Antwort von coobird, Feb 23 '12 at 17:23)
     	Image image = EditAccount_imgPicture.getImage();
     	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
 
@@ -193,9 +197,9 @@ public class EditAccountController {
 		User newUser;
 		Address address = new Address (fullname, country, postalcode, city, street, number);
 		if (isSeller) {
-			newUser = new Seller(user.getId(), username, email, password, imageByteArray, 0, address, businessname);
+			newUser = new Seller(user.getId(), username, email, password, imageByteArray, wallet, address, businessname);
 		} else {
-			newUser = new Customer(user.getId(), username, email, password, imageByteArray, 0, address);
+			newUser = new Customer(user.getId(), username, email, password, imageByteArray, wallet, address);
 		}
 		HashMap <String, Object> requestMap = new HashMap<String, Object>();
 		requestMap.put("User", newUser);
@@ -209,37 +213,47 @@ public class EditAccountController {
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
 
-		//Bild zu großŸ
-		if(queryResponse.getResponseType() == Response.ImageTooBig) {
+		//Bild zu groß
+		else if(queryResponse.getResponseType() == Response.ImageTooBig) {
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 			EditAccount_imgPicture.setImage(null);
 		}
 		
 		//Username bereits vergeben
 		else if(queryResponse.getResponseType() == Response.UsernameTaken) {
-			FXMLHandler.ShowMessageBox("Der Benutzername ist bereits vergeben.",
+			FXMLHandler.ShowMessageBox("Der Benutzername wird bereits von einem anderen Benutzer verwendet.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
-			EditAccount_txtUsername.setText("");
+			EditAccount_txtUsername.setText(user.getUsername()); //ursprünglichen Nutzernamen setzen
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
 		//Email bereits vergeben
 		else if(queryResponse.getResponseType() == Response.EmailTaken) {
-			FXMLHandler.ShowMessageBox("Die E-Mail-Adresse ist bereits vergeben.",
+			FXMLHandler.ShowMessageBox("Die E-Mail-Adresse wird bereits von einem anderen Benutzer verwendet.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
-			EditAccount_txtEmail.setText("");
+			EditAccount_txtEmail.setText(user.getEmail()); //ursprüngliche Email setzen
+    		EditAccount_txtPassword.setText("");
+    		EditAccount_txtPasswordRepeat.setText("");
 		}
 		
-		//Ä„nderungen erfolgreich
+		//Änderungen erfolgreich
 		else if(queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Die Änderung Ihrer Daten war erfolgreich. Sie müssen sich nun erneut anmelden.",
 					"Änderung abgeschlossen", "Änderung abgeschlossen", AlertType.INFORMATION, true, false);
+			Preferences.removePref("Username");											//löscht gespeicherten Username, wenn gesetzt
+			Preferences.removePref("Password");											//löscht gespeichertes Passwort, wenn gesetzt
 			LoginController.setPreText(EditAccount_txtUsername.getText());
 			FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Login", "Anmeldung", false, true);
 		}
@@ -287,6 +301,8 @@ public class EditAccountController {
 			} else if (queryResponse.getResponseType() == Response.Success) {
 				FXMLHandler.ShowMessageBox("Ihr Konto wurde erfolgreich gelöscht.",
     					"Konto gelöscht", "Konto gelöscht", AlertType.CONFIRMATION, true,false);
+				Preferences.removePref("Username");											//löscht gespeicherten Username, wenn gesetzt
+				Preferences.removePref("Password");											//löscht gespeichertes Passwort, wenn gesetzt
 				FXMLHandler.OpenSceneInStage((Stage) EditAccount_ButtonCancel.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 			}
 			

@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ServerResponse implements Serializable { //Serializable damit man von objectstream zu normalen object casten
+public class ServerResponse implements Serializable { //Serializable damit man von objectstream zu ServerResponse casten kann
 
 	private Response responseType;
-	HashMap<String, Object> responseMap = new HashMap<String, Object>();		//
+	private Map<String, Object> responseMap = new HashMap<String, Object>();
 
 	public ServerResponse(Response res, HashMap<String,Object> resMap)
 	{

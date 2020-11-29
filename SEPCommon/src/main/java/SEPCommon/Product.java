@@ -9,7 +9,7 @@ public class Product implements Serializable {
 	private double price;
 	private String priceString;
 	private Seller seller;
-	private String businessname; //wird benï¿½tigt, um den Verkï¿½ufer in den Katalog-TableViews im MainScreen anzuzeigen
+	private String businessname; //wird benötigt, um den Verkäufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
 	
@@ -20,7 +20,7 @@ public class Product implements Serializable {
 		id=_id;
 		name=_name;
 		price=_price;
-		priceString=Constants.doubleFormat.format(_price) + Constants.CURRENCY;
+		priceString=Constants.DOUBLEFORMAT.format(_price) + Constants.CURRENCY;
 		seller=_seller;
 		category=_category;
 		description=_description;

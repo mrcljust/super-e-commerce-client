@@ -3,7 +3,6 @@ package SEPClient;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
-
 import SEPCommon.ClientRequest;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
@@ -20,9 +19,9 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
@@ -30,15 +29,16 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.web.WebView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.stage.Stage;
 
 public class MainScreenController {
 
-	static User user = null;
-	Product[] lastSearchResult;
-	boolean currentSearchEvent = false;
+	private static User user = null;
+	private Product[] lastSearchResult;
+	private boolean currentSearchEvent = false;
 	
 	public static void setUser(User _user)
 	{
@@ -57,7 +57,7 @@ public class MainScreenController {
     
     public void refreshView()
     {
-    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.doubleFormat.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
+    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.DOUBLEFORMAT.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
     	
 		//Standardbild setzen
     	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
@@ -69,7 +69,7 @@ public class MainScreenController {
         	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
     		MainScreen_ButtonAddWallet.setDisable(true);
     		MainScreen_ButtonSellProduct.setDisable(false);
-    		MainScreen_ButtonMyProducts.setDisable(false);
+    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
     		MainScreen_ButtonPurchases.setDisable(true);
     	}
     	else
@@ -79,7 +79,7 @@ public class MainScreenController {
     		MainScreen_ButtonAddWallet.setDisable(false);
     		MainScreen_ButtonSellProduct.setDisable(true);
     		MainScreen_ButtonMyProducts.setDisable(true);
-    		MainScreen_ButtonPurchases.setDisable(false);
+    		MainScreen_ButtonPurchases.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
     	}
     	
     	InputStream in = new ByteArrayInputStream(user.getPicture());
@@ -91,26 +91,78 @@ public class MainScreenController {
     	MainScreen_LabelProductPrice.setText("");
     	MainScreen_LabelProductSeller.setText("");
     	MainScreen_LabelProductCategory.setText("");
-    	MainScreen_TextProductDescription.setText("");
+    	MainScreen_WebVIewProductDescription.getEngine().loadContent("");
     	MainScreen_ButtonBuyProduct.setVisible(false);
-    	MainScreen_TextProductDescription.setVisible(false);
+    	MainScreen_WebVIewProductDescription.setVisible(false);
     	
     	//Alle Kategorien Item hinzufï¿½gen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
     	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
     	
     	//Werte an die Spalten der Kataloglisten zuweisen
-    	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-        catalogProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-        catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
-        catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+    	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
+        catalogProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+        catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
+        //Anzeigewert für Preis anpassen
+        catalogPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+        catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
+        //Anzeigewert für Kategorie anpassen
+        catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
+        catalogCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
+    	    @Override
+    	    protected void updateItem(String category, boolean empty) {
+    	        super.updateItem(category, empty);
+    	        if (empty) {
+    	            setText(null);
+    	        } else if(category=="" || category==null) {
+    	        	setText("(Keine Kategorie)");
+    	        }else {
+    	            setText(category);
+    	        }
+    	    }
+    	});
 
-        lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<>("priceString"));
-    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<>("businessname"));
-    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<>("category"));
+        lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
+    	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+        //Anzeigewert für Preis anpassen
+    	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
+    	lastviewedPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+    	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
+    	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
+        //Anzeigewert für Kategorie anpassen
+    	lastviewedCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
+    	    @Override
+    	    protected void updateItem(String category, boolean empty) {
+    	        super.updateItem(category, empty);
+    	        if (empty) {
+    	            setText(null);
+    	        } else if(category=="" || category==null) {
+    	        	setText("(Keine Kategorie)");
+    	        }else {
+    	            setText(category);
+    	        }
+    	    }
+    	});
     	
     	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
     	{
@@ -123,7 +175,7 @@ public class MainScreenController {
     	}
     }
     
-    public void LoadAllProducts()
+    private void LoadAllProducts()
     {
     	MainScreen_ListCatalog.getItems().clear();
     	
@@ -136,6 +188,7 @@ public class MainScreenController {
 			//Product Array
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			ObservableProducts.removeIf(n -> (n==null));
 			
 			//Kategorien in Liste einfï¿½gen
 			for(Product p: products)
@@ -167,13 +220,21 @@ public class MainScreenController {
 			//Product Array
 			Product[] products = (Product[])queryResponse.getResponseMap().get("Products");
 			ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(products);
+			ObservableProducts.removeIf(n -> (n==null));
 			
 			MainScreen_ListLastViewed.setItems(ObservableProducts);
 		}
     }
     
 	//ChoiceBox Categories Selection Change Listener
+<<<<<<< HEAD
 	//wird aufgerufen, wenn eine Kategorie ausgewÃ¤hlt wird
+=======
+	//wird aufgerufen, wenn eine Kategorie ausgewählt wird
+    
+    //Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/14522680/javafx-choicebox-events
+    //Antwort von zhujik, Jan 25 '13 at 14:08
+>>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
     private void categoryChangedListener() {
 	    MainScreen_ChoiceBox_Category.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -184,7 +245,9 @@ public class MainScreenController {
     }
     
     private void selectionsChangedListener() {
-
+    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	//Antwort von James_D, Oct 17 '14 at 14:11
+    	
     	//ListCatalog Selection Change Listener
     	MainScreen_ListCatalog.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		//was passiert, wenn ein Eintrag in der ListCatalog ausgewï¿½hlt wird
@@ -194,6 +257,9 @@ public class MainScreenController {
     		addToLastViewedItems();
     		}
     	});
+    	
+    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	//Antwort von James_D, Oct 17 '14 at 14:11
     	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
@@ -207,6 +273,8 @@ public class MainScreenController {
     
     private void updateArticleInfo(boolean selectionInCatalog)
     {
+    	//selectionInCatalog = true --> Selektion im Katalog geändert
+    	//selectionInCatalog = false --> Selektion in LastViewed geändert
     	if(selectionInCatalog==true)
     	{
     		//Artikel in der ListCatalog ausgewï¿½hlt
@@ -228,10 +296,10 @@ public class MainScreenController {
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_TextProductDescription.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription());
+		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
 		    	
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_TextProductDescription.setVisible(true);
+		    	MainScreen_WebVIewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur fï¿½r Customer enablen
 		    	if(user instanceof Customer)
@@ -259,16 +327,16 @@ public class MainScreenController {
 		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
-			    	MainScreen_LabelProductCategory.setText("Kategorie: (keine Kategorie)");
+			    	MainScreen_LabelProductCategory.setText("Kategorie: (Keine Kategorie)");
 		    	}
 		    	else
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_TextProductDescription.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription());
-		    
+		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+		    	
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_TextProductDescription.setVisible(true);
+		    	MainScreen_WebVIewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur fï¿½r Customer enablen
 		    	if(user instanceof Customer)
@@ -316,6 +384,7 @@ public class MainScreenController {
     
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
+<<<<<<< HEAD
     	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
 		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
 		
@@ -374,6 +443,71 @@ public class MainScreenController {
 			}
 		}
 		currentSearchEvent=false;
+=======
+    	if(newValue>-1)
+    	{
+    		String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
+    		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+    		
+    		//keine Kategorie, also alle Kategorien
+    		if(newValue==0) {
+    			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
+    			if(currentSearchEvent) {
+    				LoadAllProducts();
+    				currentSearchEvent=false;
+    			}
+    			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
+    			else {
+    				searchChangedEvent();
+    			}
+    			
+    		} else {
+    			//Sonstige Kategorie ausgewählt
+    			HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	    	requestMap.put("Category", selectedCategoryString);
+    	    	
+    	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
+    	    	Client client = Client.getClient();
+    			ServerResponse queryResponse = client.sendClientRequest(req);
+    			if(queryResponse.getResponseType() != null)	{
+    				Product[] articleInCategory = (Product[])queryResponse.getResponseMap().get("Products"); //Produkte in Kategorie
+    				Product[] articlesInCategoryAndSearch = null;
+    				
+    				if(lastSearchResult == null) {
+    					//Letzte Suche war leer bzw. noch keine Suche getätigt
+    					articlesInCategoryAndSearch=articleInCategory;
+    				}
+    				else {
+    					//aktuelle Suche
+    					int i=0;
+    					for(Product p : lastSearchResult) {
+    						if(p.getCategory().equals(selectedCategoryString)) {
+        						i++;
+    						}
+    					}
+    					if(i>0)	{
+    						articlesInCategoryAndSearch = new Product[i];
+    						int ii=0;
+    						for(Product p : lastSearchResult) {
+    							if(p.getCategory().equals(selectedCategoryString)) {
+    								articlesInCategoryAndSearch[ii]=p; 
+    								ii++;
+    							}
+    						}
+    					}
+    				}
+    				
+    				if(articlesInCategoryAndSearch!=null)
+    				{
+    					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
+    					
+    					MainScreen_ListCatalog.setItems(ObservableProducts);
+    				}
+    			}
+    		}
+    		currentSearchEvent=false;
+    	}
+>>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
     }
     
     private void searchChangedEvent()
@@ -414,10 +548,18 @@ public class MainScreenController {
 						articlesInSearchAndCategory = articlesInSearch;
 					}
 					else {
+<<<<<<< HEAD
 						//bestimmte Kategorie ausgewï¿½hlt
+=======
+						//bestimmte Kategorie ausgewählt
+						
+						//Arraygröße bestimmen
+>>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
 						int i=0;
 						for(Product p : articlesInSearch) {
-							i++;
+							if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
+								i++;
+							}
 						}
 						if(i>0)	{
 							articlesInSearchAndCategory = new Product[i];
@@ -482,40 +624,43 @@ public class MainScreenController {
     private TextField MainScreen_txtSearch;
     
     @FXML
+    private WebView MainScreen_WebVIewProductDescription;
+    
+    @FXML
     private TableView<Product> MainScreen_ListLastViewed;
 
     @FXML
     private TableView<Product> MainScreen_ListCatalog;
     
     @FXML
-    private TableColumn<?, ?> lastviewedIdColumn;
+    private TableColumn<Product, Integer> lastviewedIdColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedProductColumn;
+    private TableColumn<Product, String> lastviewedProductColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedPriceColumn;
+    private TableColumn<Product, Double> lastviewedPriceColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedSellerColumn;
+    private TableColumn<Product, String> lastviewedSellerColumn;
 
     @FXML
-    private TableColumn<?, ?> lastviewedCategoryColumn;
+    private TableColumn<Product, String> lastviewedCategoryColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogIdColumn;
+    private TableColumn<Product, Integer> catalogIdColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogProductColumn;
+    private TableColumn<Product, String> catalogProductColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogPriceColumn;
+    private TableColumn<Product, Double> catalogPriceColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogSellerColumn;
+    private TableColumn<Product, String> catalogSellerColumn;
 
     @FXML
-    private TableColumn<?, ?> catalogCategoryColumn;
+    private TableColumn<Product, String> catalogCategoryColumn;
 
     @FXML
     private Label MainScreen_LabelProductTitle;
@@ -528,9 +673,6 @@ public class MainScreenController {
 
     @FXML
     private Label MainScreen_LabelProductCategory;
-
-    @FXML
-    private TextArea MainScreen_TextProductDescription;
     
     @FXML
     private ImageView MainScreen_ImgProfilePicture;
@@ -623,6 +765,7 @@ public class MainScreenController {
 			return;
     	}
     	
+<<<<<<< HEAD
     	//clienseitig Prï¿½fen, ob genug Guthaben vorhanden ist
     	if(user.getWallet()<productToBuy.getPrice())
     	{
@@ -630,9 +773,17 @@ public class MainScreenController {
 			return;
     	}
     	
+=======
+>>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
     	//Client BuyItem Request senden
+<<<<<<< HEAD
     	//Es wird bei dieser Request automatisch das Kï¿½uferkonto um den Produktpreis verringert
     	//und das Verkï¿½uferkonto um den Produktpreis erhï¿½ht
+=======
+    	//Es wird bei dieser Request automatisch das Käuferkonto um den Produktpreis verringert
+    	//und das Verkäuferkonto um den Produktpreis erhöht
+    	//In der Request wird geprüft, ob genug Guthaben vorhanden ist.
+>>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
     	requestMap.put("Product", productToBuy);
@@ -645,6 +796,13 @@ public class MainScreenController {
 		if(queryResponse.getResponseType() == Response.NoDBConnection)
 		{
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Kauf durchgefï¿½hrt.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.InsufficientBalance)
+		{
+			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			return;
