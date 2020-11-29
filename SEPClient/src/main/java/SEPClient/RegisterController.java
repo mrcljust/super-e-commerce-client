@@ -96,10 +96,12 @@ public class RegisterController {
     
     @FXML
     public void initialize() {
+    	// Vorauswahl Checkbox
     	Register_txtCountry.getItems().addAll("Deutschland", "Österreich", "Schweiz");
     	Register_txtCountry.getSelectionModel().select("Deutschland");
     	Register_txtUsername.requestFocus();
     	
+    	// Auswahl ganz oben entweder Privat oder Gewerbekunde
     	ToggleGroup radioGroup = new ToggleGroup();
     	Register_radioCustomer.setToggleGroup(radioGroup);
     	Register_radioSeller.setToggleGroup(radioGroup);
@@ -111,6 +113,7 @@ public class RegisterController {
     
     @FXML
 	void Register_OKClick(ActionEvent event) throws IOException {
+    	// Felder bekommen Eingaben
     	String username = Register_txtUsername.getText().trim();
     	String email = Register_txtEmail.getText().trim();
     	String password = SEPCommon.Methods.getMd5Encryption(Register_txtPassword.getText());
@@ -140,7 +143,7 @@ public class RegisterController {
     	byteOutput.close(); 
     	
     	
-    	//Ungültige Eingaben abfangen
+    	//Ungültige Eingaben abfangen (leere Felder...)
     	if(username=="" || username==null || email=="" || email==null || password=="" || password==null || passwordRepeat=="" || passwordRepeat==null || fullname=="" || fullname==null || street=="" || street==null || number=="" || number==null || postalcode=="" || postalcode==null || city=="" || city==null || country=="" || country==null || (isSeller && businessname==null) || (isSeller && businessname==""))
     	{
     		FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) markierten Felder aus.",
@@ -151,6 +154,7 @@ public class RegisterController {
     		return;
     	}
     	
+    	// Passwörter müssen gleich sein
     	if(!password.equals(passwordRepeat))
     	{
     		FXMLHandler.ShowMessageBox("Die Passwörter stimmen nicht überein.",
@@ -161,6 +165,7 @@ public class RegisterController {
     		return;
     	}
     	
+    	// Email muss ein @ enthalten, um es später vom Username unterscheiden zu können
     	if(!email.contains("@") || !email.contains("."))
     	{
     		FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige E-Mail-Adresse ein.",
@@ -171,6 +176,7 @@ public class RegisterController {
     		return;
     	}
     	
+    	// Dementsprechend darf der Username kein @ enthalten
     	if(username.contains("@"))
     	{
     		FXMLHandler.ShowMessageBox("Der Benutzername darf nicht das Zeichen '@' enthalten.",
@@ -185,6 +191,7 @@ public class RegisterController {
     	int postalint;
     	try
     	{
+    		// Versuchen Plz. in ein Int zu setzen, da diese nur Nummern enthalten darf
         	postalint = Integer.parseInt(postalcode.trim());
     	}
         catch (NumberFormatException nfe)
@@ -197,13 +204,16 @@ public class RegisterController {
     		return;
     	}
     	
-    	
+    	// User(Privat- oder Gewerbekunde)- und Adress-Objekt
+    	// Wallet anfangs 0$
     	User user;
     	Address address = new Address(fullname, country, postalint, city, street, number);
+    	// Gewerbekunde
     	if(isSeller)
     	{
     		user = new Seller(username, email, password, imageByteArray, 0, address, businessname);
     	}
+    	// Privatkunde
     	else
     	{
     		user = new Customer(username, email, password, imageByteArray, 0, address);
@@ -211,6 +221,7 @@ public class RegisterController {
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
     	
+    	// >RegisterUser Request mit Daten
     	ClientRequest req = new ClientRequest(Request.RegisterUser, requestMap);
     	Client client = Client.getClient();
 		ServerResponse queryResponse = client.sendClientRequest(req);
@@ -220,6 +231,7 @@ public class RegisterController {
 		//wenn User vergeben: Response.UsernameTaken returnen
 		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
 		
+		// Fälle bei denen Fehlermeldungen kommen
 		if(queryResponse.getResponseType() == Response.NoDBConnection)
 		{
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
@@ -228,6 +240,7 @@ public class RegisterController {
     		Register_txtPassword.setText("");
     		Register_txtPasswordRepeat.setText("");
 		}
+		
 		else if(queryResponse.getResponseType() == Response.ImageTooBig)
 		{
 			FXMLHandler.ShowMessageBox("Die Dateigröße des ausgewählten Profilbildes ist zu groß (max. 16MB). Bitte wählen Sie ein anderes Bild aus.",
@@ -253,6 +266,8 @@ public class RegisterController {
     		Register_txtPassword.setText("");
     		Register_txtPasswordRepeat.setText("");
 		}
+		
+		// Erfolgsmeldung
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
 			//Registrierung erfolgreich
@@ -265,10 +280,12 @@ public class RegisterController {
 
     @FXML
 	void Register_ReturnClick(ActionEvent event) {
+    	// Benutzer geht zurück zum Startscreen
     	FXMLHandler.OpenSceneInStage((Stage) Register_ButtonCancel.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 	}
     
     @FXML
+    // Nur Gewerbekunde darf Gewerbenamen eintragen
 	void Register_CustomerSelected(ActionEvent event) {
     	if(Register_radioCustomer.isSelected())
     	{
@@ -301,12 +318,14 @@ public class RegisterController {
 	}
     
     @FXML
+    // Profilbild auswählen
 	void Register_OpenPictureClick(ActionEvent event) {
     	FileChooser fileChooser = new FileChooser();
     	fileChooser.setTitle("Profilbild auswählen");
     	File file = fileChooser.showOpenDialog(FXMLHandler.getStage());
     	if(file!=null)
     	{
+    		// Erlaubte Formate
 			if(!file.toURI().toString().toLowerCase().contains(".png") && !file.toURI().toString().toLowerCase().contains(".jpg") && !file.toURI().toString().toLowerCase().contains(".jpeg"))
     	    {
     			//Bild weder .jpg, .jpeg noch .png
@@ -315,6 +334,7 @@ public class RegisterController {
     					false);
     	    	return;
     	    }
+			// Neues Profilbild auswählen
     	    Image selectedImage = new Image(file.toURI().toString());
     	    Register_imgPicture.setImage(selectedImage);
 	    }
