@@ -5,26 +5,29 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+
 import javax.imageio.ImageIO;
+
 import SEPCommon.Address;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
 import SEPCommon.Request;
-import SEPCommon.Response; 
+import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;

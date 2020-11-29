@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Optional;
 
 import javax.imageio.ImageIO;
@@ -19,6 +20,7 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
+
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -35,6 +37,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.coobird.thumbnailator.Thumbnails;
+
 
 public class EditAccountController {
 
