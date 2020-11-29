@@ -77,10 +77,11 @@ public class LoginController {
     
     @FXML
 	void Login_OKClick(ActionEvent event) {
+    	// Username bzw. Email und Passwort (verschlüsselt) bekommen
     	String userOrEmail = Login_txtEmailOrUser.getText().trim();
     	String password = SEPCommon.Methods.getMd5Encryption(Login_txtPassword.getText()); //verschlüssle das PW
     			
-    	//Ungültige Eingaben abfangen
+    	//Ungültige Eingaben abfangen (leere Felder)
     	if(userOrEmail=="" || userOrEmail==null || password=="" || password==null)
     	{
     		FXMLHandler.ShowMessageBox("Bitte geben Sie einen Benutzernamen bzw. eine E-Mail-Adresse und ein Passwort ein.",
@@ -94,10 +95,12 @@ public class LoginController {
     	requestMap.put("UserOrEmail", userOrEmail);
     	requestMap.put("Password", password);
 
+    	// LoginUser Request mit Daten
     	ClientRequest req = new ClientRequest(Request.LoginUser, requestMap);
     	Client client = Client.getClient();
 		ServerResponse queryResponse = client.sendClientRequest(req);
 		
+		// Wenn keine Verbindung
 		if(queryResponse.getResponseType() == Response.NoDBConnection)
 		{
 			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden.",
@@ -105,6 +108,7 @@ public class LoginController {
 					false);
     		Login_txtPassword.setText("");
 		}
+		// Wenn fehlerhafte Angaben
 		else if(queryResponse.getResponseType() == Response.Failure)
 		{
 			FXMLHandler.ShowMessageBox("Das Konto existiert nicht oder der eingegebene Benutzername/die eingegebene E-Mail-Adresse stimmt nicht mit dem Passwort überein.",
@@ -112,23 +116,27 @@ public class LoginController {
 					false);
     		Login_txtPassword.setText("");
 		}
+		// Wenn Request erfolreich --> richtige Daten
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
 			//Userdaten aus DB holen (bisher ist nur Email/Username und PW bekannt)
 			User user;
 			requestMap = new HashMap<String, Object>();
 			
+			// Wenn mit Email eingeloggt wurde
 			if(userOrEmail.contains("@"))
 			{
 				requestMap.put("Email", userOrEmail);
 			}
 			else
 			{
+				// Wenn mit Username eingeloggt wurde
 				requestMap.put("Username", userOrEmail);
 			}
 			req = new ClientRequest(Request.GetUserData, requestMap);
 			queryResponse = client.sendClientRequest(req);
 			
+			// Wenn keine Verbindung
 			if(queryResponse.getResponseType() == Response.Failure)
 			{
 				FXMLHandler.ShowMessageBox("Die Benutzerdaten konnten nicht aus der Datenbank ausgelesen werden bzw. es konnte keine Verbindung zur Datenbank hergestellt werden.",
@@ -136,11 +144,13 @@ public class LoginController {
 						false);
 	    		Login_txtPassword.setText("");
 			}
+			// Wenn Daten erfolgreich geholt
 			else if(queryResponse.getResponseType() == Response.Success)
 			{
+				// Daten zurückgeben
 				user = (User)queryResponse.getResponseMap().get("User");
 				
-				
+				// Anmeldedaten speichern
 				if(Login_checkSaveLogin.isSelected())
 				{
 					//Wenn die Checkbox selected ist, Daten speichern, sonst leeren String speichern
@@ -162,6 +172,7 @@ public class LoginController {
 	}
 
     @FXML
+    // Zurück zum Startscreen
 	void Login_ReturnClick(ActionEvent event) {
     	FXMLHandler.OpenSceneInStage((Stage) Login_ReturnButton.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
 	}
