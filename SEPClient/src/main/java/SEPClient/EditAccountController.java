@@ -148,7 +148,9 @@ public class EditAccountController {
     	Image image = EditAccount_imgPicture.getImage();
     	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
 
-    	//Skalieren unter Beibehaltung des Seitenverhältnisses
+    	//Skalieren unter Beibehaltung des Seitenverhältnisses. Die Library "Thumbnailator" wird zum skalieren benutzt.
+    	//Anschließend wird das Bild in ein Byte-Array umgewandelt, weil dies der benötigte Datentyp für ein Userobjekt (und die
+    	//Datenbank) ist
     	BufferedImage imageResized = Thumbnails.of(imageBuffered).size(512, 512).asBufferedImage();
     	ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
     	ImageIO.write(imageResized, "png", byteOutput);
