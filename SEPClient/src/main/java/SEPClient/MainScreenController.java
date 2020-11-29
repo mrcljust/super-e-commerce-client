@@ -69,7 +69,7 @@ public class MainScreenController {
         	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
     		MainScreen_ButtonAddWallet.setDisable(true);
     		MainScreen_ButtonSellProduct.setDisable(false);
-    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
+    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benï¿½tigt
     		MainScreen_ButtonPurchases.setDisable(true);
     	}
     	else
@@ -79,7 +79,7 @@ public class MainScreenController {
     		MainScreen_ButtonAddWallet.setDisable(false);
     		MainScreen_ButtonSellProduct.setDisable(true);
     		MainScreen_ButtonMyProducts.setDisable(true);
-    		MainScreen_ButtonPurchases.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
+    		MainScreen_ButtonPurchases.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benï¿½tigt
     	}
     	
     	InputStream in = new ByteArrayInputStream(user.getPicture());
@@ -103,7 +103,7 @@ public class MainScreenController {
     	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
         catalogProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
         catalogPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
-        //Anzeigewert für Preis anpassen
+        //Anzeigewert fï¿½r Preis anpassen
         catalogPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
     	    @Override
     	    protected void updateItem(Double price, boolean empty) {
@@ -116,7 +116,7 @@ public class MainScreenController {
     	    }
     	});
         catalogSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
-        //Anzeigewert für Kategorie anpassen
+        //Anzeigewert fï¿½r Kategorie anpassen
         catalogCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
         catalogCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
     	    @Override
@@ -134,7 +134,7 @@ public class MainScreenController {
 
         lastviewedIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
     	lastviewedProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
-        //Anzeigewert für Preis anpassen
+        //Anzeigewert fï¿½r Preis anpassen
     	lastviewedPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
     	lastviewedPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
     	    @Override
@@ -149,7 +149,7 @@ public class MainScreenController {
     	});
     	lastviewedSellerColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("businessname"));
     	lastviewedCategoryColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("category"));
-        //Anzeigewert für Kategorie anpassen
+        //Anzeigewert fï¿½r Kategorie anpassen
     	lastviewedCategoryColumn.setCellFactory(tc -> new TableCell<Product, String>() {
     	    @Override
     	    protected void updateItem(String category, boolean empty) {
@@ -227,14 +227,12 @@ public class MainScreenController {
     }
     
 	//ChoiceBox Categories Selection Change Listener
-<<<<<<< HEAD
+
 	//wird aufgerufen, wenn eine Kategorie ausgewÃ¤hlt wird
-=======
-	//wird aufgerufen, wenn eine Kategorie ausgewählt wird
     
     //Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/14522680/javafx-choicebox-events
     //Antwort von zhujik, Jan 25 '13 at 14:08
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
+
     private void categoryChangedListener() {
 	    MainScreen_ChoiceBox_Category.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -257,13 +255,10 @@ public class MainScreenController {
     		addToLastViewedItems();
     		}
     	});
-    	
-    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
-    	//Antwort von James_D, Oct 17 '14 at 14:11
-    	
+    	   	
     	//ListLastViewed Selection Change Listener
 	    MainScreen_ListLastViewed.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewï¿½hlt wird
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewÃ¤hlt wird
 	    	if(newSelection != null)
 	    	{
 		    	updateArticleInfo(false);
@@ -273,8 +268,8 @@ public class MainScreenController {
     
     private void updateArticleInfo(boolean selectionInCatalog)
     {
-    	//selectionInCatalog = true --> Selektion im Katalog geändert
-    	//selectionInCatalog = false --> Selektion in LastViewed geändert
+    	//selectionInCatalog = true --> Selektion im Katalog geï¿½ndert
+    	//selectionInCatalog = false --> Selektion in LastViewed geï¿½ndert
     	if(selectionInCatalog==true)
     	{
     		//Artikel in der ListCatalog ausgewï¿½hlt
@@ -384,7 +379,7 @@ public class MainScreenController {
     
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
-<<<<<<< HEAD
+
     	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
 		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
 		
@@ -443,26 +438,26 @@ public class MainScreenController {
 			}
 		}
 		currentSearchEvent=false;
-=======
+		
     	if(newValue>-1)
     	{
-    		String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
+    		selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
     		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
     		
     		//keine Kategorie, also alle Kategorien
     		if(newValue==0) {
-    			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
+    			//Alle Kategorien ausgewï¿½hlt und kein Suchbegriff ist eingegeben
     			if(currentSearchEvent) {
     				LoadAllProducts();
     				currentSearchEvent=false;
     			}
-    			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
+    			//Alle Kategorien ausgewï¿½hlt und Suchbegriff ist eingegeben
     			else {
     				searchChangedEvent();
     			}
     			
     		} else {
-    			//Sonstige Kategorie ausgewählt
+    			//Sonstige Kategorie ausgewï¿½hlt
     			HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	    	requestMap.put("Category", selectedCategoryString);
     	    	
@@ -474,7 +469,7 @@ public class MainScreenController {
     				Product[] articlesInCategoryAndSearch = null;
     				
     				if(lastSearchResult == null) {
-    					//Letzte Suche war leer bzw. noch keine Suche getätigt
+    					//Letzte Suche war leer bzw. noch keine Suche getï¿½tigt
     					articlesInCategoryAndSearch=articleInCategory;
     				}
     				else {
@@ -507,7 +502,7 @@ public class MainScreenController {
     		}
     		currentSearchEvent=false;
     	}
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
+
     }
     
     private void searchChangedEvent()
@@ -548,13 +543,8 @@ public class MainScreenController {
 						articlesInSearchAndCategory = articlesInSearch;
 					}
 					else {
-<<<<<<< HEAD
+
 						//bestimmte Kategorie ausgewï¿½hlt
-=======
-						//bestimmte Kategorie ausgewählt
-						
-						//Arraygröße bestimmen
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
 						int i=0;
 						for(Product p : articlesInSearch) {
 							if(p.getCategory().equals(MainScreen_ChoiceBox_Category.getSelectionModel().getSelectedItem()))	{
@@ -765,7 +755,7 @@ public class MainScreenController {
 			return;
     	}
     	
-<<<<<<< HEAD
+
     	//clienseitig Prï¿½fen, ob genug Guthaben vorhanden ist
     	if(user.getWallet()<productToBuy.getPrice())
     	{
@@ -773,17 +763,14 @@ public class MainScreenController {
 			return;
     	}
     	
-=======
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
+
+
     	//Client BuyItem Request senden
-<<<<<<< HEAD
+
     	//Es wird bei dieser Request automatisch das Kï¿½uferkonto um den Produktpreis verringert
     	//und das Verkï¿½uferkonto um den Produktpreis erhï¿½ht
-=======
-    	//Es wird bei dieser Request automatisch das Käuferkonto um den Produktpreis verringert
-    	//und das Verkäuferkonto um den Produktpreis erhöht
-    	//In der Request wird geprüft, ob genug Guthaben vorhanden ist.
->>>>>>> branch 'gradle' of https://git.uni-due.de/sep/Wintersemester_2020-21/Gruppe-A-B/Gruppe-B.git
+    	//In der Request wird geprï¿½ft, ob genug Guthaben vorhanden ist.
+
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
     	requestMap.put("Product", productToBuy);
@@ -802,7 +789,7 @@ public class MainScreenController {
 		}
 		else if(queryResponse.getResponseType() == Response.InsufficientBalance)
 		{
-			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewählte Produkt zu kaufen.",
+			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das ausgewï¿½hlte Produkt zu kaufen.",
 					"Fehler", "Fehler", AlertType.ERROR, true,
 					false);
 			return;
