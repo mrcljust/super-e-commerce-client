@@ -224,6 +224,7 @@ public class MainScreenController {
 			
 			MainScreen_ListLastViewed.setItems(ObservableProducts);
 		}
+		//nicht weiter auf Fehler prüfen, da es ja nicht notwendig ist, dass zuletzt angesehene Produkte dargestellt werden
     }
     
 	//ChoiceBox Categories Selection Change Listener
@@ -351,6 +352,8 @@ public class MainScreenController {
     	Product viewedProduct = MainScreen_ListCatalog.getSelectionModel().getSelectedItem();
     	
     	boolean alreadyInLastViewed = false;
+    	
+    	//Vor ClientRequest an den Server pruefen ob das Produkt bereits in den zuletzt angesehenen Produkten ist
     	if(MainScreen_ListLastViewed.getItems() != null)
     	{
 			for(Product p: MainScreen_ListLastViewed.getItems())

@@ -267,9 +267,15 @@ public class OfferProductController {
 			}
 			csvReader.close();
 			
-			//Erste Zeile splitten um Identifier zu erhalten
+			//Erste Zeile splitten um Identifier (und Anzahl der Spalten) zu erhalten
+			//Identifier werden nicht weiter genutzt, da die csv-Struktur immer gleich bleibt (was steht in welcher Spalte).
+			//Anderenfalls hätte man hier anhand der Strings prüfen können, in welcher Spalte zb die Produktbezeichnung
+			//steht, um diese dann entsprechend dem Product-Objekt zuzuweisen.
 			String[] csvIdentifier = lines.get(0).split(";");
 			int errorcount = 0;
+			
+			//Liste erstellen und später zu Array umwandeln, um das "lästige" Array vergrößern pro neuem Eintrag
+			//und dann benötigtestemp-Array zu umgehen
 			List<Product> csvProducts = new ArrayList<>();
 			for(int i=1;i<lines.size();i++)
 			{
@@ -292,7 +298,7 @@ public class OfferProductController {
 				}
 				catch (NumberFormatException e)
 				{
-					//aus einer Zeile kann kein Produkt-Array erstellt werden (z.B. wenn in der Preis-Spalte kein gültiger Double eingetragen ist)
+					//aus einer Zeile kann kein Product erstellt werden (z.B. wenn in der Preis-Spalte kein gültiger Double eingetragen ist)
 					//Zähle den FehlerCounter hoch
 					e.printStackTrace();
 					errorcount++;

@@ -35,7 +35,7 @@ public class FXMLHandler extends Application {
 		{
 			// Client hat erfolgreich Verbindung zum Server hergestellt
 		} else {
-			// Fehler bei Verbindungsherstellung zum Server, zeige Fehlermeldung
+			// Fehler bei Verbindungsherstellung zum Server, zeige Fehlermeldung und beende das Programm danach
 
 			ShowMessageBox("Es konnte keine Verbindung zum Server hergestellt werden. Das Programm wird beendet.",
 					"Fehler bei Verbindung zum Server", "Fehler bei Verbindung zum Server", AlertType.ERROR, true,
@@ -49,7 +49,7 @@ public class FXMLHandler extends Application {
 	}
 
 	private static Parent CreateParent(String sceneName) {
-		// Die Methode übergibt einen Parent aus einer fxml-Datei, welcher benötigt
+		// Die Methode übergibt einen Parent aus einer fxml-Datei aus den Resourcen des Projektes, welcher benötigt
 		// wird, um eine Szene zu öffnen
 		try {
 			return FXMLLoader.load(FXMLHandler.class.getResource("/SEPClient/UI/" + sceneName + ".fxml"));
@@ -73,6 +73,7 @@ public class FXMLHandler extends Application {
 			
 			if(startCentered)
 			{
+				//zentriert starten
 				Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 				stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
 				stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
@@ -95,6 +96,7 @@ public class FXMLHandler extends Application {
 			
 			if(startCentered)
 			{
+				//zentriert starten
 				Rectangle2D primScreenBounds = Screen.getPrimary().getVisualBounds();
 				stage.setX((primScreenBounds.getWidth() - stage.getWidth()) / 2);
 				stage.setY((primScreenBounds.getHeight() - stage.getHeight()) / 2);
