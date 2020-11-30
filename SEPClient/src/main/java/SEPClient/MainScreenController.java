@@ -380,67 +380,12 @@ public class MainScreenController {
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
 
-    	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
 		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
 		
 		//keine Kategorie, also alle Kategorien
-		if(newValue==0) {
-			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
-			if(currentSearchEvent) {
-				LoadAllProducts();
-				currentSearchEvent=false;
-			}
-			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
-			else {
-				searchChangedEvent();
-			}
-			
-		} else {
-			//Sonstige Kategorie ausgewählt
-			HashMap<String, Object> requestMap = new HashMap<String, Object>();
-	    	requestMap.put("Category", selectedCategoryString);
-	    	
-	    	ClientRequest req = new ClientRequest(Request.FetchProducts, requestMap);
-	    	Client client = Client.getClient();
-			ServerResponse queryResponse = client.sendClientRequest(req);
-			if(queryResponse.getResponseType() != null)	{
-				Product[] articleInCategory = (Product[])queryResponse.getResponseMap().get("Products"); //Produkte in Kategorie
-				Product[] articlesInCategoryAndSearch = null;
-				
-				if(lastSearchResult == null) {
-					//Letzte Suche war leer bzw. noch keine Suche getätigt
-					articlesInCategoryAndSearch=articleInCategory;
-				}
-				else {
-					//aktuelle Suche
-					int i=0;
-					for(Product p : lastSearchResult) {
-						i++;
-					}
-					if(i>0)	{
-						articlesInCategoryAndSearch = new Product[i];
-						int ii=0;
-						for(Product p : lastSearchResult) {
-							if(p.getCategory().equals(selectedCategoryString)) {
-								articlesInCategoryAndSearch[ii]=p; 
-								ii++;
-							}
-						}
-					}
-				}
-				
-				if(articlesInCategoryAndSearch!=null)
-				{
-					ObservableList<Product> ObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch);
-					
-					MainScreen_ListCatalog.setItems(ObservableProducts);
-				}
-			}
-		}
-		currentSearchEvent=false;
-		
     	if(newValue>-1)
     	{
+        	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
     		selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
     		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
     		
@@ -502,7 +447,6 @@ public class MainScreenController {
     		}
     		currentSearchEvent=false;
     	}
-
     }
     
     private void searchChangedEvent()

@@ -130,8 +130,8 @@ public class EditAccountController {
 	void EditAccount_OKClick (ActionEvent event) throws IOException {
 		String username = EditAccount_txtUsername.getText().trim();
 		String email = EditAccount_txtEmail.getText().trim();
-		String password = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPassword.getText());
-		String passwordRepeated = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPasswordRepeat.getText());
+		String password = EditAccount_txtPassword.getText();
+		String passwordRepeated = EditAccount_txtPasswordRepeat.getText();
 		String fullname = EditAccount_txtFullName.getText().trim();
 		String street = EditAccount_txtStreet.getText().trim();
 		String number = EditAccount_txtNumber.getText().trim(); //ich muss nicht typecasten?
@@ -173,6 +173,10 @@ public class EditAccountController {
 			EditAccount_txtPasswordRepeat.setText("");
 			return; //nochmal versuchen
 		}
+		
+		//Passwort verschlüsseln
+		password = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPassword.getText());
+		passwordRepeated = SEPCommon.Methods.getMd5Encryption(EditAccount_txtPasswordRepeat.getText());
 		
 		if (!email.contains("@") || !email.contains(".")) {
 			FXMLHandler.ShowMessageBox("Die E-Mail Adresse ist nicht gültig.", "Fehler", "Fehler", AlertType.ERROR, true, false);

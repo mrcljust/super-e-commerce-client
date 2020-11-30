@@ -116,8 +116,8 @@ public class RegisterController {
     	// Felder bekommen Eingaben
     	String username = Register_txtUsername.getText().trim();
     	String email = Register_txtEmail.getText().trim();
-    	String password = SEPCommon.Methods.getMd5Encryption(Register_txtPassword.getText());
-    	String passwordRepeat = SEPCommon.Methods.getMd5Encryption(Register_txtPasswordRepeat.getText());
+    	String password = Register_txtPassword.getText();
+    	String passwordRepeat = Register_txtPasswordRepeat.getText();
     	boolean isSeller = Register_radioSeller.isSelected();
     	String fullname = Register_txtFullName.getText().trim();
     	String street = Register_txtStreet.getText().trim();
@@ -164,6 +164,10 @@ public class RegisterController {
     		Register_txtPasswordRepeat.setText("");
     		return;
     	}
+    	
+    	//Passwort verschlüsseln
+    	password = SEPCommon.Methods.getMd5Encryption(Register_txtPassword.getText());
+    	passwordRepeat = SEPCommon.Methods.getMd5Encryption(Register_txtPasswordRepeat.getText());
     	
     	// Email muss ein @ enthalten, um es später vom Username unterscheiden zu können
     	if(!email.contains("@") || !email.contains("."))
