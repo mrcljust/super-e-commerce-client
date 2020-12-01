@@ -743,7 +743,7 @@ public class SQL {
 		}
 	}
 
-	protected Product[] fetchAllProducts() {															//ProductArray aufgerufen in 
+	protected Product[] fetchAllProducts() {															//ProductArray aufgerufen in test
 		// Alle in der DB vorhandenen Produkte in einem ProductArray ausgeben
 
 		// Wenn erfolgreich gefetcht, Product-Array returnen
