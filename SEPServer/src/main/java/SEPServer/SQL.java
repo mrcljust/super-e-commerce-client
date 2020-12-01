@@ -743,7 +743,7 @@ public class SQL {
 		}
 	}
 
-	protected Product[] fetchAllProducts() {
+	protected Product[] fetchAllProducts() {															//ProductArray aufgerufen in 
 		// Alle in der DB vorhandenen Produkte in einem ProductArray ausgeben
 
 		// Wenn erfolgreich gefetcht, Product-Array returnen
@@ -771,7 +771,7 @@ public class SQL {
 			while (AllProducts.next()) {  //Tupel Zählen
 				sqlcounter++;
 			}
-			ResultSet AllProducts2= pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			ResultSet AllProducts2= pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten
 			
 
 			Product[] allProducts = new Product[sqlcounter];
@@ -834,7 +834,7 @@ public class SQL {
 				sqlcounter++;
 			}
 
-			ResultSet AllProductsByCategory2 = statement.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			ResultSet AllProductsByCategory2 = statement.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten, NCAR
 			
 
 			Product[] allProductsSameCategory = new Product[sqlcounter];
@@ -897,7 +897,7 @@ public class SQL {
 				sqlcounter++;
 			}
 			
-			ResultSet AllProductsByFullString2 = pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten glaueb aber nien, weil Statement danach closed
+			ResultSet AllProductsByFullString2 = pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten(?) NCAR
 			
 			
 			Product[] allProductsByString = new Product[sqlcounter];
