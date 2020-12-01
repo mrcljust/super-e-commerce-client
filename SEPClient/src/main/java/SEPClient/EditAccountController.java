@@ -164,14 +164,14 @@ public class EditAccountController {
 				|| city=="" || city==null || country=="" || country==null || (isSeller && businessname==null) || (isSeller && businessname=="")) {
 			
 			FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
-			return; //nochmal versuchen
+			return; 
 		}
     	
 		if (!passwordRepeated.equals(password)) {
 			FXMLHandler.ShowMessageBox("Die Passwörter stimmen nicht überein.", "Fehler", "Fehler", AlertType.ERROR, true, false);
 			EditAccount_txtPassword.setText("");
 			EditAccount_txtPasswordRepeat.setText("");
-			return; //nochmal versuchen
+			return; 
 		}
 		
 		//Passwort verschlüsseln

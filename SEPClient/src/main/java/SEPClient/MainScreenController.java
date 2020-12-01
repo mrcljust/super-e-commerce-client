@@ -383,16 +383,15 @@ public class MainScreenController {
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
 
-		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+		MainScreen_ListCatalog.getItems().clear();
 		
 		//keine Kategorie, also alle Kategorien
     	if(newValue>-1)
     	{
         	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
-    		selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
     		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
     		
-    		//keine Kategorie, also alle Kategorien
+    		//keine Kategorie
     		if(newValue==0) {
     			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
     			if(currentSearchEvent) {
