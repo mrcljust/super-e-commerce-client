@@ -1087,7 +1087,7 @@ public class SQL {
 			selectCategoryID.setString(1, product.getCategory());
 			ResultSet selectCategoryIDResult = selectCategoryID.executeQuery();
 			if (selectCategoryIDResult.next()) {
-				//wenn Kategorie bereits existiert, speichere ID in der Variable categoryid:
+				//wenn Kategorie bereits existiert, speichere ID in der Variable categoryid
 				categoryid = selectCategoryIDResult.getInt("id");
 			} 
 			else {
@@ -1097,21 +1097,20 @@ public class SQL {
 				createCategory.setString(1, product.getCategory());
 				createCategory.execute();
 				
-				//nachdem Kategorie erstellt wurde, können wir Kategorie auslesen:
+				//nachdem Kategorie erstellt wurde, kann wie vorher vorgegangen werden
 				selectCategoryIDResult = selectCategoryID.executeQuery();
 				if (selectCategoryIDResult.next()) {
 					categoryid = selectCategoryIDResult.getInt("id");
 				} else {
-					//vielleicht noch rausnehmen? Weil sollte eigentlich nicht passieren
 					return Response.Failure;
 				}
 			}
-			//da jetzt Kategorie existiert, können wir das Produkt anlegen
+			//jetzt kann Produkt angelegt werden
 			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description) "
 					+ "VALUES (?, ?, ?, ?, ?)");
 		
-			insertProduct.setInt(1, seller.getId()); //An Stelle des 1. ? setzen
-			insertProduct.setString(2,  product.getName()); // ...
+			insertProduct.setInt(1, seller.getId()); 
+			insertProduct.setString(2,  product.getName()); 
 			insertProduct.setDouble(3,  SEPCommon.Methods.round(product.getPrice(), 2));
 			insertProduct.setInt(4, categoryid);
 			insertProduct.setString(5, product.getDescription());
