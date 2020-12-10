@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 10. Dez 2020 um 23:25
+-- Erstellungszeit: 11. Dez 2020 um 00:36
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -29,16 +29,16 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `auctions` (
   `auction_id` int(11) NOT NULL,
-  `buyer_id` int(11) NOT NULL,
+  `currentbidder_id` int(11) NOT NULL,
   `seller_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `image` longblob NOT NULL,
   `startprice` double NOT NULL,
   `minbid` double NOT NULL,
-  `endbid` double NOT NULL,
-  `shippingtype_id` int(11) NOT NULL COMMENT 'fremdschlüssel shippingtype',
-  `enddate` date NOT NULL DEFAULT current_timestamp(),
+  `currentbid` double NOT NULL,
+  `shippingtype_id` int(11) NOT NULL COMMENT 'Fremdschlüssel shippingtype',
+  `enddate` datetime NOT NULL,
   `emailsent` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
