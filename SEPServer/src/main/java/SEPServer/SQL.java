@@ -10,9 +10,12 @@ import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.User;
 import SEPCommon.Address;
+import SEPCommon.Auction;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
+import SEPCommon.Order;
 import SEPCommon.Product;
+import SEPCommon.Rating;
 
 public class SQL {
 
@@ -743,7 +746,7 @@ public class SQL {
 		}
 	}
 
-	protected Product[] fetchAllProducts() {															//ProductArray aufgerufen in test
+	protected Product[] fetchAllProducts() {															//ProductArray aufgerufen in Mainscreen
 		// Alle in der DB vorhandenen Produkte in einem ProductArray ausgeben
 
 		// Wenn erfolgreich gefetcht, Product-Array returnen
@@ -827,7 +830,7 @@ public class SQL {
 			 		   + "JOIN users\r\n"
 			 		   + "ON users.id=products.seller_id\r\n"
 			 		   + "WHERE categories.title=?");
-			statement.setString(1, category);
+			statement.setString(1, category);		
 			ResultSet AllProductsByCategory = statement.executeQuery();
 
 			while (AllProductsByCategory.next()) {
@@ -1261,4 +1264,75 @@ public class SQL {
 			return Response.Failure;
 		}
 	}
+	
+	protected Response addAuction (Auction auction) {
+		return null;
+	}
+	
+	protected Response sendBid(Customer bidder, double bid) {
+		return null;
+	}
+	
+	
+
+	protected Response saveAuction(User buyer, Auction auction) {
+		return null;
+	}
+	
+	protected Order[] fetchOrders (User buyer) {
+		return null;
+	}
+	
+	protected Response SendRating (Rating rating) {
+		return null;
+	}
+	
+	protected Rating[] fetchRatings (User user) {				// Text und Punkte
+		return null;
+	}
+	 protected double[] fetchAvgRating(User user) {			//index 0 ist Average, Index 1 ist average	
+		 return null;
+	 }
+	 
+	 protected Response deleteOrder (Order order) {
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchPurchasedAuctions (User buyer) {		//selbst gekaufte Auktionen (beendet)
+		 return null;
+	 }
+	 
+	 
+	 protected Auction[] fetchEndedAuctions () {					//alle beendeten Auktionen
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchCurrentAuctions () {					//alle aktuell laufende Auktionen
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchOwnCurrentAuctions (User buyer) {		//selbst eingestellte Auktionen
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchAuctionsUserBiddedOn (User buyer) {		//Auktionen auf die Buyer geboten hat
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchSavedAuctions(User buyer) {				//Auktionen die user gespeichert hat (aktuell + beendete)
+		 return null;
+	 }
+	 
+	 
+	 
+	 
+	 protected Auction[] fetchAuctionsByString(String searchstring) {
+		 return null;
+	 }
+	 
+	 
+	 protected Response CheckForFinishedAuctions() {				//Checken ob und wann email schicken
+		 return null;
+	 }
+	 
 }

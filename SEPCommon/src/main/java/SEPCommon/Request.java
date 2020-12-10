@@ -13,5 +13,12 @@ public enum Request {
 	AddItems,
 	BuyItem,
 	DeleteUser,
-	GetUserData
+	GetUserData,
+	CreateAuction,
+	SendBid,
+	FetchAuctions,			//Acitve, ActiveAndEnded, MyBids, MyAuctions, SavedAuctions
+	DeleteOrder,
+	SendRating,
+	FetchRatings,			// 2 Typen, alle Bewertungen und Durchschnitt
+	FetchOrders
 }

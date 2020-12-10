@@ -7,5 +7,8 @@ public enum Response {
 	UsernameTaken,
 	EmailTaken,
 	Failure,
-	InsufficientBalance
+	InsufficientBalance,
+	BidTooLow,
+	AuctionAlreadyEnded,
+	
 }
