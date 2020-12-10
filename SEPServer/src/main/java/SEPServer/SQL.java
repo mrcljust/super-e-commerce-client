@@ -1266,72 +1266,143 @@ public class SQL {
 	}
 	
 	protected Response addAuction (Auction auction) {
+		if (!checkConnection()) {
+			return null;
+		}
+		
 		return null;
 	}
 	
 	protected Response sendBid(Customer bidder, double bid) {
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		
 		return null;
 	}
 	
 	
 
 	protected Response saveAuction(User buyer, Auction auction) {
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		
 		return null;
 	}
 	
 	protected Order[] fetchOrders (User buyer) {
+		if (!checkConnection()) {
+			return null;
+		}
+		
 		return null;
 	}
 	
 	protected Response SendRating (Rating rating) {
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		
 		return null;
 	}
 	
-	protected Rating[] fetchRatings (User user) {				// Text und Punkte
+	protected Rating[] fetchRatings (User user) {
+		// Text und Punkte
+		if (!checkConnection()) {
+			return null;
+		}
+		
 		return null;
 	}
-	 protected double[] fetchAvgRating(User user) {			//index 0 ist Average, Index 1 ist average	
+	 protected double[] fetchAvgRating(User user) {
+		//index 0 ist Average, Index 1 ist Anzahl
+		if (!checkConnection()) {
+			return null;
+		}
+			
 		 return null;
 	 }
 	 
 	 protected Response deleteOrder (Order order) {
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+			
 		 return null;
 	 }
 	 
-	 protected Auction[] fetchPurchasedAuctions (User buyer) {		//selbst gekaufte Auktionen (beendet)
-		 return null;
-	 }
-	 
-	 
-	 protected Auction[] fetchEndedAuctions () {					//alle beendeten Auktionen
-		 return null;
-	 }
-	 
-	 protected Auction[] fetchCurrentAuctions () {					//alle aktuell laufende Auktionen
-		 return null;
-	 }
-	 
-	 protected Auction[] fetchOwnCurrentAuctions (User buyer) {		//selbst eingestellte Auktionen
-		 return null;
-	 }
-	 
-	 protected Auction[] fetchAuctionsUserBiddedOn (User buyer) {		//Auktionen auf die Buyer geboten hat
-		 return null;
-	 }
-	 
-	 protected Auction[] fetchSavedAuctions(User buyer) {				//Auktionen die user gespeichert hat (aktuell + beendete)
+	 protected Auction[] fetchPurchasedAuctions (User buyer) {
+		 //selbst gekaufte Auktionen (beendet)
+		if (!checkConnection()) {
+			return null;
+		}
+		
 		 return null;
 	 }
 	 
 	 
+	 protected Auction[] fetchEndedAuctions () {
+		 //alle beendeten Auktionen
+		if (!checkConnection()) {
+			return null;
+		}
+				
+		 return null;
+	 }
 	 
+	 protected Auction[] fetchCurrentAuctions () {
+		 //alle aktuell laufende Auktionen
+		if (!checkConnection()) {
+			return null;
+		}
+		
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchOwnCurrentAuctions (User buyer) {
+		//selbst eingestellte Auktionen
+		if (!checkConnection()) {
+			return null;
+		}
+			
+		 return null;
+	 }
+	 
+	 protected Auction[] fetchAuctionsUserBiddedOn (User buyer) {
+		//Auktionen auf die Buyer geboten hat
+		if (!checkConnection()) {
+			return null;
+		}
+		
+		return null;
+	 }
+	 
+	 protected Auction[] fetchSavedAuctions(User buyer) {
+		 //Auktionen die user gespeichert hat (aktuell + beendete)
+		 if (!checkConnection()) {
+			 return null;
+		 }
+			
+		 return null;
+	 }
 	 
 	 protected Auction[] fetchAuctionsByString(String searchstring) {
-		 return null;
+		if (!checkConnection()) {
+			return null;
+		}
+			
+		return null;
 	 }
 	 
-	 
-	 protected Response CheckForFinishedAuctions() {				//Checken ob und wann email schicken
+	 protected Response checkForFinishedAuctions() {
+		 //Checken ob es beendete Auktionen gibt, zu welchen noch keine Verkaufsbestätigungsemail verschickt wurde,
+		 //ggf Email schicken
+		 if (!checkConnection()) {
+			 return Response.NoDBConnection;
+		 }
+		 
+		 EmailHandler.sendAuctionEndedEmail(null);
 		 return null;
 	 }
 	 

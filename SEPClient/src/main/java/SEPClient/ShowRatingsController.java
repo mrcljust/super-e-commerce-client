@@ -13,7 +13,7 @@ public class ShowRatingsController {
 		user = _user;
 	}
 
-	public static void setViewOnRatings(boolean _viewOwnRatings) {
+	public static void setViewOwnRatings(boolean _viewOwnRatings) {
 		viewOwnRatings = _viewOwnRatings;
 	}
 

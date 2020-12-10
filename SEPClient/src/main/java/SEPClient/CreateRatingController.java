@@ -8,8 +8,8 @@ import SEPCommon.User;
 
 public class CreateRatingController {
 
-	private static Order order = null;
 	private static User user = null;
+	private static Order order = null;
 	private static Auction auction = null;
 
 	public static void setUser(User _user) {

@@ -16,7 +16,7 @@ import SEPCommon.User;
 public class ServerThread implements Runnable {
 	private Socket client;
 	private int clientID;
-	private SEPServer.SQL sql;
+	private SQL sql;
 	private ObjectInputStream in;
 	private ObjectOutputStream out;
 	

@@ -6,8 +6,7 @@ import SEPCommon.Response;
 public class EmailHandler {
 
 	
-	protected Response sendAuctionEndedEmail(Auction auction) {
+	protected static Response sendAuctionEndedEmail(Auction auction) {
 		return null;
-		
 	}
 }

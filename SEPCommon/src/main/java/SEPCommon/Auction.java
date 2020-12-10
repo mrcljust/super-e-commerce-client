@@ -126,7 +126,7 @@ public class Auction implements Serializable {
 	}
 
 	public void setShippingType(String shippingType) {
-		shippingType = shippingType;
+		this.shippingType = shippingType;
 	}
 
 	public Customer getSeller() {
