@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 11. Dez 2020 um 00:36
+-- Erstellungszeit: 13. Dez 2020 um 14:25
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -38,6 +38,7 @@ CREATE TABLE `auctions` (
   `minbid` double NOT NULL,
   `currentbid` double NOT NULL,
   `shippingtype_id` int(11) NOT NULL COMMENT 'Fremdschlüssel shippingtype',
+  `starttime` datetime NOT NULL,
   `enddate` datetime NOT NULL,
   `emailsent` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
