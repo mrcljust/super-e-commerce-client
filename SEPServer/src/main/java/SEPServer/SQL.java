@@ -11,6 +11,7 @@ import SEPCommon.Seller;
 import SEPCommon.User;
 import SEPCommon.Address;
 import SEPCommon.Auction;
+import SEPCommon.AuctionType;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
 import SEPCommon.Order;
@@ -1273,17 +1274,17 @@ public class SQL {
 		return null;
 	}
 	
-	protected Response sendBid(Customer bidder, double bid) {
+	protected Response sendBid(Auction auction, Customer bidder, double bid) {
+		//Das Objekt bidder bietet auf das Objekt auction die Menge bid
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 		
 		return null;
 	}
-	
-	
 
 	protected Response saveAuction(User buyer, Auction auction) {
+		//Auktion in die Merkliste des Objekt buyer setzen
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
@@ -1292,45 +1293,17 @@ public class SQL {
 	}
 	
 	protected Order[] fetchOrders (User buyer) {
+		//Alle orders die das Objekt buyer gekauft hat in einem Order-Array zurückgeben.
+		//Wenn erfolgreich gefetcht, Product-Array returnen
+		//wenn keine Verbindung zu DB: null returnen
+		//wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null returnen
+		
 		if (!checkConnection()) {
 			return null;
 		}
 		
 		return null;
 	}
-	
-	protected Response SendRating (Rating rating) {
-		if (!checkConnection()) {
-			return Response.NoDBConnection;
-		}
-		
-		return null;
-	}
-	
-	protected Rating[] fetchRatings (User user) {
-		// Text und Punkte
-		if (!checkConnection()) {
-			return null;
-		}
-		
-		return null;
-	}
-	 protected double[] fetchAvgRating(User user) {
-		//index 0 ist Average, Index 1 ist Anzahl
-		if (!checkConnection()) {
-			return null;
-		}
-			
-		 return null;
-	 }
-	 
-	 protected Response deleteOrder (Order order) {
-		if (!checkConnection()) {
-			return Response.NoDBConnection;
-		}
-			
-		 return null;
-	 }
 	 
 	 protected Auction[] fetchPurchasedAuctions (User buyer) {
 		 //selbst gekaufte Auktionen (beendet)
@@ -1341,9 +1314,13 @@ public class SQL {
 		 return null;
 	 }
 	 
-	 
-	 protected Auction[] fetchEndedAuctions () {
-		 //alle beendeten Auktionen
+	 protected Auction[] fetchAuctions (AuctionType auctionType) {
+		 //je nach AuctionType alle aktuell laufenden, beendeten oder zukünftigen Auktionen zurückgeben
+		 
+		 //AuctionType:
+		 //AuctionType.Active = aktive Auktionen
+		 //AuctionType.Ended = beendete Auktionen
+		 //AuctionType.Future = zukünftige Auktionen
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1351,17 +1328,8 @@ public class SQL {
 		 return null;
 	 }
 	 
-	 protected Auction[] fetchCurrentAuctions () {
-		 //alle aktuell laufende Auktionen
-		if (!checkConnection()) {
-			return null;
-		}
-		
-		 return null;
-	 }
-	 
-	 protected Auction[] fetchOwnCurrentAuctions (User buyer) {
-		//selbst eingestellte Auktionen
+	 protected Auction[] fetchOwnAuctions (User buyer) {
+		//selbst eingestellte Auktionen (aktuell + beendete + zukünftige)
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1370,7 +1338,7 @@ public class SQL {
 	 }
 	 
 	 protected Auction[] fetchAuctionsUserBiddedOn (User buyer) {
-		//Auktionen auf die Buyer geboten hat
+		//Auktionen auf die buyer geboten hat (aktuell + beendete)
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1379,7 +1347,7 @@ public class SQL {
 	 }
 	 
 	 protected Auction[] fetchSavedAuctions(User buyer) {
-		 //Auktionen die user gespeichert hat (aktuell + beendete)
+		 //Auktionen die buyer gespeichert hat (aktuell + beendete + zukünftige)
 		 if (!checkConnection()) {
 			 return null;
 		 }
@@ -1387,7 +1355,16 @@ public class SQL {
 		 return null;
 	 }
 	 
-	 protected Auction[] fetchAuctionsByString(String searchstring) {
+	 protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
+		 //Auktionen mit searchString im Titel/Name zurückgeben
+		 
+		 //je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen Auktionen mit dem searchstring zurückgeben
+		 
+		 //AuctionType:
+		 //AuctionType.Active = aktive Auktionen
+		 //AuctionType.Ended = beendete Auktionen
+		 //AuctionType.Future = zukünftige Auktionen
+		 
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1395,9 +1372,43 @@ public class SQL {
 		return null;
 	 }
 	 
-	 protected Response checkForFinishedAuctions() {
+		
+		protected Response SendRating (Rating rating) {
+			if (!checkConnection()) {
+				return Response.NoDBConnection;
+			}
+			
+			return null;
+		}
+		
+		protected Rating[] fetchRatings (User user) {
+			// Text und Punkte
+			if (!checkConnection()) {
+				return null;
+			}
+			
+			return null;
+		}
+		 protected double[] fetchAvgRating(User user) {
+			//index 0 ist Average, Index 1 ist Anzahl
+			if (!checkConnection()) {
+				return null;
+			}
+				
+			 return null;
+		 }
+		 
+		 protected Response deleteOrder (Order order) {
+			if (!checkConnection()) {
+				return Response.NoDBConnection;
+			}
+				
+			 return null;
+		 }
+	 
+	 protected Response checkForNewFinishedAuctions() {
 		 //Checken ob es beendete Auktionen gibt, zu welchen noch keine Verkaufsbestätigungsemail verschickt wurde,
-		 //ggf Email schicken
+		 //(Spalte emailsent in der Auctions-DB-Tabelle), ggf Email schicken
 		 if (!checkConnection()) {
 			 return Response.NoDBConnection;
 		 }

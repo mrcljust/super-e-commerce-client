@@ -16,9 +16,10 @@ public enum Request {
 	GetUserData,
 	CreateAuction,
 	SendBid,
-	FetchAuctions,			//Acitve, ActiveAndEnded, MyBids, MyAuctions, SavedAuctions
+	FetchAuctions,			//AuctionType Enum, MyBids, MyAuctions, SavedAuctions
 	DeleteOrder,
 	SendRating,
 	FetchRatings,			// 2 Typen, alle Bewertungen und Durchschnitt
-	FetchOrders
+	FetchOrders,
+	GetServerDateTime //aktuelle Zeit vom Server
 }

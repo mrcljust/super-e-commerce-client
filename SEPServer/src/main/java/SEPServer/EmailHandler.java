@@ -8,6 +8,5 @@ public class EmailHandler {
 	
 	protected static Response sendAuctionEndedEmail(Auction auction) {
 		return null;
-		
 	}
 }

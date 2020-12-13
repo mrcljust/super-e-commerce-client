@@ -38,7 +38,7 @@ public class Server {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 		        public void run() {
-		        	sql.checkForFinishedAuctions();
+		        	sql.checkForNewFinishedAuctions();
 		        }
 		    }, 0, 60000);
 			

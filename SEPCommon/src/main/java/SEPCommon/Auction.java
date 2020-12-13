@@ -16,11 +16,12 @@ public class Auction implements Serializable {
 	private Customer currentBidder;
 	private Rating sellerRating;
 	private Rating buyerRating;
+	private Date starttime;
 	private Date enddate;
 	private boolean isEnded;
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, String _shippingType,
-			Customer _seller, Customer _currentBidder, Double _currentBid, Date _enddate) {
+			Customer _seller, Customer _currentBidder, Double _currentBid, Date _starttime, Date _enddate) {
 		//wird aufgerufen, wenn laufende Auktion aus DB geholt wird
 		this.id = _id;
 		this.title = _title;
@@ -30,6 +31,7 @@ public class Auction implements Serializable {
 		this.shippingType = _shippingType;
 		this.seller = _seller;
 		this.isEnded = false;
+		this.starttime = _starttime;
 		this.enddate = _enddate;
 		this.currentBid = _currentBid;
 		this.currentBidder = _currentBidder;
@@ -37,7 +39,7 @@ public class Auction implements Serializable {
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _currentBid,
 			String _shippingType, Customer _seller, Customer _currentBidder, Rating _sellerRating, Rating _buyerRating,
-			Date _enddate) {
+			Date _starttime, Date _enddate) {
 		//wird bei beendeten Auktionen in der DB aufgerufen.
 		this.id = _id;
 		this.title = _title;
@@ -50,12 +52,13 @@ public class Auction implements Serializable {
 		this.currentBidder = _currentBidder;
 		this.sellerRating = _sellerRating;
 		this.buyerRating = _buyerRating;
+		this.starttime = _starttime;
 		this.enddate = _enddate;
 		this.isEnded=true;
 	}
 
 	public Auction(String _title, String _description, byte[] _image, double _minBid, String _shippingType,	
-			Customer _seller, Date _enddate) {
+			Customer _seller, Date _starttime, Date _enddate) {
 		//wird aufgerufen, wenn neue Auktion angelegt wird (noch keine ID vergeben)
 		this.title = _title;
 		this.description = _description;
@@ -63,6 +66,7 @@ public class Auction implements Serializable {
 		this.minBid = _minBid;
 		shippingType = _shippingType;
 		this.seller = _seller;
+		this.starttime = _starttime;
 		this.enddate = _enddate;
 		this.isEnded=false;
 	}
