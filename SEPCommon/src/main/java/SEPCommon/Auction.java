@@ -11,7 +11,7 @@ public class Auction implements Serializable {
 	private byte[] image;
 	private double minBid;
 	private double currentBid;
-	private String shippingType;
+	private ShippingType shippingType;
 	private Customer seller;
 	private Customer currentBidder;
 	public Rating getSellerRating() {
@@ -60,7 +60,7 @@ public class Auction implements Serializable {
 	private Date enddate;
 	private boolean isEnded;
 
-	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, String _shippingType,
+	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,
 			Customer _seller, Customer _currentBidder, Double _currentBid, Date _starttime, Date _enddate) {
 		//wird aufgerufen, wenn laufende Auktion aus DB geholt wird
 		this.id = _id;
@@ -78,7 +78,7 @@ public class Auction implements Serializable {
 	}
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _currentBid,
-			String _shippingType, Customer _seller, Customer _currentBidder, Rating _sellerRating, Rating _buyerRating,
+			ShippingType _shippingType, Customer _seller, Customer _currentBidder, Rating _sellerRating, Rating _buyerRating,
 			Date _starttime, Date _enddate) {
 		//wird bei beendeten Auktionen in der DB aufgerufen.
 		this.id = _id;
@@ -97,7 +97,7 @@ public class Auction implements Serializable {
 		this.isEnded=true;
 	}
 
-	public Auction(String _title, String _description, byte[] _image, double _minBid, String _shippingType,	
+	public Auction(String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,	
 			Customer _seller, Date _starttime, Date _enddate) {
 		//wird aufgerufen, wenn neue Auktion angelegt wird (noch keine ID vergeben)
 		this.title = _title;
@@ -167,11 +167,11 @@ public class Auction implements Serializable {
 		this.minBid = _minBid;
 	}
 
-	public String getShippingType() {
+	public ShippingType getShippingType() {
 		return shippingType;
 	}
 
-	public void setShippingType(String _shippingType) {
+	public void setShippingType(ShippingType _shippingType) {
 		this.shippingType = _shippingType;
 	}
 

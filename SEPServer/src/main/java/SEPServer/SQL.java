@@ -12,6 +12,7 @@ import java.util.Date;
 
 import SEPCommon.Response;
 import SEPCommon.Seller;
+import SEPCommon.ShippingType;
 import SEPCommon.User;
 import SEPCommon.Address;
 import SEPCommon.Auction;
@@ -1297,7 +1298,14 @@ public class SQL {
 			pstmt.setBytes(6, auction.getSeller().getPicture());
 			pstmt.setDouble(7, auction.getMinBid());
 			pstmt.setInt(8, auction.getSeller().getId());
-			pstmt.setString(9, auction.getShippingType()); // nicht sicher
+			if(auction.getShippingType() == ShippingType.Shipping)
+			{
+				pstmt.setInt(9, 1); 
+			}
+			else if(auction.getShippingType() == ShippingType.PickUp)
+			{
+				pstmt.setInt(9, 2); 
+			}
 			pstmt.setDouble(10, auction.getMinBid());
 			pstmt.setDate(11, (java.sql.Date) auction.getStarttime());		//cast unterschiedliche Dates
 			pstmt.setString(12, auction.getTitle());
@@ -1513,6 +1521,10 @@ public class SQL {
 	protected Response checkForNewFinishedAuctions() {
 		// Checken ob es beendete Auktionen gibt, zu welchen noch keine
 		// Verkaufsbestätigungsemail verschickt wurde,
+		// falls ja, das Guthaben des Käufers reduzieren, und das Guthaben des Verkäufers erhöhen (wie bei BuyItem)
+		// Spezialfall: User hat inzwischen kein Guthaben mehr (wird beim Gebot geprüft, aber er kann es zwischenzeitlich
+		// ausgegeben haben) - in diesem Fall die Zeile currentbidder_id auf "" und currentbid auf 0 - also keinen Käufer
+		// in der DB speichern
 		// (Spalte emailsent in der Auctions-DB-Tabelle), ggf Email schicken
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
