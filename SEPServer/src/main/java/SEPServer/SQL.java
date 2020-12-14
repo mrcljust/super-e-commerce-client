@@ -1329,13 +1329,13 @@ public class SQL {
 		else if (currentServerDate.compareTo(endDate) > 0) { // 1.Fall CurrentServerDate ist nach Enddatum (Auktion bereits beendet)
 			return Response.AuctionAlreadyEnded;
 		} else {
-			if (auction.getCurrentBid() >= bid) { // 2. Fall, Bid ist zu niedrig
+			if (auction.getCurrentBid() >= bid || decreaseWallet(bidder, bid)==Response.Failure) { // 2. Fall, Bid ist zu niedrig oder nicht genug Geld
 				return Response.BidTooLow;
 			} else {
-				if (bid > auction.getCurrentBid()) { // 3. Fall Auktion läuft noch sowie 
+				if (bid > auction.getCurrentBid() && decreaseWallet(bidder, bid)==Response.Success) { // 3. Fall Auktion läuft noch sowie bidder genug geld theoretisch
 					try {
 						PreparedStatement pstmt = connection.prepareStatement(
-								"Update auctions Set currentbid=?, currentbidder_id= ?)" + " VALUES(?,?)");
+								"UPDATE auctions SET currentbid=?, currentbidder_id=? VALUES(?,?)");
 						pstmt.setDouble(1, bid);
 						pstmt.setInt(2, bidder.getId());
 						pstmt.execute();
@@ -1370,8 +1370,38 @@ public class SQL {
 		// wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null
 		// returnen
 
+		
 		if (!checkConnection()) {
 			return null;
+		}
+		try {
+			PreparedStatement pstmt= connection.prepareStatement("SELECT * \r\n" 
+					+ "FROM users\r\n" 
+					+ "JOIN orders\r\n"
+					+ "ON users.id=orders.buyer_id\r\n"
+					+ "JOIN products\r\n"
+					+ "ON products.id= "
+					+ "WHERE orders.buyer_id="+ buyer.getId());
+			
+			ResultSet allOrdersResultSet=pstmt.executeQuery();
+			
+			int arraycounter=0;
+			int sqlcounter=0;
+			while(allOrdersResultSet.next()) {			//Tupel zählen
+				sqlcounter++;
+			}
+			allOrdersResultSet.beforeFirst();		//zurücksetzen des pointers auf 0
+			Order[] allOrdersArray = new Order[sqlcounter];
+			
+			while(allOrdersResultSet.next()) {
+				
+	//			Product newProduct= new Product()
+	//			allOrdersArray[arraycounter]= new Order(buyer.getId(), allOrdersResultSet.getInt(columnIndex) )
+			}
+			
+			
+		}catch(SQLException e) {
+			e.printStackTrace();
 		}
 
 		return null;
