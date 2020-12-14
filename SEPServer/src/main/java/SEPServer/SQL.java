@@ -6,6 +6,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Date;
+
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.User;
@@ -22,6 +26,15 @@ public class SQL {
 
 	private boolean isConnected;
 	private static Connection connection;			//Connection zum connecten mit DB
+
+	
+	//Quelle: https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
+	//Autor: Aaron Blenkush
+	// Edited: Jan 8'14 at 18:47
+	private static Date d1= new Date();
+	private static SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
+	private static String formattedDate= df.format(d1);
+	
 
 	private boolean connect() {
 		try {
@@ -190,8 +203,10 @@ public class SQL {
 			
 			try {
 				// Eintrag in Datenbank
-				PreparedStatement stmt = connection.prepareStatement("INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
-						+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				PreparedStatement stmt = connection.prepareStatement(
+						"INSERT INTO users(type,username,password,email,fullname,street,number,postalcode,city,country,image,wallet,companyname,lastviewed) "
+								+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+				
 				
 				// ? Values mit übergebenen Daten füllen (auch Adresse wird gefüllt)
 				stmt.setString(1, "Customer");
@@ -1270,8 +1285,32 @@ public class SQL {
 		if (!checkConnection()) {
 			return null;
 		}
+		try {
+			PreparedStatement pstmt=connection.prepareStatement("INSERT INTO auctions(currentbid, currentbidder_id, description, emailsent, enddate, image, minbid, seller_id, shippingtype_id, startprice, starttime, title)"
+					+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,)");
 
-		return null;
+			pstmt.setDouble(1, auction.getCurrentBid());
+			pstmt.setInt(2, auction.getCurrentBidder().getId());
+			pstmt.setString(3, auction.getDescription());
+			pstmt.setBoolean(4, false);
+			pstmt.setDate(5, (java.sql.Date) auction.getEnddate()); // cast weil unterschiedliche arten von date in java und sql
+			pstmt.setBytes(6, auction.getSeller().getPicture());
+			pstmt.setDouble(7, auction.getMinBid());
+			pstmt.setInt(8, auction.getSeller().getId());
+			pstmt.setString(9, auction.getShippingType()); // nicht sicher
+			pstmt.setDouble(10, auction.getMinBid());
+			pstmt.setDate(11, (java.sql.Date) auction.getStarttime());		//cast unterschiedliche Dates
+			pstmt.setString(12, auction.getTitle());
+
+			pstmt.execute();
+
+			return Response.Success;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return Response.Failure;
+		}
+
 	}
 
 	protected Response sendBid(Auction auction, Customer bidder, double bid) {
@@ -1422,4 +1461,8 @@ public class SQL {
 		return null;
 	}
 
+	public static void main(String[]args) {
+		SQL testSQLObject= new SQL();
+		System.out.println(formattedDate);
+	}
 }

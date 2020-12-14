@@ -14,6 +14,46 @@ public class Auction implements Serializable {
 	private String shippingType;
 	private Customer seller;
 	private Customer currentBidder;
+	public Rating getSellerRating() {
+		return sellerRating;
+	}
+
+	public void setSellerRating(Rating _sellerRating) {
+		this.sellerRating = _sellerRating;
+	}
+
+	public Rating getBuyerRating() {
+		return buyerRating;
+	}
+
+	public void setBuyerRating(Rating _buyerRating) {
+		this.buyerRating = _buyerRating;
+	}
+
+	public Date getStarttime() {
+		return starttime;
+	}
+
+	public void setStarttime(Date _starttime) {
+		this.starttime = _starttime;
+	}
+
+	public Date getEnddate() {
+		return enddate;
+	}
+
+	public void setEnddate(Date _enddate) {
+		this.enddate = _enddate;
+	}
+
+	public boolean isEnded() {
+		return isEnded;
+	}
+
+	public void setEnded(boolean _isEnded) {
+		this.isEnded = _isEnded;
+	}
+
 	private Rating sellerRating;
 	private Rating buyerRating;
 	private Date starttime;
