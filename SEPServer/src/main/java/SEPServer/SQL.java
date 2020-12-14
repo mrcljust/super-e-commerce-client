@@ -1281,7 +1281,7 @@ public class SQL {
 		}
 	}
 
-	protected Response addAuction(Auction auction) {
+	protected Response addAuction(Auction auction) {				//done sofern keine weitere nicht berücksichtigte Fälle (Check L1300)
 		if (!checkConnection()) {
 			return null;
 		}
