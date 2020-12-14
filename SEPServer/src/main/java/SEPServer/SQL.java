@@ -33,7 +33,7 @@ public class SQL {
 	// Edited: Jan 8'14 at 18:47
 	private static Date d1= new Date();
 	private static SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
-	private static String formattedDate= df.format(d1);
+	private static String currentServerDate= df.format(d1);
 	
 
 	private boolean connect() {
@@ -1315,8 +1315,39 @@ public class SQL {
 
 	protected Response sendBid(Auction auction, Customer bidder, double bid) {
 		// Das Objekt bidder bietet auf das Objekt auction die Menge bid
+		// 1. Fall Auktion bereits beendet
+		// 2. Fall Bid ist zu niedrig
+		// 3. Fall Bid ist in Ordnung und die Auktion läuft noch
+		Date date = auction.getEnddate();
+		SimpleDateFormat auctionEndDate = new SimpleDateFormat("dd/MM/YYYY HH:mm a");
+		String endDate = auctionEndDate.format(date);
+
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
+		}
+
+		else if (currentServerDate.compareTo(endDate) > 0) { // 1.Fall CurrentServerDate ist nach Enddatum (Auktion bereits beendet)
+			return Response.AuctionAlreadyEnded;
+		} else {
+			if (auction.getCurrentBid() >= bid) { // 2. Fall, Bid ist zu niedrig
+				return Response.BidTooLow;
+			} else {
+				if (bid > auction.getCurrentBid()) { // 3. Fall Auktion läuft noch sowie 
+					try {
+						PreparedStatement pstmt = connection.prepareStatement(
+								"Update auctions Set currentbid=?, currentbidder_id= ?)" + " VALUES(?,?)");
+						pstmt.setDouble(1, bid);
+						pstmt.setInt(2, bidder.getId());
+						pstmt.execute();
+					} catch (SQLException e) {
+						e.printStackTrace();
+						return Response.Failure;
+					}
+				}
+				else {						//erneute Überprüfung ob bid tatsächlich höher als jetziges Gebot ist
+					return Response.Failure;
+				}
+			}
 		}
 
 		return null;
@@ -1463,6 +1494,6 @@ public class SQL {
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
-		System.out.println(formattedDate);
+		System.out.println(currentServerDate);
 	}
 }
