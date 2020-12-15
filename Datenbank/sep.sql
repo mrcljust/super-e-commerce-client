@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 13. Dez 2020 um 14:25
+-- Erstellungszeit: 15. Dez 2020 um 02:14
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -40,7 +40,8 @@ CREATE TABLE `auctions` (
   `shippingtype_id` int(11) NOT NULL COMMENT 'Fremdschlüssel shippingtype',
   `starttime` datetime NOT NULL,
   `enddate` datetime NOT NULL,
-  `emailsent` tinyint(1) NOT NULL
+  `emailsent` tinyint(1) NOT NULL,
+  `insertion_date` datetime DEFAULT current_timestamp() COMMENT 'wird autom. befuellt'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -66,7 +67,7 @@ CREATE TABLE `orders` (
   `seller_id` int(11) NOT NULL,
   `buyer_id` int(11) NOT NULL,
   `price` double NOT NULL,
-  `purchasedate` date NOT NULL DEFAULT current_timestamp()
+  `purchasedate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -82,7 +83,7 @@ CREATE TABLE `products` (
   `price` double NOT NULL,
   `category_id` int(11) NOT NULL,
   `description` text NOT NULL,
-  `insertdate` date NOT NULL DEFAULT current_timestamp()
+  `insertdate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -98,7 +99,8 @@ CREATE TABLE `ratings` (
   `sender_id` int(11) NOT NULL,
   `receiver_id` int(11) NOT NULL,
   `stars` int(11) NOT NULL,
-  `text` text NOT NULL
+  `text` text NOT NULL,
+  `rating_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -141,9 +143,9 @@ CREATE TABLE `users` (
   `image` longblob NOT NULL COMMENT 'bis zu 16mb',
   `wallet` double NOT NULL,
   `companyname` varchar(255) NOT NULL,
-  `lastviewed` varchar(255) NOT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte, max. 10',
-  `savedauctions` varchar(255) NOT NULL,
-  `registerdate` date NOT NULL DEFAULT current_timestamp()
+  `lastviewed` varchar(255) DEFAULT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte, max. 10',
+  `savedauctions` varchar(255) DEFAULT NULL,
+  `registerdate` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
