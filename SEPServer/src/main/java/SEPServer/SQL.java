@@ -1388,7 +1388,9 @@ public class SQL {
 					+ "JOIN orders\r\n"
 					+ "ON users.id=orders.buyer_id\r\n"
 					+ "JOIN products\r\n"
-					+ "ON products.id= "
+					+ "ON products.id=orders.product_id\r\n "
+					+ "JOIN auctions\r\n"
+					+"ON auctions.seller_id=orders.seller_id"
 					+ "WHERE orders.buyer_id="+ buyer.getId());
 			
 			ResultSet allOrdersResultSet=pstmt.executeQuery();
@@ -1403,8 +1405,25 @@ public class SQL {
 			
 			while(allOrdersResultSet.next()) {
 				
-	//			Product newProduct= new Product()
-	//			allOrdersArray[arraycounter]= new Order(buyer.getId(), allOrdersResultSet.getInt(columnIndex) )
+				Address newAddress = new Address(allOrdersResultSet.getString("users.fullname"),
+						allOrdersResultSet.getString("users.country"), allOrdersResultSet.getInt("users.postalcode"),
+						allOrdersResultSet.getString("users.city"), allOrdersResultSet.getString("users.street"),
+						allOrdersResultSet.getString("users.number"));
+				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"), allOrdersResultSet.getString("users.username"),
+						allOrdersResultSet.getString("users.email"), allOrdersResultSet.getString("users.password"),
+						allOrdersResultSet.getBytes("users.image"), allOrdersResultSet.getDouble("users.wallet"), newAddress,
+						allOrdersResultSet.getString("users.companyname"));
+				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
+						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
+						newSeller, allOrdersResultSet.getString("categories.title"),
+						allOrdersResultSet.getString("products.description"));
+				
+				//Rating newRating= new Rating(buyer.
+					//allOrdersArray[sqlcounter] = new Order(buyer.getId(),
+					//newProduct, allOrdersResultSet.getDouble("products.price"), newSeller, allOrdersResultSet.getDate("auctions.enddate"), allOrdersResultSet.getR
+					//	allOrdersResultSet.getString("categories.title"), allOrdersResultSet.getString("products.description"));
+				
+	
 			}
 			
 			
