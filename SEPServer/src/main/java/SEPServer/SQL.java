@@ -1334,31 +1334,31 @@ public class SQL {
 			return Response.NoDBConnection;
 		}
 
-		else if (currentServerDate.compareTo(endDate) > 0) { // 1.Fall CurrentServerDate ist nach Enddatum (Auktion bereits beendet)
-			return Response.AuctionAlreadyEnded;
-		} else {
-			if (auction.getCurrentBid() >= bid || decreaseWallet(bidder, bid)==Response.Failure) { // 2. Fall, Bid ist zu niedrig oder nicht genug Geld
+		else if (currentServerDate.compareTo(endDate) < 0) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
+			if (auction.getCurrentBid() >= bid) {
 				return Response.BidTooLow;
+			} else if (decreaseWallet(bidder, bid) == Response.Failure) {
+				return Response.InsufficientBalance;
 			} else {
-				if (bid > auction.getCurrentBid() && decreaseWallet(bidder, bid)==Response.Success) { // 3. Fall Auktion läuft noch sowie bidder genug geld theoretisch
+				if (bid > auction.getCurrentBid() && decreaseWallet(bidder, bid) == Response.Success) {
 					try {
-						PreparedStatement pstmt = connection.prepareStatement(
-								"UPDATE auctions SET currentbid=?, currentbidder_id=? VALUES(?,?)");
+						PreparedStatement pstmt = connection
+								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=? VALUES(?,?)");
 						pstmt.setDouble(1, bid);
 						pstmt.setInt(2, bidder.getId());
 						pstmt.execute();
+						return Response.Success;
 					} catch (SQLException e) {
 						e.printStackTrace();
 						return Response.Failure;
 					}
-				}
-				else {						//erneute Überprüfung ob bid tatsächlich höher als jetziges Gebot ist
+				} else {
 					return Response.Failure;
 				}
 			}
+		} else {
+			return Response.AuctionAlreadyEnded;
 		}
-
-		return null;
 	}
 
 	protected Response saveAuction(User buyer, Auction auction) {
