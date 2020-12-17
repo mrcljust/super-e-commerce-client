@@ -1460,6 +1460,7 @@ public class SQL {
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
 								allSellerRatings.getInt("ratings.order_id"),false);
+						//test
 					}
 					break;
 				}
