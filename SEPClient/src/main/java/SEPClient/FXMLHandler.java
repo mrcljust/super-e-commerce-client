@@ -59,7 +59,7 @@ public class FXMLHandler extends Application {
 		return null;
 	}
 	
-	public void OpenSceneAndStage(String sceneName, String sceneTitle, boolean resizable, boolean startCentered) {
+	public static void OpenSceneAndStage(String sceneName, String sceneTitle, boolean resizable, boolean startCentered) {
 		// Die Methode öffnet eine Szene aus dem UI Package und vergibt den Titel
 		try {
 			scene = new Scene(CreateParent(sceneName));

@@ -6,7 +6,10 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
@@ -38,11 +41,13 @@
             <Label fx:id="MainScreen_LabelLoggedInAs" layoutX="59.0" layoutY="3.0" text="Angemeldet als:" />
             <Label fx:id="MainScreen_LabelWallet" alignment="TOP_LEFT" layoutX="59.0" layoutY="24.0" prefHeight="17.0" prefWidth="111.0" text="Guthaben:" />
             <Button fx:id="MainScreen_ButtonPurchases" layoutX="14.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyPurchasesClick" text="Meine Käufe" />
-            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="103.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Produkte" />
-            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="210.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Produkt(e) anbieten" />
-            <Button fx:id="MainScreen_ButtonAddWallet" layoutX="337.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
-            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="461.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
-            <Button fx:id="MainScreen_ButtonLogout" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
+            <Button fx:id="MainScreen_ButtonAddWallet" layoutX="101.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
+            <Button fx:id="MainScreen_ButtonCreateAuction" layoutX="222.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonCreateAuctionClick" text="Auktion erstellen" />
+            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="356.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Festpreisangebote" />
+            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="511.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Festpreisangebot(e) erstellen" />
+            <Button fx:id="MainScreen_ButtonMyRatings" layoutX="710.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonMyRatingsClick" text="Meine Bewertungen" />
+            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="838.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
+            <Button fx:id="MainScreen_ButtonLogout" layoutX="953.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
             <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
                <image>
                   <Image url="@no-image.jpg" />
@@ -52,49 +57,88 @@
       </Pane>
       <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">
         <items>
-            <SplitPane dividerPositions="0.4045977011494253" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
-              <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="474.0" prefWidth="759.0">
-                     <children>
-                        <Label alignment="CENTER" layoutX="28.0" layoutY="2.0" prefHeight="17.0" prefWidth="703.0" text="Zuletzt angesehene Produkte" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="27.0">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <TableView fx:id="MainScreen_ListLastViewed" layoutY="21.0" prefHeight="153.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0">
-                          <columns>
-                            <TableColumn fx:id="lastviewedIdColumn" editable="false" prefWidth="75.0" text="ID" />
-                            <TableColumn fx:id="lastviewedProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
-                              <TableColumn fx:id="lastviewedPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
-                              <TableColumn fx:id="lastviewedSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
-                              <TableColumn fx:id="lastviewedCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
-                          </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-                  <AnchorPane prefHeight="86.0" prefWidth="759.0">
-                     <children>
-                        <Label alignment="CENTER" layoutX="218.0" layoutY="9.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
-                           <font>
-                              <Font name="System Bold" size="12.0" />
-                           </font>
-                        </Label>
-                        <ChoiceBox fx:id="MainScreen_ChoiceBox_Category" layoutX="4.0" layoutY="5.0" prefHeight="25.0" prefWidth="185.0" />
-                        <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearch_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
-                        <Button fx:id="MainScreen_btnSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
-                        <TableView fx:id="MainScreen_ListCatalog" layoutY="35.0" prefHeight="221.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
-                           <columns>
-                              <TableColumn fx:id="catalogIdColumn" editable="false" prefWidth="75.0" text="ID" />
-                              <TableColumn fx:id="catalogProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
-                              <TableColumn fx:id="catalogPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
-                              <TableColumn fx:id="catalogSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
-                              <TableColumn fx:id="catalogCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
-                           </columns>
-                        </TableView>
-                     </children>
-                  </AnchorPane>
-              </items>
-            </SplitPane>
+            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab fx:id="tabArticles" text="Festpreisangebote">
+                     <content>
+                        <SplitPane dividerPositions="0.4045977011494253" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0">
+                           <items>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="474.0" prefWidth="759.0">
+                                 <children>
+                                    <Label alignment="CENTER" layoutX="28.0" layoutY="2.0" prefHeight="17.0" prefWidth="703.0" text="Zuletzt angesehene Produkte" AnchorPane.leftAnchor="28.0" AnchorPane.rightAnchor="27.0">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <TableView fx:id="MainScreen_ListLastViewed" layoutY="21.0" prefHeight="153.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="21.0">
+                                       <columns>
+                                          <TableColumn fx:id="lastviewedIdColumn" editable="false" prefWidth="75.0" text="ID" />
+                                          <TableColumn fx:id="lastviewedProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
+                                          <TableColumn fx:id="lastviewedPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
+                                          <TableColumn fx:id="lastviewedSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
+                                          <TableColumn fx:id="lastviewedCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                              <AnchorPane prefHeight="86.0" prefWidth="759.0">
+                                 <children>
+                                    <Label alignment="CENTER" layoutX="218.0" layoutY="9.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
+                                       <font>
+                                          <Font name="System Bold" size="12.0" />
+                                       </font>
+                                    </Label>
+                                    <ChoiceBox fx:id="MainScreen_ChoiceBox_Category" layoutX="4.0" layoutY="5.0" prefHeight="25.0" prefWidth="185.0" />
+                                    <TextField fx:id="MainScreen_txtSearch" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearch_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
+                                    <Button fx:id="MainScreen_btnSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnSearchOKClick" text="OK" AnchorPane.rightAnchor="14.0" />
+                                    <TableView fx:id="MainScreen_ListCatalog" layoutY="35.0" prefHeight="221.0" prefWidth="759.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="35.0">
+                                       <columns>
+                                          <TableColumn fx:id="catalogIdColumn" editable="false" prefWidth="75.0" text="ID" />
+                                          <TableColumn fx:id="catalogProductColumn" editable="false" prefWidth="254.0" text="Produkt" />
+                                          <TableColumn fx:id="catalogPriceColumn" editable="false" minWidth="0.0" prefWidth="140.0" text="Preis" />
+                                          <TableColumn fx:id="catalogSellerColumn" editable="false" prefWidth="119.0" text="Verkäufer" />
+                                          <TableColumn fx:id="catalogCategoryColumn" editable="false" prefWidth="168.0" text="Kategorie" />
+                                       </columns>
+                                    </TableView>
+                                 </children>
+                              </AnchorPane>
+                           </items>
+                        </SplitPane>
+                     </content>
+                </Tab>
+                <Tab fx:id="tabLiveAuctions" text="Liveauktionen">
+                     <content>
+                        <AnchorPane prefHeight="86.0" prefWidth="759.0">
+                           <children>
+                              <TableView fx:id="MainScreen_ListAuctions" layoutY="74.0" prefHeight="332.0" prefWidth="758.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="74.0">
+                                 <columns>
+                                    <TableColumn fx:id="auctionsCatalogIdColumn" editable="false" prefWidth="45.0" text="ID" />
+                                    <TableColumn fx:id="auctionsCatalogTitleColumn" editable="false" prefWidth="284.0" text="Titel" />
+                                    <TableColumn fx:id="auctionsCatalogCurrentBidColumn" editable="false" minWidth="0.0" prefWidth="107.0" text="Aktuelles Gebot" />
+                                    <TableColumn fx:id="auctionsCatalogStartpriceColumn" editable="false" text="Startpreis" />
+                                    <TableColumn fx:id="auctionsCatalogStartColumn" editable="false" prefWidth="116.0" text="Start" />
+                                    <TableColumn fx:id="auctionsCatalogEndColumn" editable="false" prefWidth="125.0" text="Ende" />
+                                 </columns>
+                              </TableView>
+                              <RadioButton fx:id="radioAllAuctions" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioAllAuctions_Click" selected="true" text="Alle Auktionen" />
+                              <RadioButton fx:id="radioMyBids" layoutX="119.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyBids_Click" text="Meine Gebote" />
+                              <RadioButton fx:id="radioMyAuctions" layoutX="228.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyAuctions_Click" text="Meine Auktionen" />
+                              <RadioButton fx:id="radioSavedAuctions" layoutX="347.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioSavedAuctions_Click" text="Gemerkte Auktionen" />
+                              <RadioButton fx:id="radioCurrentAuctions" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioCurrentAuctions_Click" selected="true" text="Aktuelle Auktionen" />
+                              <RadioButton fx:id="radioEndedAuctions" layoutX="142.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioEndedAuctions_Click" text="Beendete Auktionen" />
+                              <RadioButton fx:id="radioFutureAuctions" layoutX="279.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioFutureAuctions_Click" text="Zukünftige Auktionen" />
+                              <TextField fx:id="MainScreen_txtSearchAuctions" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearchAuctions_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
+                              <Button fx:id="MainScreen_btnAuctionsSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnAuctionsSearchOK_Click" text="OK" AnchorPane.rightAnchor="14.0" />
+                              <Label alignment="CENTER" layoutX="218.0" layoutY="51.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                        </AnchorPane>
+                     </content></Tab>
+              </tabs>
+            </TabPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
                   <Label alignment="CENTER" layoutX="6.0" layoutY="6.0" prefHeight="17.0" prefWidth="421.0" text="Produktdetails" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="3.0">
@@ -113,9 +157,15 @@
                      </font>
                   </Label>
                   <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="67.0" text="Verkäufer:" />
-                  <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="84.0" text="Kategorie:" />
-                  <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="335.0" layoutY="80.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="14.0" />
-                  <WebView fx:id="MainScreen_WebVIewProductDescription" layoutX="405.0" layoutY="313.0" prefHeight="68.0" prefWidth="222.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="111.0" />
+                  <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="124.0" text="Kategorie:" />
+                  <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="339.0" layoutY="120.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="11.0" />
+                  <WebView fx:id="MainScreen_WebViewProductDescription" layoutX="405.0" layoutY="150.0" prefHeight="274.0" prefWidth="405.0" AnchorPane.bottomAnchor="11.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="150.0" />
+                  <Label fx:id="MainScreen_txtRatingCount" layoutX="217.0" layoutY="86.0" text="(Anzahl: XX)" />
+                  <Label fx:id="MainScreen_txtAverageRating" layoutX="14.0" layoutY="86.0" text="Durchschnittliche Bewertung: X.XX">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Label>
+                  <Button fx:id="MainScreen_ButtonShowRatings" layoutX="309.0" layoutY="82.0" mnemonicParsing="false" onAction="#MainScreen_ButtonShowRatingsClick" text="Alle Bewertungen" />
                </children>
             </AnchorPane>
         </items>

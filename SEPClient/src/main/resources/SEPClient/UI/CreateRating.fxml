@@ -1,8 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1">
-	<!-- TODO Add Nodes -->
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="229.0" prefWidth="464.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.CreateRatingController">
+   <children>
+      <Label fx:id="CreateRating_txtSellerBuyerName" layoutX="52.0" layoutY="14.0" prefHeight="17.0" prefWidth="404.0" text="Bewertung für den Käufer/Verkäufer (NAME)" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Label>
+      <Label fx:id="CreateRating_txtIDDate" layoutX="52.0" layoutY="31.0" prefHeight="17.0" prefWidth="404.0" text="Auktion-ID (ID) / Bestell-ID (ID) vom (DATUM)" textAlignment="CENTER" />
+      <ChoiceBox fx:id="CreateRating_Stars" layoutX="14.0" layoutY="66.0" prefHeight="25.0" prefWidth="51.0" />
+      <Label layoutX="70.0" layoutY="70.0" text="von 5 Sternen (*)" />
+      <Label layoutX="14.0" layoutY="99.0" text="Ihr Erfahrungsbericht:&#10;(optional)" />
+      <TextArea fx:id="CreateRating_Text" layoutX="144.0" layoutY="99.0" prefHeight="80.0" prefWidth="299.0" promptText="Erfahrungsbericht eingeben..." />
+      <Button fx:id="CreateRating_ButtonOK" layoutX="260.0" layoutY="191.0" mnemonicParsing="false" onAction="#CreateRating_ButtonOK_Click" text="Bewertung abgeben" />
+      <Button fx:id="CreateRating_ButtonReturn" layoutX="390.0" layoutY="191.0" mnemonicParsing="false" onAction="#CreateRating_ButtonReturn_Click" text="Zurück" />
+      <ImageView fx:id="CreateRating_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
+         <image>
+            <Image url="@no-image.jpg" />
+         </image>
+      </ImageView>
+   </children>
 </AnchorPane>
-
