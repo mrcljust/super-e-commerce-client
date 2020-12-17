@@ -19,10 +19,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
@@ -69,8 +72,9 @@ public class MainScreenController {
         	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
     		MainScreen_ButtonAddWallet.setDisable(true);
     		MainScreen_ButtonSellProduct.setDisable(false);
-    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
+    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber erst in 3. Iteration benötigt
     		MainScreen_ButtonPurchases.setDisable(true);
+    		MainScreen_ButtonCreateAuction.setDisable(true);
     	}
     	else
     	{
@@ -79,7 +83,8 @@ public class MainScreenController {
     		MainScreen_ButtonAddWallet.setDisable(false);
     		MainScreen_ButtonSellProduct.setDisable(true);
     		MainScreen_ButtonMyProducts.setDisable(true);
-    		MainScreen_ButtonPurchases.setDisable(true); //eig false, aber in der 1. Iteration noch nicht benötigt
+    		MainScreen_ButtonPurchases.setDisable(false);
+    		MainScreen_ButtonCreateAuction.setDisable(false);
     	}
     	
     	InputStream in = new ByteArrayInputStream(user.getPicture());
@@ -91,9 +96,12 @@ public class MainScreenController {
     	MainScreen_LabelProductPrice.setText("");
     	MainScreen_LabelProductSeller.setText("");
     	MainScreen_LabelProductCategory.setText("");
-    	MainScreen_WebVIewProductDescription.getEngine().loadContent("");
+    	MainScreen_txtAverageRating.setText("");
+    	MainScreen_txtRatingCount.setText("");
+    	MainScreen_WebViewProductDescription.getEngine().loadContent("");
     	MainScreen_ButtonBuyProduct.setVisible(false);
-    	MainScreen_WebVIewProductDescription.setVisible(false);
+    	MainScreen_ButtonShowRatings.setVisible(false);
+    	MainScreen_WebViewProductDescription.setVisible(false);
     	
     	//Alle Kategorien Item hinzufügen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
@@ -173,6 +181,17 @@ public class MainScreenController {
     	{
 	    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
     	}
+		
+	    ToggleGroup radioViewAuctionsGroup = new ToggleGroup();
+	    radioAllAuctions.setToggleGroup(radioViewAuctionsGroup);
+	    radioMyBids.setToggleGroup(radioViewAuctionsGroup);
+	    radioMyAuctions.setToggleGroup(radioViewAuctionsGroup);
+	    radioSavedAuctions.setToggleGroup(radioViewAuctionsGroup);
+
+	    ToggleGroup radioAuctionTypeGroup = new ToggleGroup();
+	    radioCurrentAuctions.setToggleGroup(radioAuctionTypeGroup);
+	    radioEndedAuctions.setToggleGroup(radioAuctionTypeGroup);
+	    radioFutureAuctions.setToggleGroup(radioAuctionTypeGroup);
     }
     
     private void LoadAllProducts()
@@ -283,6 +302,8 @@ public class MainScreenController {
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getPriceString());
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_txtAverageRating.setText("Durchschnittliche Bewertung: X.XX");
+		    	MainScreen_txtRatingCount.setText("(Anzahl: XX)");
 		    	String selectedCategory = MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
@@ -292,10 +313,11 @@ public class MainScreenController {
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
-		    	
+		    	MainScreen_WebViewProductDescription.getEngine().loadContent(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+
+		    	MainScreen_ButtonShowRatings.setVisible(true);
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_WebVIewProductDescription.setVisible(true);
+		    	MainScreen_WebViewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
@@ -320,6 +342,8 @@ public class MainScreenController {
 		    	MainScreen_LabelProductTitle.setText(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getName());
 		    	MainScreen_LabelProductPrice.setText("Preis: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getPriceString());
 		    	MainScreen_LabelProductSeller.setText("Verkäufer: " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getBusinessname() + " (Benutzer " + MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+		    	MainScreen_txtAverageRating.setText("Durchschnittliche Bewertung: X.XX");
+		    	MainScreen_txtRatingCount.setText("(Anzahl: XX)");
 		    	String selectedCategory = MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getCategory();
 		    	if(selectedCategory=="")
 		    	{
@@ -329,10 +353,11 @@ public class MainScreenController {
 		    	{
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
-		    	MainScreen_WebVIewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+		    	MainScreen_WebViewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
 		    	
+		    	MainScreen_ButtonShowRatings.setVisible(true);
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
-		    	MainScreen_WebVIewProductDescription.setVisible(true);
+		    	MainScreen_WebViewProductDescription.setVisible(true);
 		    	
 		    	//Kaufen Button nur für Customer enablen
 		    	if(user instanceof Customer)
@@ -552,15 +577,27 @@ public class MainScreenController {
 
     @FXML
     private Button MainScreen_ButtonPurchases;
+    
+    @FXML
+    private Button MainScreen_ButtonMyRatings;
+    
+    @FXML
+    private Button MainScreen_ButtonCreateAuction;
+    
+    @FXML
+    private Button MainScreen_ButtonShowRatings;
 
     @FXML
     private Label MainScreen_LabelLoggedInAs;
 
     @FXML
+    private Tab tabArticles;
+    
+    @FXML
     private TextField MainScreen_txtSearch;
     
     @FXML
-    private WebView MainScreen_WebVIewProductDescription;
+    private WebView MainScreen_WebViewProductDescription;
     
     @FXML
     private TableView<Product> MainScreen_ListLastViewed;
@@ -597,6 +634,57 @@ public class MainScreenController {
 
     @FXML
     private TableColumn<Product, String> catalogCategoryColumn;
+    
+    @FXML
+    private Tab tabLiveAuctions;
+
+    @FXML
+    private TextField MainScreen_txtSearchAuctions;
+
+    @FXML
+    private Button MainScreen_btnAuctionsSearchOK;
+
+    @FXML
+    private TableView<?> MainScreen_ListAuctions;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogIdColumn;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogTitleColumn;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogCurrentBidColumn;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogStartpriceColumn;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogStartColumn;
+
+    @FXML
+    private TableColumn<?, ?> auctionsCatalogEndColumn;
+
+    @FXML
+    private RadioButton radioAllAuctions;
+
+    @FXML
+    private RadioButton radioMyBids;
+
+    @FXML
+    private RadioButton radioMyAuctions;
+
+    @FXML
+    private RadioButton radioSavedAuctions;
+
+    @FXML
+    private RadioButton radioCurrentAuctions;
+
+    @FXML
+    private RadioButton radioEndedAuctions;
+
+    @FXML
+    private RadioButton radioFutureAuctions;
 
     @FXML
     private Label MainScreen_LabelProductTitle;
@@ -609,6 +697,15 @@ public class MainScreenController {
 
     @FXML
     private Label MainScreen_LabelProductCategory;
+    
+    @FXML
+    private Label MainScreen_lblAverageRating;
+    
+    @FXML
+    private Label MainScreen_txtRatingCount;
+    
+    @FXML
+    private Label MainScreen_txtAverageRating;
     
     @FXML
     private ImageView MainScreen_ImgProfilePicture;
@@ -629,7 +726,7 @@ public class MainScreenController {
     @FXML
     void MainScreen_btnAddWalletClick(ActionEvent event) {
     	WalletController.setUser(user);
-		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonEditAccount.getScene().getWindow(), "Wallet", "Guthaben aufladen", false, true);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonAddWallet.getScene().getWindow(), "Wallet", "Guthaben aufladen", false, true);
     }
 
     @FXML
@@ -642,14 +739,54 @@ public class MainScreenController {
     void MainScreen_btnLogoutClick(ActionEvent event) {
 		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonLogout.getScene().getWindow(), "Start", "Super-E-commerce-Platform", false, true);
     }
+    
+    @FXML
+    void MainScreen_ButtonCreateAuctionClick(ActionEvent event) {
+    	CreateAuctionController.setCustomer((Customer)user); //nur für Customer enabled
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonCreateAuction.getScene().getWindow(), "CreateAuction", "Auktion erstellen", false, true);
+    }
+    
+    @FXML
+    void MainScreen_ButtonMyRatingsClick(ActionEvent event) {
+    	ShowRatingsController.setUser(user);
+    	ShowRatingsController.setViewOwnRatings(true);
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonMyRatings.getScene().getWindow(), "ShowRatings", "Meine Bewertungen", false, true);
+    }
+    
+    @FXML
+    void MainScreen_ButtonShowRatingsClick(ActionEvent event)
+    {
+    	//Alle Bewertungen eines Verkäufers anzeigen
+    	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
+    	{
+    		ShowRatingsController.setUser(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller());
+    	}
+    	else if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
+    	{
+    		ShowRatingsController.setUser(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller());
+    	}
+		ShowRatingsController.setViewOwnRatings(false);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonShowRatings.getScene().getWindow(), "ShowRatings", "Bewertungen des Verkäufers", false, true);
+    }
 
     @FXML
     void MainScreen_btnMyProductsClick(ActionEvent event) {
-
+    	//3 Iteration ToDo
     }
 
     @FXML
     void MainScreen_btnMyPurchasesClick(ActionEvent event) {
+    	MyPurchasesController.setCustomer((Customer)user); //nur für Customer enabled
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonPurchases.getScene().getWindow(), "MyPurchases", "Meine Käufe", false, true);
+    }
+    
+    @FXML
+    void tabArticles_SelectionChange(ActionEvent event) {
+
+    }
+
+    @FXML
+    void tabLiveAuctions_SelectionChange(ActionEvent event) {
 
     }
 
@@ -667,6 +804,21 @@ public class MainScreenController {
     		MainScreen_btnSearchOK.fire();
         }
     }
+    
+    @FXML
+    void MainScreen_txtSearchAuctions_Click(ActionEvent event) {
+    	
+    }
+    
+    @FXML
+    void MainScreen_txtSearchAuctions_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button Auction Search Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+    		MainScreen_btnAuctionsSearchOK.fire();
+        }
+    }
 
     @FXML
     //OfferProduct oeffnen
@@ -679,6 +831,74 @@ public class MainScreenController {
     		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
     	}
     	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", false, true);
+    }
+    
+    @FXML
+    void MainScreen_btnAuctionsSearchOK_Click(ActionEvent event)
+    {
+    	
+    }
+    
+    @FXML
+    void radioAllAuctions_Click(ActionEvent event) {
+    	radioCurrentAuctions.setSelected(true);
+    	radioCurrentAuctions.setVisible(true);
+    	radioEndedAuctions.setVisible(true);
+    	radioFutureAuctions.setVisible(true);
+    	MainScreen_txtSearchAuctions.setText("");
+    	MainScreen_txtSearchAuctions.setVisible(true);
+    	MainScreen_btnAuctionsSearchOK.setVisible(true);
+    }
+
+    @FXML
+    void radioCurrentAuctions_Click(ActionEvent event) {
+
+    }
+
+    @FXML
+    void radioEndedAuctions_Click(ActionEvent event) {
+
+    }
+
+    @FXML
+    void radioFutureAuctions_Click(ActionEvent event) {
+
+    }
+
+    @FXML
+    void radioMyAuctions_Click(ActionEvent event) {
+    	radioCurrentAuctions.setSelected(false);
+    	radioEndedAuctions.setSelected(false);
+    	radioFutureAuctions.setSelected(false);
+    	radioCurrentAuctions.setVisible(false);
+    	radioEndedAuctions.setVisible(false);
+    	radioFutureAuctions.setVisible(false);
+    	MainScreen_txtSearchAuctions.setVisible(false);
+    	MainScreen_btnAuctionsSearchOK.setVisible(false);
+    }
+
+    @FXML
+    void radioMyBids_Click(ActionEvent event) {
+    	radioCurrentAuctions.setSelected(false);
+    	radioEndedAuctions.setSelected(false);
+    	radioFutureAuctions.setSelected(false);
+    	radioCurrentAuctions.setVisible(false);
+    	radioEndedAuctions.setVisible(false);
+    	radioFutureAuctions.setVisible(false);
+    	MainScreen_txtSearchAuctions.setVisible(false);
+    	MainScreen_btnAuctionsSearchOK.setVisible(false);
+    }
+
+    @FXML
+    void radioSavedAuctions_Click(ActionEvent event) {
+    	radioCurrentAuctions.setSelected(false);
+    	radioEndedAuctions.setSelected(false);
+    	radioFutureAuctions.setSelected(false);
+    	radioCurrentAuctions.setVisible(false);
+    	radioEndedAuctions.setVisible(false);
+    	radioFutureAuctions.setVisible(false);
+    	MainScreen_txtSearchAuctions.setVisible(false);
+    	MainScreen_btnAuctionsSearchOK.setVisible(false);
     }
     
     @FXML
