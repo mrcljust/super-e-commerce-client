@@ -45,6 +45,16 @@ public class Rating implements Serializable {
 			orderId=_orderOrAuctionId;
 		}
 	}
+	
+	public int getOrderId()
+	{
+		return orderId;
+	}
+	
+	public int getAuctionId()
+	{
+		return auctionId;
+	}
 
 	public int getSenderId() {
 		return senderId;
@@ -62,12 +72,12 @@ public class Rating implements Serializable {
 		this.receiverId = receiverId;
 	}
 
-	public int getOrderId() {
-		return orderId;
-	}
-
 	public void setOrderId(int orderId) {
 		this.orderId = orderId;
+	}
+	
+	public void setAuctionId(int auctionId) {
+		this.auctionId = auctionId;
 	}
 
 	public Rating(int _stars, String _text) {
