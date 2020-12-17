@@ -1530,11 +1530,44 @@ public class SQL {
 	}
 
 	protected Response deleteOrder(Order order) {
-		if (!checkConnection()) {
+			// Order anhand von ID aus der Datenbank löschen
+		
+			// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
+			// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+			// Verbindung herstellen, wenn keine Verbindung besteht
+		
+			// OrderID speichern
+			int orderID = order.getId();
+			// Order Date speichern
+			Date date = order.getDate();
+			
+			// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
+			SimpleDateFormat date1 = new SimpleDateFormat("dd/MM/YYYY");
+			String orderGetDate = date1.format(date);
+			String ServerDate = date1.format(currentServerDate);
+			
+			if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
-
-		return null;
+			
+			// Order kann am gleichen Tag der Bestellung noch storniert werden
+			if(orderGetDate.equals(ServerDate)) {
+				try
+				{
+					// Order aus Datenbank löschen anahnd der ID
+					Statement statement = connection.createStatement();
+					statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
+					return Response.Success;
+				} catch (SQLException e) {
+					// Fehler zurückgeben
+					return Response.Failure;
+				}		
+			}
+			
+			// Order ist zu lange her und kann nicht mehr gelöscht werden
+			else {
+				return Response.Failure;
+			}
 	}
 
 	protected Response checkForNewFinishedAuctions() {
