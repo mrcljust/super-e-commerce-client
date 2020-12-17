@@ -1386,23 +1386,27 @@ public class SQL {
 		}
 		try {
 			PreparedStatement pstmtSellerRatings = connection.prepareStatement(
-					"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id WHERE users.id=" + buyer.getId());
+					"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id=orders.order_id WHERE users.id="
+							+ buyer.getId());
 			
 			PreparedStatement pstmtSenderRatings = connection.prepareStatement(
-					"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id WHERE users.id=" + buyer.getId());
+					"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id=orders.order_id WHERE users.id="
+							+ buyer.getId());
 			
 			PreparedStatement pstmtOrders= connection.prepareStatement("SELECT * \r\n" 
 					+ "FROM users\r\n" 
 					+ "JOIN orders\r\n"
 					+ "ON users.id=orders.buyer_id\r\n"
 					+ "JOIN products\r\n"
-					+"ON auctions.seller_id=orders.seller_id"	
-					+ "WHERE orders.buyer_id="+ buyer.getId());
-			//test
+					+"ON products.id=orders.product_id"	
+					+ "WHERE users.id="+ buyer.getId());
 			
+						
 			int arraycounterAllOrders=0;
 			int sqlcounterAllOrders=0;
 			ResultSet allOrdersResultSet=pstmtOrders.executeQuery();
+			ResultSet allSellerRatings=pstmtSellerRatings.executeQuery();
+			ResultSet allSenderRatings=pstmtSenderRatings.executeQuery();
 			while(allOrdersResultSet.next()) {			//Tupel zählen
 				sqlcounterAllOrders++;
 			}
@@ -1424,10 +1428,44 @@ public class SQL {
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
 						newSeller, allOrdersResultSet.getString("categories.title"),
 						allOrdersResultSet.getString("products.description"));
-				Rating newSellerRating = new Rating(allOrdersResultSet.getInt("ratings.stars"),
-						allOrdersResultSet.getString("ratings.text"), allOrdersResultSet.getInt("ratings.sender_id"),
-						allOrdersResultSet.getInt("ratings.receiver_id"),
-						allOrdersResultSet.getInt("ratings.order_id"));
+				
+				while (allSellerRatings.next() != false) {
+					if (allSellerRatings.getString("ratings.text") == null) {
+						Rating newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+								allSellerRatings.getInt("ratings.stars"), null,
+								allSellerRatings.getInt("ratings.sender_id"),
+								allSellerRatings.getInt("ratings.receiver_id"),
+								allSellerRatings.getInt("ratings.order_id"), false);
+					} else {
+						Rating newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+								allSellerRatings.getInt("ratings.stars"), allSellerRatings.getString("ratings.text"),
+								allSellerRatings.getInt("ratings.sender_id"),
+								allSellerRatings.getInt("ratings.receiver_id"),
+								allSellerRatings.getInt("ratings.order_id"),false);
+					}
+					break;
+				}
+
+				while (allSenderRatings.next() != false) {
+					if (allSenderRatings.getString("ratings.text") == null) {
+						Rating newBuyerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+								allSellerRatings.getInt("ratings.stars"), null,
+								allSellerRatings.getInt("ratings.sender_id"),
+								allSellerRatings.getInt("ratings.receiver_id"),
+								allSellerRatings.getInt("ratings.order_id"),false);
+
+					} else {
+						Rating newBuyerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+								allSellerRatings.getInt("ratings.stars"), null,
+								allSellerRatings.getInt("ratings.sender_id"),
+								allSellerRatings.getInt("ratings.receiver_id"),
+								allSellerRatings.getInt("ratings.order_id"),false);
+					}
+					break;
+				}
+				
+				
+				allOrdersArray[arraycounterAllOrders]= new Order(allOrdersResultSet.getInt("orders.id"), newProduct, allOrdersResultSet.getDate("orders.purchasedate"),newSellerRating, newBuyerRating );
 			
 				arraycounterAllOrders++;
 			
