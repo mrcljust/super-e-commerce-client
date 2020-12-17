@@ -110,13 +110,6 @@
                      <content>
                         <AnchorPane prefHeight="86.0" prefWidth="759.0">
                            <children>
-                              <Label alignment="CENTER" layoutX="218.0" layoutY="51.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
-                                 <font>
-                                    <Font name="System Bold" size="12.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="MainScreen_txtSearchAuctions" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearchAuctions_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
-                              <Button fx:id="MainScreen_btnAuctionsSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnAuctionsSearchOK_Click" text="OK" AnchorPane.rightAnchor="14.0" />
                               <TableView fx:id="MainScreen_ListAuctions" layoutY="74.0" prefHeight="332.0" prefWidth="758.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="74.0">
                                  <columns>
                                     <TableColumn fx:id="auctionsCatalogIdColumn" editable="false" prefWidth="45.0" text="ID" />
@@ -134,6 +127,13 @@
                               <RadioButton fx:id="radioCurrentAuctions" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioCurrentAuctions_Click" selected="true" text="Aktuelle Auktionen" />
                               <RadioButton fx:id="radioEndedAuctions" layoutX="142.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioEndedAuctions_Click" text="Beendete Auktionen" />
                               <RadioButton fx:id="radioFutureAuctions" layoutX="279.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioFutureAuctions_Click" text="Zukünftige Auktionen" />
+                              <TextField fx:id="MainScreen_txtSearchAuctions" layoutX="520.0" layoutY="5.0" onKeyPressed="#MainScreen_txtSearchAuctions_KeyPressed" prefWidth="185.0" promptText="Suchbegriff eingeben..." AnchorPane.rightAnchor="53.0" />
+                              <Button fx:id="MainScreen_btnAuctionsSearchOK" layoutX="712.0" layoutY="5.0" mnemonicParsing="false" onAction="#MainScreen_btnAuctionsSearchOK_Click" text="OK" AnchorPane.rightAnchor="14.0" />
+                              <Label alignment="CENTER" layoutX="218.0" layoutY="51.0" prefHeight="17.0" prefWidth="323.0" text="Katalog" AnchorPane.leftAnchor="218.0" AnchorPane.rightAnchor="217.0">
+                                 <font>
+                                    <Font name="System Bold" size="12.0" />
+                                 </font>
+                              </Label>
                            </children>
                         </AnchorPane>
                      </content></Tab>

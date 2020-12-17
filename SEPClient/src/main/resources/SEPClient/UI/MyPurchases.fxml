@@ -28,6 +28,8 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
+      <Button fx:id="MyPurchases_CreateRating_Order" disable="true" layoutX="10.0" layoutY="267.0" mnemonicParsing="false" onAction="#MyPurchases_CreateRating_Order_Click" text="Bewertung für Verkäufer abgeben..." />
+      <Button fx:id="MyPurchases_DeleteOrderButton" disable="true" layoutX="219.0" layoutY="267.0" mnemonicParsing="false" onAction="#MyPurchases_DeleteOrderButton_Click" text="Kauf stornieren" />
       <TableView fx:id="MyPurchases_ListAuctions" layoutX="10.0" layoutY="323.0" prefHeight="221.0" prefWidth="759.0">
          <columns>
             <TableColumn fx:id="auctionsIdColumn" editable="false" prefWidth="75.0" text="Auktions-ID" />
@@ -37,9 +39,7 @@
             <TableColumn fx:id="auctionsRatingGivenColumn" editable="false" prefWidth="170.0" text="Bewertung abgegeben?" />
          </columns>
       </TableView>
-      <Button fx:id="MyPurchases_CreateRating_Order" disable="true" layoutX="10.0" layoutY="267.0" mnemonicParsing="false" onAction="#MyPurchases_CreateRating_Order_Click" text="Bewertung für Verkäufer abgeben..." />
       <Button fx:id="MyPurchases_CreateRating_Auction" disable="true" layoutX="10.0" layoutY="552.0" mnemonicParsing="false" onAction="#MyPurchases_CreateRating_Auction_Click" text="Bewertung für Verkäufer abgeben..." />
       <Button fx:id="MyPurchases_Return" layoutX="709.0" layoutY="552.0" mnemonicParsing="false" onAction="#MyPurchases_Return_Click" text="Zurück" />
-      <Button fx:id="MyPurchases_DeleteOrderButton" disable="true" layoutX="219.0" layoutY="267.0" mnemonicParsing="false" onAction="#MyPurchases_DeleteOrderButton_Click" text="Kauf stornieren" />
    </children>
 </AnchorPane>
