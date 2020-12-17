@@ -1377,31 +1377,38 @@ public class SQL {
 		// wenn keine Verbindung zu DB: null returnen
 		// wenn sonstiger Fehler auftritt (keine Produkte angesehen o.ä.) ggf. null
 		// returnen
-
+		//order array befüllen dafür braucht man: Tabelle:orders(orderid), products für product Objekt, sellerrating, buyerrating
+		// überprüfen ob Ratinhs vorhanden, dann sql statement etc ansonsten objekt=null
+		
 		
 		if (!checkConnection()) {
 			return null;
 		}
 		try {
-			PreparedStatement pstmt= connection.prepareStatement("SELECT * \r\n" 
+			PreparedStatement pstmtSellerRatings = connection.prepareStatement(
+					"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id WHERE users.id=" + buyer.getId());
+			
+			PreparedStatement pstmtSenderRatings = connection.prepareStatement(
+					"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id WHERE users.id=" + buyer.getId());
+			
+			PreparedStatement pstmtOrders= connection.prepareStatement("SELECT * \r\n" 
 					+ "FROM users\r\n" 
 					+ "JOIN orders\r\n"
 					+ "ON users.id=orders.buyer_id\r\n"
 					+ "JOIN products\r\n"
-					+ "ON products.id=orders.product_id\r\n "
-					+ "JOIN auctions\r\n"
 					+"ON auctions.seller_id=orders.seller_id"
+					+"JOIN ratings \r\n "
+					+"ON ratings.order_id=orders.order_id"
 					+ "WHERE orders.buyer_id="+ buyer.getId());
 			
-			ResultSet allOrdersResultSet=pstmt.executeQuery();
-			
-			int arraycounter=0;
-			int sqlcounter=0;
+			int arraycounterAllOrders=0;
+			int sqlcounterAllOrders=0;
+			ResultSet allOrdersResultSet=pstmtOrders.executeQuery();
 			while(allOrdersResultSet.next()) {			//Tupel zählen
-				sqlcounter++;
+				sqlcounterAllOrders++;
 			}
 			allOrdersResultSet.beforeFirst();		//zurücksetzen des pointers auf 0
-			Order[] allOrdersArray = new Order[sqlcounter];
+			Order[] allOrdersArray = new Order[sqlcounterAllOrders];
 			
 			while(allOrdersResultSet.next()) {
 				
@@ -1409,18 +1416,36 @@ public class SQL {
 						allOrdersResultSet.getString("users.country"), allOrdersResultSet.getInt("users.postalcode"),
 						allOrdersResultSet.getString("users.city"), allOrdersResultSet.getString("users.street"),
 						allOrdersResultSet.getString("users.number"));
-				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"), allOrdersResultSet.getString("users.username"),
-						allOrdersResultSet.getString("users.email"), allOrdersResultSet.getString("users.password"),
-						allOrdersResultSet.getBytes("users.image"), allOrdersResultSet.getDouble("users.wallet"), newAddress,
+				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"),
+						allOrdersResultSet.getString("users.username"), allOrdersResultSet.getString("users.email"),
+						allOrdersResultSet.getString("users.password"), allOrdersResultSet.getBytes("users.image"),
+						allOrdersResultSet.getDouble("users.wallet"), newAddress,
 						allOrdersResultSet.getString("users.companyname"));
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
 						newSeller, allOrdersResultSet.getString("categories.title"),
 						allOrdersResultSet.getString("products.description"));
-				
-				//Rating newRating= new Rating(buyer.
-					//allOrdersArray[sqlcounter] = new Order(buyer.getId(),
-					//newProduct, allOrdersResultSet.getDouble("products.price"), newSeller, allOrdersResultSet.getDate("auctions.enddate"), allOrdersResultSet.getR
+				Rating newSellerRating = new Rating(allOrdersResultSet.getInt("ratings.stars"),
+						allOrdersResultSet.getString("ratings.text"), allOrdersResultSet.getInt("ratings.sender_id"),
+						allOrdersResultSet.getInt("ratings.receiver_id"),
+						allOrdersResultSet.getInt("ratings.order_id"));
+			
+				arraycounterAllOrders++;
+			
+			//int arraycounterAllSellerRatings=0;
+			//int sqlcounterAllSellerRatings=0;
+			//while(allSellerRatingsResultSet.next()) {
+			//	sqlcounterAllSellerRatings++;
+			//}
+			//allSellerRatingsResultSet.beforeFirst();
+		
+			
+			PreparedStatement pstmtBuyerRating=connection.prepareStatement("");
+
+			
+		
+			//	allOrdersArray[sqlcounter] = new Order(buyer.getId(), newProduct, allOrdersResultSet.getDate("orders.purchasedate"), 
+					//newProduct, allOrdersResultSet.getDouble("products.price"), newSeller, allOrdersResultSet.getDate("orders.purchasedate"), allOrdersResultSet.getR
 					//	allOrdersResultSet.getString("categories.title"), allOrdersResultSet.getString("products.description"));
 				
 	
@@ -1451,6 +1476,16 @@ public class SQL {
 		// AuctionType.Active = aktive Auktionen
 		// AuctionType.Ended = beendete Auktionen
 		// AuctionType.Future = zukünftige Auktionen
+		
+		if(auctionType==AuctionType.Active) {
+			
+		}
+		else if(auctionType==AuctionType.Ended) {
+			
+		}
+		else if(auctionType==AuctionType.Future) {
+			
+		}
 		if (!checkConnection()) {
 			return null;
 		}

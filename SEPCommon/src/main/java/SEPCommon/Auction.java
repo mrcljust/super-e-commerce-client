@@ -14,6 +14,13 @@ public class Auction implements Serializable {
 	private ShippingType shippingType;
 	private Customer seller;
 	private Customer currentBidder;
+	private Rating sellerRating;
+	private Rating buyerRating;
+	private Date starttime;
+	private Date enddate;
+	private boolean isEnded;
+	
+	
 	public Rating getSellerRating() {
 		return sellerRating;
 	}
@@ -54,11 +61,7 @@ public class Auction implements Serializable {
 		this.isEnded = _isEnded;
 	}
 
-	private Rating sellerRating;
-	private Rating buyerRating;
-	private Date starttime;
-	private Date enddate;
-	private boolean isEnded;
+
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,
 			Customer _seller, Customer _currentBidder, Double _currentBid, Date _starttime, Date _enddate) {
