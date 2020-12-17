@@ -1396,10 +1396,9 @@ public class SQL {
 					+ "JOIN orders\r\n"
 					+ "ON users.id=orders.buyer_id\r\n"
 					+ "JOIN products\r\n"
-					+"ON auctions.seller_id=orders.seller_id"
-					+"JOIN ratings \r\n "
-					+"ON ratings.order_id=orders.order_id"
+					+"ON auctions.seller_id=orders.seller_id"	
 					+ "WHERE orders.buyer_id="+ buyer.getId());
+			//test
 			
 			int arraycounterAllOrders=0;
 			int sqlcounterAllOrders=0;
