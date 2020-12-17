@@ -36,6 +36,8 @@ public class SQL {
 	private static SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
 	private static String currentServerDate= df.format(d1);
 	
+	java.util.Date date= new java.util.Date();
+	
 
 	private boolean connect() {
 		try {
@@ -1477,26 +1479,78 @@ public class SQL {
 		// Auktionen zurückgeben
 
 		// AuctionType:
-		// AuctionType.Active = aktive Auktionen
-		// AuctionType.Ended = beendete Auktionen
-		// AuctionType.Future = zukünftige Auktionen
+		// AuctionType.Active = aktive Auktionen -> serverzeit >= starttime AND serverzeit <=endttime 
+		// AuctionType.Ended = beendete Auktionen -> serverzeit > endtime
+		// AuctionType.Future = zukünftige Auktionen -> serverzeit < starttime
+		try {
+			if (auctionType == AuctionType.Active) {
+
+				PreparedStatement sqlTime;
+				sqlTime = connection.prepareStatement("Select * FROM auctions");
+
+				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
+				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
+						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
+								+ d1 + ">=" + sqlStartTime + "AND" + d1 + " <=" + sqlEndTime);
+
+				int currentBidderId = pstmtAllActiveAuctions.getResultSet().getInt("auctions.currentbidder_id");
+				int arraycounterAllOrders = 0;
+				int sqlcounterAllOrders = 0;
+				ResultSet allOrdersResultSet = pstmtAllActiveAuctions.executeQuery();
+				while (allOrdersResultSet.next()) { // Tupel zählen
+					sqlcounterAllOrders++;
+				}
+			}
+
+			else if (auctionType == AuctionType.Ended) {
+				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
+				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
+				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+				PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
+						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
+								+ d1 + ">" + sqlEndTime);
+				int currentBidderId = pstmtAllEndedAuctions.getResultSet().getInt("auctions.currentbidder_id");
+				int arraycounterAllOrders = 0;
+				int sqlcounterAllOrders = 0;
+				ResultSet allOrdersResultSet = pstmtAllEndedAuctions.executeQuery();
+
+				while (allOrdersResultSet.next()) { // Tupel zählen
+					sqlcounterAllOrders++;
+				}
+
+			} else if (auctionType == AuctionType.Future) {
+				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
+				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
+				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+				PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
+						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
+								+ d1 + "<" + sqlStartTime);
+				int currentBidderId = pstmtAllFutureAuctions.getResultSet().getInt("auctions.currentbidder_id");
+				int arraycounterAllOrders = 0;
+				int sqlcounterAllOrders = 0;
+				ResultSet allOrdersResultSet = pstmtAllFutureAuctions.executeQuery();
+
+				while (allOrdersResultSet.next()) { // Tupel zählen
+					sqlcounterAllOrders++;
+				}
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+	
+			
 		
-		if(auctionType==AuctionType.Active) {
-			
-		}
-		else if(auctionType==AuctionType.Ended) {
-			
-		}
-		else if(auctionType==AuctionType.Future) {
-			
-		}
 		if (!checkConnection()) {
 			return null;
 		}
 
 		return null;
 	}
-
+	
 	protected Auction[] fetchOwnAuctions(User buyer) {
 		// selbst eingestellte Auktionen (aktuell + beendete + zukünftige)
 		if (!checkConnection()) {
@@ -1568,7 +1622,7 @@ public class SQL {
 		return null;
 	}
 
-	protected Response deleteOrder(Order order) {
+	protected Response deleteOrder(Order order, Customer buyer) {
 			// Order anhand von ID aus der Datenbank löschen
 		
 			// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
