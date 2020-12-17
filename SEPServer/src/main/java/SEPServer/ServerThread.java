@@ -4,10 +4,18 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.Authenticator.RequestorType;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import SEPCommon.Auction;
+import SEPCommon.AuctionType;
 import SEPCommon.ClientRequest;
+import SEPCommon.Customer;
+import SEPCommon.Order;
 import SEPCommon.Product;
+import SEPCommon.Rating;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.ServerResponse;
@@ -140,11 +148,8 @@ public class ServerThread implements Runnable {
 				//Request FetchProducts mit Kategorie
 				//HASHMAP: "Category" - Kategorie
 				
-				//Request FetchProducts mit vollem Suchbegriff
-				//HASHMAP: "SearchFullString" - Suchbegriff
-				
-				//Request FetchProducts unvollständigem Suchbegriff
-				//HASHMAP: "SearchPartialString" - Suchbegriff
+				//Request FetchProducts mit Suchbegriff
+				//HASHMAP: "SearchString" - Suchbegriff
 				
 				else if(requestType == Request.FetchProducts)
 				{
@@ -320,6 +325,200 @@ public class ServerThread implements Runnable {
 					}
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request CreateAuction
+				//HASHMAP: "Auction" - Auction-Objekt
+				else if(requestType == Request.CreateAuction)
+				{
+					Auction argAuction = (Auction)requestMap.get("Auction");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.addAuction(argAuction);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request SendBid
+				//HASHMAP: "Auction" - Auction-Objekt, "Bidder" - Customer-Objekt des Bieters, "Bid" - Bietbetrag
+				else if(requestType == Request.SendBid)
+				{
+					Auction argAuction = (Auction)requestMap.get("Auction");
+					Customer argCustomer = (Customer)requestMap.get("Bidder");
+					Double argBid = (Double)requestMap.get("Bid");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.sendBid(argAuction, argCustomer, argBid);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request FetchAuctions,
+				//HASHMAP: "AuctionType" - AuctionType-Objekt
+				
+				//Request FetchAuctions mit Suchbegriff
+				//HASHMAP: "AuctionType" - AuctionType-Objekt, "SearchString" - Suchbegriff
+				else if(requestType == Request.FetchAuctions)
+				{
+					AuctionType argAuctionType = (AuctionType)requestMap.get("AuctionType");
+					Auction[] auctions;
+					
+					if(requestMap.containsKey("SearchString"))
+					{
+						//nach Produkten mit Suchbegriff suchen
+						String searchString = (String)requestMap.get("SearchString");
+						
+						//SQL-Abfrage ausführen
+						auctions = sql.fetchAuctionsByString(searchString, argAuctionType);
+					}
+					else //kein SearchString
+					{
+						//SQL-Abfrage ausführen
+						auctions = sql.fetchAuctions(argAuctionType);
+					}
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(auctions==null)
+					{
+						//keine DB Verbindung oder sonstiger Fehler
+						responseType = Response.Failure;
+					}
+					else
+					{
+						responseType = Response.Success;
+						responseMap.put("Auctions", auctions);
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request DeleteOrder
+				//HASHMAP: "Order" - Order-Objekt, "Customer" - Customer-Objekt des Kaeufers
+				else if(requestType == Request.DeleteOrder)
+				{
+					Order argOrder = (Order)requestMap.get("Order");
+					Customer argCustomer = (Customer)requestMap.get("Buyer");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.deleteOrder(argOrder, argCustomer);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request SendRating
+				//HASHMAP: "Rating" - Rating-Objekt
+				else if(requestType == Request.SendRating)
+				{
+					Rating argRating = (Rating)requestMap.get("Rating");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.SendRating(argRating);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request FetchRatings
+				//HASHMAP: "User" - User-Objekt, "FetchAvg" - Boolean, ob durchschnittliche Bewertungen oder Rating[] 
+				else if(requestType == Request.FetchRatings)
+				{
+					User argUser = (User)requestMap.get("User");
+					Boolean argFetchAvg = (Boolean)requestMap.get("FetchAvg");
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(argFetchAvg)
+					{
+						//durchschnittliche Bewertungen
+						
+						//SQL-Abfrage ausführen
+						double[] avgDoubleArray = sql.fetchAvgRating(argUser);
+						
+						if(avgDoubleArray==null)
+						{
+							responseType = Response.Failure;
+						}
+						else
+						{
+							// index 0 ist Average, Index 1 ist Anzahl
+							responseType = Response.Success;
+							double avgRating = avgDoubleArray[0];
+							double ratingCount = avgDoubleArray[1];
+							responseMap.put("Average", avgRating);
+							responseMap.put("Amount", ratingCount);
+						}
+					}
+					else
+					{
+						//alle Bewertungen
+						
+						//SQL-Abfrage ausführen
+						Rating[] ratings = sql.fetchRatings(argUser);
+						if(ratings==null)
+						{
+							responseType = Response.Failure;
+						}
+						else
+						{
+							responseType = Response.Success;
+							responseMap.put("Ratings", ratings);
+						}
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request FetchOrders
+				//HASHMAP: "Buyer" - User-Objekt
+				else if(requestType == Request.FetchOrders)
+				{
+					User argUser = (User)requestMap.get("Buyer");
+					Order[] orders = sql.fetchOrders(argUser);
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(orders==null)
+					{
+						//keine DB Verbindung oder sonstiger Fehler
+						responseType = Response.Failure;
+					}
+					else
+					{
+						responseType = Response.Success;
+						responseMap.put("Orders", orders);
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				else if(requestType == Request.GetServerDateTime)
+				{
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					Date dateNow =  new Date();
+					responseMap.put("DateTime", dateNow);
+					ServerResponse response = new ServerResponse(Response.Success, responseMap);
 					
 					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
