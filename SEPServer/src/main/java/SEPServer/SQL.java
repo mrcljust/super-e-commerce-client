@@ -1429,40 +1429,23 @@ public class SQL {
 				ResultSet allSenderRatings = pstmtSenderRatings.executeQuery();
 
 				Rating newSellerRating = null;
-				while (allSellerRatings.next() != false) {
-					if (allSellerRatings.getString("ratings.text") == null) {
-						newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
-								allSellerRatings.getInt("ratings.stars"), null,
-								allSellerRatings.getInt("ratings.sender_id"),
-								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), false);
-					} else {
-						newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
-								allSellerRatings.getInt("ratings.stars"), allSellerRatings.getString("ratings.text"),
-								allSellerRatings.getInt("ratings.sender_id"),
-								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), false);
-					}
-					break;
+				if (allSellerRatings.next() != false) {
+					newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+							allSellerRatings.getInt("ratings.stars"), allSellerRatings.getString("ratings.text"), // selbst wenn String bspw leer, wird leer sein
+							allSellerRatings.getInt("ratings.sender_id"),
+							allSellerRatings.getInt("ratings.receiver_id"), allSellerRatings.getInt("ratings.order_id"),
+							false);
 				}
-				Rating newSenderRating = null;
-				while (allSenderRatings.next() != false) {
-					if (allSenderRatings.getString("ratings.text") == null) {
-						newSenderRating = new Rating(allSellerRatings.getInt("ratings.id"),
-								allSellerRatings.getInt("ratings.stars"), null,
-								allSellerRatings.getInt("ratings.sender_id"),
-								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), false);
 
-					} else {
-						newSenderRating = new Rating(allSellerRatings.getInt("ratings.id"),
-								allSellerRatings.getInt("ratings.stars"), null,
-								allSellerRatings.getInt("ratings.sender_id"),
-								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), false);
-						// test
-					}
-					break;
+				Rating newSenderRating = null;
+				if (allSenderRatings.next() != false) {
+
+					newSenderRating = new Rating(allSellerRatings.getInt("ratings.id"),
+							allSellerRatings.getInt("ratings.stars"), null,
+							allSellerRatings.getInt("ratings.sender_id"),
+							allSellerRatings.getInt("ratings.receiver_id"), allSellerRatings.getInt("ratings.order_id"),
+							false);
+
 				}
 
 				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.id"), newProduct,
