@@ -10,24 +10,40 @@ public class Rating implements Serializable {
 	private int senderId;
 	private int receiverId;
 	private int orderId;
+	private int auctionId;
 
-	public Rating(int _id, int _stars, String _text, int _senderId, int _receiverId, int _orderId) {
+	public Rating(int _id, int _stars, String _text, int _senderId, int _receiverId, int _orderOrAuctionId, boolean isAuction) {
 
 		this.id = _id;
 		this.stars = _stars;
 		this.text = _text;
 		this.senderId = _senderId;
 		this.receiverId = _receiverId;
-		this.orderId = _orderId;
+		
+		if(isAuction)
+		{
+			auctionId=_orderOrAuctionId;
+		}
+		else
+		{
+			orderId=_orderOrAuctionId;
+		}
 	}
 
-	public Rating(int _stars, String _text, int _senderId, int _receiverId, int _orderId) {
+	public Rating(int _stars, String _text, int _senderId, int _receiverId, int _orderOrAuctionId, boolean isAuction) {
 
 		this.stars = _stars;
 		this.text = _text;
 		this.senderId = _senderId;
 		this.receiverId = _receiverId;
-		this.orderId = _orderId;
+		if(isAuction)
+		{
+			auctionId=_orderOrAuctionId;
+		}
+		else
+		{
+			orderId=_orderOrAuctionId;
+		}
 	}
 
 	public int getSenderId() {
