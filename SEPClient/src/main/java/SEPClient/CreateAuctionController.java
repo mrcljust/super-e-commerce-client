@@ -1,9 +1,9 @@
 package SEPClient;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneId;
+import java.util.Date;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -12,10 +12,15 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.HTMLEditor;
 import javafx.stage.Stage;
+import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
+import SEPCommon.Request;
+import SEPCommon.Response;
+import SEPCommon.ServerResponse;
 
 public class CreateAuctionController {
 
@@ -34,8 +39,8 @@ public class CreateAuctionController {
     	Auction_radioStartNow.setToggleGroup(radioGroupStarttime);
     	Auction_radioStartOther.setToggleGroup(radioGroupStarttime);
     	
-    	Auction_EndDatePicker.setValue(LocalDate.now(ZoneId.of("CET")));
-    	Auction_EndTime.setText(LocalTime.now(ZoneId.of("CET")).toString().substring(0, 5));
+    	//Aktuelles Datum in EndDatePicker
+    	Auction_EndDatePicker.setValue(SEPCommon.Methods.convertToLocalDate(new Date()));
 	}
 	
     @FXML
@@ -101,7 +106,66 @@ public class CreateAuctionController {
 
     @FXML
     void Auction_InsertClick(ActionEvent event) {
+    	//DATUM IN CET KONVERTIEREN UND PRUEFEN
+    	Date startDateAndTime;
+    	Date endDateAndTime;
+    	if(Auction_radioStartNow.isSelected())
+    	{
+        	//Startzeitpunkt jetzt
+    		startDateAndTime = SEPCommon.Methods.convertToDate(LocalDateTime.now());
+    	}
+    	else
+    	{
+        	//Anderer Startzeitpunkt
+        	//Startdatum und Startzeit in Date umwandeln.
+    		try {
+    			String[] startTimeSplit = Auction_StartTime.getText().split(":");
+            	int starthour = Integer.parseInt(startTimeSplit[0]);
+            	int startminute = Integer.parseInt(startTimeSplit[1]);
+            	startDateAndTime = SEPCommon.Methods.convertToDate(Auction_StartDatePicker.getValue().atTime(starthour, startminute));
+    		
+			} catch (Exception e) {
+				FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige Start-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+				return;
+			}
+    	}
+    	
+    	//Enddatum und Endzeit in Date umwandeln. vorher noch prüfen ob die Endzeit im Format XX:XX ist
+    	try {
+    		String[] endTimeSplit = Auction_EndTime.getText().split(":");
+        	int endhour  = Integer.parseInt(endTimeSplit[0]);
+        	int endminute  = Integer.parseInt(endTimeSplit[1]);
+        	endDateAndTime = SEPCommon.Methods.convertToDate(Auction_EndDatePicker.getValue().atTime(endhour, endminute));
+		} catch (Exception e) {
+			FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige End-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return;
+		}
+    	
 
+    	
+    	//Anhand Serveruhrzeit prüfen ob gültig (in Zukunft) und ob Endzeit nach Startzeit
+        ClientRequest req = new ClientRequest(Request.GetServerDateTime, null);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		
+		//Antwort auslesen
+		if(queryResponse.getResponseType() == Response.Success)
+		{
+			Date serverDate = (Date)queryResponse.getResponseMap().get("ServerDateTime");
+			
+			//HIER PRUEFEN
+			
+	    	//TESTAUSGABE
+	    	System.out.println(startDateAndTime);
+	    	System.out.println(endDateAndTime);
+			System.out.println(serverDate);
+		}
+		else
+		{
+			FXMLHandler.ShowMessageBox("Das Datum vom Server kann nicht geprüft werden, ggf. ist der Server nicht erreichbar.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			return;
+		}
     }
 
     @FXML
@@ -123,6 +187,7 @@ public class CreateAuctionController {
     void Auction_radioStartNow_Click(ActionEvent event) {
     	Auction_StartDatePicker.setDisable(true);
     	Auction_StartTime.setDisable(true);
+    	Auction_StartTime.setText("");
     	Auction_StartDatePicker.setValue(null);
     }
 
@@ -130,8 +195,14 @@ public class CreateAuctionController {
     void Auction_radioStartOther_Click(ActionEvent event) {
     	Auction_StartDatePicker.setDisable(false);
     	Auction_StartTime.setDisable(false);
-    	Auction_StartDatePicker.setValue(LocalDate.now(ZoneId.of("CET")));
-    	Auction_StartTime.setText(LocalTime.now(ZoneId.of("CET")).toString().substring(0, 5));
+    	
+
+    	//Aktuelles Datum in StartDatePicker
+    	Auction_StartDatePicker.setValue(SEPCommon.Methods.convertToLocalDate(new Date()));
+
+    	//Aktuelles Zeit in StartTime
+    	LocalTime localTime = SEPCommon.Methods.convertToLocalTime(new Date());
+    	Auction_StartTime.setText(localTime.getHour() + ":" + localTime.getMinute());
     }
 
 }
