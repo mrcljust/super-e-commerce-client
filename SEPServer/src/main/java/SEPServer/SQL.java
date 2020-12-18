@@ -1761,22 +1761,22 @@ public class SQL {
 			return null;
 		}
 		
-		Auction[] savedAuctions;
+		Auction[] savedAuctionsArray;
 		
 		try {
-			PreparedStatement fetchSavedauctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
-			ResultSet fetchSavedAuctionsIdsResult = fetchSavedauctionsIds.executeQuery();
+			PreparedStatement fetchSavedAuctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
+			ResultSet fetchSavedAuctionsIdsResult = fetchSavedAuctionsIds.executeQuery();
 			
 			//wenn eine Spalte savedAuctions gefunden wurde
 			if(fetchSavedAuctionsIdsResult.next()) 	
 			{
 				
-				String saved = fetchSavedAuctionsIdsResult.getString("saved");
-				if(saved=="" || saved==null || saved.isEmpty() || saved.isBlank())
+				String savedAuctionsString = fetchSavedAuctionsIdsResult.getString("saved");
+				if(savedAuctionsString=="" || savedAuctionsString==null || savedAuctionsString.isEmpty() || savedAuctionsString.isBlank())
 					return null; //keine Auktionen bisher gespeichert
 				
-				String[] savedAuctionsIds = saved.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
-				savedAuctions = new Auction[savedAuctionsIds.length]; //Rückgabearray mit Größe der Anzahl der IDs im Array
+				String[] savedAuctionsIds = savedAuctionsString.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
+				savedAuctionsArray = new Auction[savedAuctionsIds.length]; //Rückgabearray mit Größe der Anzahl der IDs im Array
 				
 				int newArrayCounter = 0;
 				for(String viewedIdStr : savedAuctionsIds) 
@@ -1784,7 +1784,7 @@ public class SQL {
 					try {
 						int viewedId = Integer.parseInt(viewedIdStr);
 						
-						//Für jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
+						//Für jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen	
 						//anschließend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
 						//und in das Array savedAuctions, welches am Ende zurückgegeben wird schreiben
 						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.id='" + viewedId + "'");
