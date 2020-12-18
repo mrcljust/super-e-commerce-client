@@ -1276,14 +1276,14 @@ public class SQL {
 		}
 		try {
 			PreparedStatement pstmt=connection.prepareStatement("INSERT INTO auctions(currentbid, currentbidder_id, description, emailsent, enddate, image, minbid, seller_id, shippingtype_id, startprice, starttime, title)"
-					+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?,)");
+					+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
 
 			pstmt.setDouble(1, auction.getCurrentBid());
 			pstmt.setInt(2, auction.getCurrentBidder().getId());
 			pstmt.setString(3, auction.getDescription());
 			pstmt.setBoolean(4, false);
 			pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(auction.getEnddate())); // cast weil unterschiedliche arten von date in java und sql
-			pstmt.setBytes(6, auction.getSeller().getPicture());
+			pstmt.setBytes(6, auction.getImage());
 			pstmt.setDouble(7, auction.getMinBid());
 			pstmt.setInt(8, auction.getSeller().getId());
 			if(auction.getShippingType() == ShippingType.Shipping)
@@ -1493,8 +1493,8 @@ public class SQL {
 					LocalDateTime sqlEndTime = allActiveAuctions.getTimestamp("auctions.enddate").toLocalDateTime();
 					
 				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ serverDate + ">=" + sqlStartTime + "AND" + serverDate + " <=" + sqlEndTime+ "AND auctions.auction_id="+ ActiveAuctionId);
+						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE "
+								+ serverDate + " >= " + sqlStartTime + " AND " + serverDate + " <= " + sqlEndTime+ " AND auctions.auction_id="+ ActiveAuctionId);
 
 				int arraycounterAllActiveAuctions = 0;
 				int sqlcounterAllActiveAuctions = 0;
@@ -1992,6 +1992,7 @@ Auction[] savedAuctions;
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
-		testSQLObject.addAuction(new Auction(1, "Hallo Beispiel", "Beispielhafte Beschreibung", null, 20.55, ShippingType.PickUp, new Customer(99, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55, LocalDateTime.now(),LocalDateTime.now()));
+
+		testSQLObject.addAuction(new Auction(1, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, ShippingType.PickUp, new Customer(99, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55, LocalDateTime.now(),LocalDateTime.now()));
 	}
 }
