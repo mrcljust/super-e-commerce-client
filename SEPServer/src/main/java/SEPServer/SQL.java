@@ -1314,29 +1314,29 @@ public class SQL {
 		// 1. Fall Auktion bereits beendet
 		// 2. Fall Bid ist zu niedrig
 		// 3. Fall Bid ist in Ordnung und die Auktion läuft noch
-		
-		//Quelle: https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
-		//Autor: Aaron Blenkush
+
+		// Quelle:
+		// https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
+		// Autor: Aaron Blenkush
 		// Edited: Jan 8'14 at 18:47
-		LocalDateTime serverDate= LocalDateTime.now();
-		//String currentServerDate= SEPCommon.Constants.DATEFORMAT.format(serverDate);
-		
-		
+		LocalDateTime serverDate = LocalDateTime.now();
+		// String currentServerDate= SEPCommon.Constants.DATEFORMAT.format(serverDate);
+
 		LocalDateTime endDate = auction.getEnddate();
 		LocalDateTime startDate = auction.getStarttime();
-		//String endDate = SEPCommon.Constants.DATEFORMAT.format(date);
+		// String endDate = SEPCommon.Constants.DATEFORMAT.format(date);
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 
-		else if (serverDate.isAfter(startDate)&& serverDate.isBefore(endDate)) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
-			if (auction.getCurrentBid() >= bid) {
-				return Response.BidTooLow;
-			} else if (decreaseWallet(bidder, bid) == Response.Failure) {
-				return Response.InsufficientBalance;
-			} else {
-				if (bid > auction.getCurrentBid() && decreaseWallet(bidder, bid) == Response.Success) {
+		else if (serverDate.isAfter(startDate) == true) {
+			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
+				if (auction.getCurrentBid() >= bid) {
+					return Response.BidTooLow;
+				} else if (decreaseWallet(bidder, bid) == Response.Failure) {
+					return Response.InsufficientBalance;
+				} else if (bid > auction.getCurrentBid() && decreaseWallet(bidder, bid) == Response.Success) {
 					try {
 						PreparedStatement pstmt = connection
 								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=? VALUES(?,?)");
@@ -1351,10 +1351,15 @@ public class SQL {
 				} else {
 					return Response.Failure;
 				}
+
+			} else {
+				return Response.AuctionAlreadyEnded;
 			}
+
 		} else {
-			return Response.AuctionAlreadyEnded;
+			return Response.AuctionNotStartedYet;
 		}
+
 	}
 
 	protected Response saveAuction(User buyer, Auction auction) {
