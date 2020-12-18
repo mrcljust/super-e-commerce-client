@@ -1563,7 +1563,7 @@ public class SQL {
 				allEndedAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0
 				Auction[] allEndedAuctionsArray = new Auction[sqlcounterAllOrders];
 				
-				int auctionId= allActiveAuctionsResultSet.getInt("auctions.auction_id");
+			/*	int auctionId= allActiveAuctionsResultSet.getInt("auctions.auction_id");
 				
 				PreparedStatement pstmtSellerRatingsEndedAuction= connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.auction_id="
@@ -1572,7 +1572,7 @@ public class SQL {
 				PreparedStatement pstmtSenderEndedAuction = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
 								+ orderId + "WHERE users.id=" + buyer.getId());
-
+*/
 			} else if (auctionType == AuctionType.Future) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
