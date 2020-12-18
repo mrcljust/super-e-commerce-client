@@ -5,6 +5,13 @@ import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 public class Methods {
 
@@ -48,5 +55,33 @@ public class Methods {
         catch (NoSuchAlgorithmException e) { 
             throw new RuntimeException(e); 
         } 
-    } 
+    }
+	
+	//Methode zum Umwandeln eines java.util.Date zu java.time.LocalDate
+	//QUELLE: https://www.baeldung.com/java-date-to-localdate-and-localdatetime
+	//(September 25, 2020, baeldung) - abgeändert
+	public static LocalDate convertToLocalDate(Date dateToConvert) {
+		Instant instant = dateToConvert.toInstant();
+		ZonedDateTime zdt = instant.atZone(ZoneId.of("CET"));
+		LocalDate localDate = zdt.toLocalDate();
+	    return localDate;
+	}
+	
+	//Methode zum Umwandeln eines java.util.Date zu java.time.LocalTime
+	//QUELLE: https://www.baeldung.com/java-date-to-localdate-and-localdatetime
+	//(September 25, 2020, baeldung) - abgeändert
+	public static LocalTime convertToLocalTime(Date dateToConvert) {
+		Instant instant = dateToConvert.toInstant();
+		ZonedDateTime zdt = instant.atZone(ZoneId.of("CET"));
+		LocalTime localTime = zdt.toLocalTime();
+	    return localTime;
+	}
+	
+	//Methode zum Umwandeln eines java.time.LocalDateTime zu java.util.Date
+	//QUELLE: https://www.baeldung.com/java-date-to-localdate-and-localdatetime
+	//(September 25, 2020, baeldung) - abgeändert
+	public static Date convertToDate(LocalDateTime localDateTimeToConvert)
+	{
+		return Date.from(localDateTimeToConvert.atZone(ZoneId.of("CET")).toInstant());
+	}
 }
