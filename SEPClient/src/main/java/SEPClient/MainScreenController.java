@@ -347,11 +347,11 @@ public class MainScreenController {
     		        	System.out.println(newTab.getText());
     		        	if(newTab==tabLiveAuctions)
     		        	{
-    		        		tabLiveAuctions_Change();
+    		        		tabLiveAuctions_Select();
     		        	}
     		        	else if(newTab==tabArticles)
     		        	{
-    		        		tabArticles_Change();
+    		        		tabArticles_Select();
     		        	}
     		        }
     		    }
@@ -553,6 +553,53 @@ public class MainScreenController {
     		}
     		currentSearchEvent=false;
     	}
+    }
+    
+    private void auctionsSearchChangedEvent(AuctionType auctionType)
+    {
+    	//Katalog leeren
+    	
+    	if(MainScreen_ListAuctions.getItems()!=null)
+    	{
+    		MainScreen_ListAuctions.getItems().clear();
+    	}
+		
+		if(MainScreen_txtSearchAuctions.getText()==null || MainScreen_txtSearchAuctions.getText().isEmpty() || MainScreen_txtSearchAuctions.getText().isBlank() || MainScreen_txtSearchAuctions.getText() == "")
+		{
+			//Wenn kein Text eingegeben, alle laden
+	    	if(radioCurrentAuctions.isSelected())
+	    	{
+	    		LoadAuctions(AuctionType.Active);
+	    	}
+	    	else if(radioEndedAuctions.isSelected())
+	    	{
+	    		LoadAuctions(AuctionType.Ended);
+	    	}
+	    	else if(radioFutureAuctions.isSelected())
+	    	{
+	    		LoadAuctions(AuctionType.Future);
+	    	}
+	    	return;
+		}
+		Auction[] auctionsInSearch = null;
+
+		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+		requestMap.put("AuctionType", auctionType);
+    	requestMap.put("SearchString", MainScreen_txtSearchAuctions.getText());
+    	
+    	ClientRequest req = new ClientRequest(Request.FetchAuctions, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		if(queryResponse.getResponseType() != null)	{
+			auctionsInSearch = (Auction[])queryResponse.getResponseMap().get("Auctions");
+			if(auctionsInSearch!=null)
+			{
+				ObservableList<Auction> ObservableAuctions = FXCollections.observableArrayList(auctionsInSearch);
+				
+				MainScreen_ListAuctions.setItems(ObservableAuctions);
+			}
+		}
     }
     
     private void searchChangedEvent()
@@ -892,11 +939,6 @@ public class MainScreenController {
     }
     
     @FXML
-    void MainScreen_txtSearchAuctions_Click(ActionEvent event) {
-    	
-    }
-    
-    @FXML
     void MainScreen_txtSearchAuctions_KeyPressed(KeyEvent event) {
     	//Taste wird gedrückt
     	//Bei Enter: Button Auction Search Klick simulieren
@@ -922,7 +964,19 @@ public class MainScreenController {
     @FXML
     void MainScreen_btnAuctionsSearchOK_Click(ActionEvent event)
     {
-    	
+    	//Suche kann bei aktiven, beendeten, zukünftigen Auktionen aufgerufen werden.
+    	if(radioCurrentAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Active);
+    	}
+    	else if(radioEndedAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Ended);
+    	}
+    	else if(radioFutureAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Future);
+    	}
     }
     
     @FXML
@@ -944,18 +998,19 @@ public class MainScreenController {
     }
     
     private void fetchCurrentAuctions() {
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Active));
-
+    	auctionsSearchChangedEvent(AuctionType.Active);
 	}
 
     @FXML
     void radioEndedAuctions_Click(ActionEvent event) {
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Ended));
+    	//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle geendeten Auktionen geladen
+    	auctionsSearchChangedEvent(AuctionType.Ended);
     }
 
     @FXML
     void radioFutureAuctions_Click(ActionEvent event) {
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Future));
+    	//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle zukünftigen Auktionen geladen
+    	auctionsSearchChangedEvent(AuctionType.Future);
     }
 
     @FXML
@@ -1000,7 +1055,7 @@ public class MainScreenController {
     	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.SavedAuctions));
     }
     
-    void tabArticles_Change() {
+    void tabArticles_Select() {
     	if(MainScreen_ListAuctions.getItems()!=null)
     	{
     		MainScreen_ListAuctions.getItems().clear();
@@ -1008,9 +1063,22 @@ public class MainScreenController {
     	clearProductDetails();
     	LoadAllProducts();
     	loadLastViewedProducts();
+    	
+    	MainScreen_txtSearch.setText("");
+    	MainScreen_ChoiceBox_Category.getSelectionModel().select(0);
+    	currentSearchEvent=false;
+    	lastSearchResult=null;
     }
 
-    void tabLiveAuctions_Change() {
+    void tabLiveAuctions_Select() {
+    	radioAllAuctions.setSelected(true);
+    	radioCurrentAuctions.setSelected(true);
+    	radioCurrentAuctions.setVisible(true);
+    	radioEndedAuctions.setVisible(true);
+    	radioFutureAuctions.setVisible(true);
+    	MainScreen_txtSearchAuctions.setText("");
+    	MainScreen_txtSearchAuctions.setVisible(true);
+    	MainScreen_btnAuctionsSearchOK.setVisible(true);
     	if(MainScreen_ListCatalog.getItems()!=null)
     	{
     		MainScreen_ListCatalog.getItems().clear();
@@ -1021,7 +1089,8 @@ public class MainScreenController {
     	}
     	clearProductDetails();
     	fetchCurrentAuctions();
-    	
+
+    	MainScreen_txtSearchAuctions.setText("");
     }
     
     @FXML
