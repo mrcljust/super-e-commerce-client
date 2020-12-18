@@ -1761,7 +1761,7 @@ public class SQL {
 			return null;
 		}
 		
-		Auction[] savedAuctionsArray;
+Auction[] savedAuctions;
 		
 		try {
 			PreparedStatement fetchSavedAuctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
@@ -1771,12 +1771,12 @@ public class SQL {
 			if(fetchSavedAuctionsIdsResult.next()) 	
 			{
 				
-				String savedAuctionsString = fetchSavedAuctionsIdsResult.getString("saved");
-				if(savedAuctionsString=="" || savedAuctionsString==null || savedAuctionsString.isEmpty() || savedAuctionsString.isBlank())
+				String saved = fetchSavedAuctionsIdsResult.getString("savedauctions");
+				if(saved=="" || saved==null || saved.isEmpty() || saved.isBlank())
 					return null; //keine Auktionen bisher gespeichert
 				
-				String[] savedAuctionsIds = savedAuctionsString.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
-				savedAuctionsArray = new Auction[savedAuctionsIds.length]; //Rückgabearray mit Größe der Anzahl der IDs im Array
+				String[] savedAuctionsIds = saved.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
+				savedAuctions = new Auction[savedAuctionsIds.length]; //Rckgabearray mit Gre der Anzahl der IDs im Array
 				
 				int newArrayCounter = 0;
 				for(String viewedIdStr : savedAuctionsIds) 
@@ -1784,9 +1784,9 @@ public class SQL {
 					try {
 						int viewedId = Integer.parseInt(viewedIdStr);
 						
-						//Für jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen	
-						//anschließend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
-						//und in das Array savedAuctions, welches am Ende zurückgegeben wird schreiben
+						//Fr jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
+						//anschlieend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
+						//und in das Array savedAuctions, welches am Ende zurckgegeben wird schreiben
 						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.id='" + viewedId + "'");
 						ResultSet fetchAuctionsInfoResult = fetchAuctionInfo.executeQuery();
 						if(fetchAuctionsInfoResult.next())
@@ -1832,8 +1832,8 @@ public class SQL {
 						}
 						newArrayCounter++;
 						} catch (NumberFormatException e) {
-							//Auction mittlerweile gelöscht
-							//ignorieren, für diese ID keine Auktion (null) in das Array schreiben.
+							//Auction mittlerweile gelscht
+							//ignorieren, fr diese ID keine Auktion (null) in das Array schreiben.
 							savedAuctions[newArrayCounter] = null;
 						}
 					}
@@ -1841,14 +1841,13 @@ public class SQL {
 				}
 				else
 				{
-					//kein Entry mit der BuyerId - eigentlich nicht möglich.
+					//kein Entry mit der BuyerId - eigentlich nicht mglich.
 					return null;
 				}
 			} catch (SQLException e) {
 				e.printStackTrace();
 				return null;
 			}
-				
 	}
 
 	protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
