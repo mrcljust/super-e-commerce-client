@@ -1492,12 +1492,17 @@ public class SQL {
 
 				PreparedStatement sqlTime;
 				sqlTime = connection.prepareStatement("Select * FROM auctions");
+				ResultSet allActiveAuctions=sqlTime.executeQuery();
 
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
 				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+	
+				while(allActiveAuctions.next()) {
+					int ActiveAuctionId=allActiveAuctions.getInt("auctions.auction_id");
+					
 				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ serverDate + ">=" + sqlStartTime + "AND" + serverDate + " <=" + sqlEndTime);
+								+ serverDate + ">=" + sqlStartTime + "AND" + serverDate + " <=" + sqlEndTime+ "AND auctions.auction_id="+ ActiveAuctionId);
 
 				int arraycounterAllActiveAuctions = 0;
 				int sqlcounterAllActiveAuctions = 0;
@@ -1566,13 +1571,19 @@ public class SQL {
 					arraycounterAllActiveAuctions++;
 				}
 			}
+			}
 
 			else if (auctionType == AuctionType.Ended) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
+				ResultSet allEndedAuctions=sqlTime.executeQuery();
+				
 				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+				while(allEndedAuctions.next()) {
+					int endedAuctionId=allEndedAuctions.getInt("auctions.auction_id");
+					
 				PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ serverDate + ">" + sqlEndTime);
+								+ serverDate + ">" + sqlEndTime + "AND auctions.auction_id="+ endedAuctionId);
 
 				int arraycounterAllEndedAuctions = 0;
 				int sqlcounterAllEndedAuctions = 0;
@@ -1680,12 +1691,18 @@ public class SQL {
 				}
 				arraycounterAllEndedAuctions++;
 				// test
+				}
 			} else if (auctionType == AuctionType.Future) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
+				ResultSet allFutureAuctions=sqlTime.executeQuery();
+				
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
-				PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
+				while(allFutureAuctions.next()) {
+					int futureAuctionId=allFutureAuctions.getInt("auctions.auction_id");
+				 PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ serverDate + "<" + sqlStartTime);
+								+ serverDate + "<" + sqlStartTime + "AND auctions.auction_id="+ futureAuctionId);
+				 
 				int arraycounterAllFutureAuctions = 0;
 				int sqlcounterAllOrders = 0;
 				ResultSet allFutureAuctionsResultSet = pstmtAllFutureAuctions.executeQuery();
@@ -1727,7 +1744,7 @@ public class SQL {
 					arraycounterAllFutureAuctions++;
 				}
 			}
-
+			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
