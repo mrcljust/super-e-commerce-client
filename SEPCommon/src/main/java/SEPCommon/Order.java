@@ -1,17 +1,17 @@
 package SEPCommon;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Order implements Serializable {
 
 	private int id;
 	private Product product;
-	private Date date;
+	private LocalDateTime date;
 	private Rating sellerRating;
 	private Rating buyerRating;
 
-	public Order(int _id, Product _Product, Date _date, Rating _sellerRating, Rating _buyerRating) {
+	public Order(int _id, Product _Product, LocalDateTime _date, Rating _sellerRating, Rating _buyerRating) {
 
 		this.id = _id;
 		this.product= _Product;
@@ -37,11 +37,11 @@ public class Order implements Serializable {
 		this.product = product;
 	}
 
-	public Date getDate() {
+	public LocalDateTime getDate() {
 		return date;
 	}
 
-	public void setDate(Date date) {
+	public void setDate(LocalDateTime date) {
 		this.date = date;
 	}
 

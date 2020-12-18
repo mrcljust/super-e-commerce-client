@@ -1,7 +1,7 @@
 package SEPCommon;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class Auction implements Serializable {
 
@@ -16,8 +16,8 @@ public class Auction implements Serializable {
 	private Customer currentBidder;
 	private Rating sellerRating;
 	private Rating buyerRating;
-	private Date starttime;
-	private Date enddate;
+	private LocalDateTime starttime;
+	private LocalDateTime enddate;
 	private boolean isEnded;
 	
 	
@@ -37,19 +37,19 @@ public class Auction implements Serializable {
 		this.buyerRating = _buyerRating;
 	}
 
-	public Date getStarttime() {
+	public LocalDateTime getStarttime() {
 		return starttime;
 	}
 
-	public void setStarttime(Date _starttime) {
+	public void setStarttime(LocalDateTime _starttime) {
 		this.starttime = _starttime;
 	}
 
-	public Date getEnddate() {
+	public LocalDateTime getEnddate() {
 		return enddate;
 	}
 
-	public void setEnddate(Date _enddate) {
+	public void setEnddate(LocalDateTime _enddate) {
 		this.enddate = _enddate;
 	}
 
@@ -64,7 +64,7 @@ public class Auction implements Serializable {
 
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,
-			Customer _seller, Customer _currentBidder, Double _currentBid, Date _starttime, Date _enddate) {
+			Customer _seller, Customer _currentBidder, Double _currentBid, LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird aufgerufen, wenn laufende Auktion aus DB geholt wird
 		this.id = _id;
 		this.title = _title;
@@ -82,7 +82,7 @@ public class Auction implements Serializable {
 
 	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _currentBid,
 			ShippingType _shippingType, Customer _seller, Customer _currentBidder, Rating _sellerRating, Rating _buyerRating,
-			Date _starttime, Date _enddate) {
+			LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird bei beendeten Auktionen in der DB aufgerufen.
 		this.id = _id;
 		this.title = _title;
@@ -101,7 +101,7 @@ public class Auction implements Serializable {
 	}
 
 	public Auction(String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,	
-			Customer _seller, Date _starttime, Date _enddate) {
+			Customer _seller, LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird aufgerufen, wenn neue Auktion angelegt wird (noch keine ID vergeben)
 		this.title = _title;
 		this.description = _description;

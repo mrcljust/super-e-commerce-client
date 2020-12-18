@@ -6,9 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import java.time.LocalDateTime;
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ShippingType;
@@ -26,9 +24,6 @@ public class SQL {
 
 	private boolean isConnected;
 	private static Connection connection;			//Connection zum connecten mit DB
-
-	
-	
 	
 	private boolean connect() {
 		try {
@@ -1287,7 +1282,7 @@ public class SQL {
 			pstmt.setInt(2, auction.getCurrentBidder().getId());
 			pstmt.setString(3, auction.getDescription());
 			pstmt.setBoolean(4, false);
-			pstmt.setDate(5, (java.sql.Date) auction.getEnddate()); // cast weil unterschiedliche arten von date in java und sql
+			pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(auction.getEnddate())); // cast weil unterschiedliche arten von date in java und sql
 			pstmt.setBytes(6, auction.getSeller().getPicture());
 			pstmt.setDouble(7, auction.getMinBid());
 			pstmt.setInt(8, auction.getSeller().getId());
@@ -1300,7 +1295,7 @@ public class SQL {
 				pstmt.setInt(9, 2); 
 			}
 			pstmt.setDouble(10, auction.getMinBid());
-			pstmt.setDate(11, (java.sql.Date) auction.getStarttime());		//cast unterschiedliche Dates
+			pstmt.setTimestamp(11, java.sql.Timestamp.valueOf(auction.getStarttime()));		//cast unterschiedliche Dates
 			pstmt.setString(12, auction.getTitle());
 
 			pstmt.execute();
@@ -1323,21 +1318,19 @@ public class SQL {
 		//Quelle: https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
 		//Autor: Aaron Blenkush
 		// Edited: Jan 8'14 at 18:47
-		Date serverDate= new Date();
-	//	SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
-		//String currentServerDate= df.format(serverDate);
+		LocalDateTime serverDate= LocalDateTime.now();
+		//String currentServerDate= SEPCommon.Constants.DATEFORMAT.format(serverDate);
 		
 		
-		Date endDate = auction.getEnddate();
-		Date startDate=auction.getStarttime();
-		//SimpleDateFormat auctionEndDate = new SimpleDateFormat("dd/MM/YYYY HH:mm a");
-		//String endDate = auctionEndDate.format(date);
+		LocalDateTime endDate = auction.getEnddate();
+		LocalDateTime startDate = auction.getStarttime();
+		//String endDate = SEPCommon.Constants.DATEFORMAT.format(date);
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 
-		else if (serverDate.after(startDate)&& serverDate.before(endDate)) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
+		else if (serverDate.isAfter(startDate)&& serverDate.isBefore(endDate)) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
 			if (auction.getCurrentBid() >= bid) {
 				return Response.BidTooLow;
 			} else if (decreaseWallet(bidder, bid) == Response.Failure) {
@@ -1452,7 +1445,7 @@ public class SQL {
 				}
 
 				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.id"), newProduct,
-						allOrdersResultSet.getDate("orders.purchasedate"), newBuyerRating, newSellerRating);
+						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
 
 				arraycounterAllOrders++;
 
@@ -1483,7 +1476,7 @@ public class SQL {
 		// AuctionType.Active = aktive Auktionen -> serverzeit >= starttime AND serverzeit <=endttime 
 		// AuctionType.Ended = beendete Auktionen -> serverzeit > endtime
 		// AuctionType.Future = zukünftige Auktionen -> serverzeit < starttime
-		Date serverDate = new Date();
+		LocalDateTime serverDate = LocalDateTime.now();
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1496,8 +1489,8 @@ public class SQL {
 
 				while(allActiveAuctions.next()) {
 					int ActiveAuctionId=allActiveAuctions.getInt("auctions.auction_id");
-					Date sqlStartTime = allActiveAuctions.getDate("auctions.starttime");
-					Date sqlEndTime = allActiveAuctions.getDate("auctions.enddate");
+					LocalDateTime sqlStartTime = allActiveAuctions.getTimestamp("auctions.starttime").toLocalDateTime();
+					LocalDateTime sqlEndTime = allActiveAuctions.getTimestamp("auctions.enddate").toLocalDateTime();
 					
 				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
@@ -1564,8 +1557,8 @@ public class SQL {
 							allActiveAuctionsResultSet.getBytes("auctions.image"),
 							allActiveAuctionsResultSet.getDouble("auctions.startprice"), shippingtype, newSeller,
 							currentBidder, allActiveAuctionsResultSet.getDouble("auctions.currentbid"),
-							allActiveAuctionsResultSet.getDate("auctions.starttime"),
-							allActiveAuctionsResultSet.getDate("auctions.enddate"));
+							allActiveAuctionsResultSet.getTimestamp("auctions.starttime").toLocalDateTime(),
+							allActiveAuctionsResultSet.getTimestamp("auctions.enddate").toLocalDateTime());
 
 					arraycounterAllActiveAuctions++;
 				}
@@ -1579,7 +1572,7 @@ public class SQL {
 				
 				while(allEndedAuctions.next()) {
 					int endedAuctionId=allEndedAuctions.getInt("auctions.auction_id");
-					Date sqlEndTime = allEndedAuctions.getDate("auctions.enddate");
+					LocalDateTime sqlEndTime = allEndedAuctions.getTimestamp("auctions.enddate").toLocalDateTime();
 					
 				PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
@@ -1686,8 +1679,8 @@ public class SQL {
 							allEndedAuctionsResultSet.getInt("auctions.startprice"),
 							allEndedAuctionsResultSet.getInt("auctions.currentbid"), shippingtype, newSeller,
 							currentBidder, newSellerRating, newBuyerRating,
-							allEndedAuctionsResultSet.getDate("auctions.starttime"),
-							allEndedAuctionsResultSet.getDate("auctions.enddate"));
+							allEndedAuctionsResultSet.getTimestamp("auctions.starttime").toLocalDateTime(),
+							allEndedAuctionsResultSet.getTimestamp("auctions.enddate").toLocalDateTime());
 				}
 				arraycounterAllEndedAuctions++;
 				// test
@@ -1699,7 +1692,7 @@ public class SQL {
 				
 				while(allFutureAuctions.next()) {
 					int futureAuctionId=allFutureAuctions.getInt("auctions.auction_id");
-					Date sqlStartTime = allFutureAuctions.getDate("auctions.starttime");
+					LocalDateTime sqlStartTime = allFutureAuctions.getTimestamp("auctions.starttime").toLocalDateTime();
 				 PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
 								+ serverDate + "<" + sqlStartTime + "AND auctions.auction_id="+ futureAuctionId);
@@ -1739,8 +1732,8 @@ public class SQL {
 							allFutureAuctionsResultSet.getString("auctions.description"),
 							allFutureAuctionsResultSet.getBytes("auctions.image"),
 							allFutureAuctionsResultSet.getDouble("auctions.minbid"), shippingtype, newSeller,
-							allFutureAuctionsResultSet.getDate("auctions.starttime"),
-							allFutureAuctionsResultSet.getDate("auctions.enddate"));
+							allFutureAuctionsResultSet.getTimestamp("auctions.starttime").toLocalDateTime(),
+							allFutureAuctionsResultSet.getTimestamp("auctions.enddate").toLocalDateTime());
 
 					arraycounterAllFutureAuctions++;
 				}
@@ -1844,7 +1837,7 @@ Auction[] savedAuctions;
 							
 							Auction auction = new Auction(viewedId, fetchAuctionsInfoResult.getString("auctions.title"), fetchAuctionsInfoResult.getString("auctions.description"),
 									fetchAuctionsInfoResult.getBytes("auctions.image"), fetchAuctionsInfoResult.getDouble("auctions.minbid"), shippingtype,
-									seller, customer, fetchAuctionsInfoResult.getDouble("auctions.currentbid"), fetchAuctionsInfoResult.getDate("auctions.starttime"), fetchAuctionsInfoResult.getDate("auctions.enddate"));
+									seller, customer, fetchAuctionsInfoResult.getDouble("auctions.currentbid"), fetchAuctionsInfoResult.getTimestamp("auctions.starttime").toLocalDateTime(), fetchAuctionsInfoResult.getTimestamp("auctions.enddate").toLocalDateTime());
 							
 							savedAuctions[newArrayCounter] = auction;
 						}
@@ -1941,17 +1934,16 @@ Auction[] savedAuctions;
 		// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
 		// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
-		Date serverDate= new Date();
+		LocalDateTime serverDate = LocalDateTime.now();
 		// OrderID speichern
 		int orderID = order.getId();
 		// Order Date speichern
-		Date date = order.getDate();
+		LocalDateTime date = order.getDate();
 		Double price = order.getProduct().getPrice();
 		
 		// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
-		SimpleDateFormat date1 = new SimpleDateFormat("dd/MM/YYYY");
-		String orderGetDate = date1.format(date);
-		String ServerDate = date1.format(serverDate);
+		String orderGetDate = SEPCommon.Constants.DATEFORMATDAYONLY.format(date);
+		String ServerDate = SEPCommon.Constants.DATEFORMATDAYONLY.format(serverDate);
 		
 		if (!checkConnection()) {
 		return Response.NoDBConnection;
@@ -2000,5 +1992,6 @@ Auction[] savedAuctions;
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
+		testSQLObject.addAuction(new Auction(1, "Hallo Beispiel", "Beispielhafte Beschreibung", null, 20.55, ShippingType.PickUp, new Customer(99, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55, LocalDateTime.now(),LocalDateTime.now()));
 	}
 }
