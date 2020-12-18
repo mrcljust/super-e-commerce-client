@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.time.LocalTime;
 import java.util.Date;
 
 import SEPCommon.Response;
@@ -1532,20 +1531,30 @@ public class SQL {
 								currentBidderInformation.getDouble("users.wallet"), newAddressCurrentbidder);
 					}
 					
-					Enum shippingtype;
+					ShippingType shippingtype=null;
 					if(allActiveAuctionsResultSet.getInt("auctions.shippingtype_id")==1) {
 						shippingtype=ShippingType.Shipping;
 					}
 					else if(allActiveAuctionsResultSet.getInt("auctions.shippingtype_id")==2) {
 						shippingtype=ShippingType.PickUp;
 					}
-					//allActiveAuctionsArray[sqlcounterAllActiveAuctions]= new Auction(allActiveAuctionsResultSet.getInt("auctions.auction_id"), allActiveAuctionsResultSet.getString("auctions.title"), allActiveAuctionsResultSet.getString("auctions.description"), allActiveAuctionsResultSet.getBytes("auctions.image"), allActiveAuctionsResultSet.getDouble("auctions.minbid"), shippingtype, newSeller, currentBidder,allActiveAuctionsResultSet.getDouble("auctions.currentbid"), allActiveAuctionsResultSet.getDate("auctions.starttime"), allActiveAuctionsResultSet.getDate("auctions.enddate"));
-					//allActiveAuctionsArray[sqlcounterAllActiveAuctions]= new Auction(sqlcounterAllActiveAuctions, null, null, null, sqlcounterAllActiveAuctions, sqlcounterAllActiveAuctions, null, currentBidder, currentBidder, null, null, sqlEndTime, sqlEndTime)
-
-				arraycounterAllActiveAuctions++;
+					allActiveAuctionsArray[sqlcounterAllActiveAuctions] = new Auction(
+							allActiveAuctionsResultSet.getInt("auctions.auction_id"),
+							allActiveAuctionsResultSet.getString("auctions.title"),
+							allActiveAuctionsResultSet.getString("auctions.description"),
+							allActiveAuctionsResultSet.getBytes("auctions.image"),
+							allActiveAuctionsResultSet.getDouble("auctions.minbid"), shippingtype, newSeller,
+							currentBidder, allActiveAuctionsResultSet.getDouble("auctions.currentbid"),
+							allActiveAuctionsResultSet.getDate("auctions.starttime"),
+							allActiveAuctionsResultSet.getDate("auctions.enddate"));
+	
+					arraycounterAllActiveAuctions++;
 				}
 			}
 
+			
+			
+			
 			else if (auctionType == AuctionType.Ended) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
@@ -1573,6 +1582,37 @@ public class SQL {
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
 								+ orderId + "WHERE users.id=" + buyer.getId());
 */
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			} else if (auctionType == AuctionType.Future) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
