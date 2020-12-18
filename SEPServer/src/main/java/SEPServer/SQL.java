@@ -1509,7 +1509,7 @@ public class SQL {
 				while (allActiveAuctionsResultSet.next()) { // Tupel zählen
 					sqlcounterAllActiveAuctions++;
 				}
-				allActiveAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0
+				allActiveAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0 kk
 				Auction[] allActiveAuctionsArray = new Auction[sqlcounterAllActiveAuctions];
 				while (allActiveAuctionsResultSet.next()) {
 					Address newAddress = new Address(allActiveAuctionsResultSet.getString("users.fullname"),
