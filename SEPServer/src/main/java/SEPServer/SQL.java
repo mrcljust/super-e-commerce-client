@@ -1494,11 +1494,10 @@ public class SQL {
 				sqlTime = connection.prepareStatement("Select * FROM auctions");
 				ResultSet allActiveAuctions=sqlTime.executeQuery();
 
-				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
-				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
-	
 				while(allActiveAuctions.next()) {
 					int ActiveAuctionId=allActiveAuctions.getInt("auctions.auction_id");
+					Date sqlStartTime = allActiveAuctions.getDate("auctions.starttime");
+					Date sqlEndTime = allActiveAuctions.getDate("auctions.enddate");
 					
 				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
@@ -1510,7 +1509,7 @@ public class SQL {
 				while (allActiveAuctionsResultSet.next()) { // Tupel zählen
 					sqlcounterAllActiveAuctions++;
 				}
-				allActiveAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0
+				allActiveAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0 kk
 				Auction[] allActiveAuctionsArray = new Auction[sqlcounterAllActiveAuctions];
 				while (allActiveAuctionsResultSet.next()) {
 					Address newAddress = new Address(allActiveAuctionsResultSet.getString("users.fullname"),
@@ -1577,9 +1576,10 @@ public class SQL {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				ResultSet allEndedAuctions=sqlTime.executeQuery();
 				
-				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
+				
 				while(allEndedAuctions.next()) {
 					int endedAuctionId=allEndedAuctions.getInt("auctions.auction_id");
+					Date sqlEndTime = allEndedAuctions.getDate("auctions.enddate");
 					
 				PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
@@ -1696,9 +1696,10 @@ public class SQL {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				ResultSet allFutureAuctions=sqlTime.executeQuery();
 				
-				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
+				
 				while(allFutureAuctions.next()) {
 					int futureAuctionId=allFutureAuctions.getInt("auctions.auction_id");
+					Date sqlStartTime = allFutureAuctions.getDate("auctions.starttime");
 				 PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
 								+ serverDate + "<" + sqlStartTime + "AND auctions.auction_id="+ futureAuctionId);
