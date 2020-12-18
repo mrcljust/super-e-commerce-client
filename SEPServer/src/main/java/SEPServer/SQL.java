@@ -1626,11 +1626,99 @@ public class SQL {
 
 	protected Auction[] fetchSavedAuctions(User buyer) {
 		// Auktionen die buyer gespeichert hat (aktuell + beendete + zukünftige)
+		
 		if (!checkConnection()) {
 			return null;
 		}
+		
+		Auction[] savedAuctions;
+		
+		try {
+			PreparedStatement fetchSavedAuctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
+			ResultSet fetchSavedAuctionsIdsResult = fetchSavedAuctionsIds.executeQuery();
+			
+			//wenn eine Spalte savedAuctions gefunden wurde
+			if(fetchSavedAuctionsIdsResult.next()) 	
+			{
+				
+				String saved = fetchSavedAuctionsIdsResult.getString("saved");
+				if(saved=="" || saved==null || saved.isEmpty() || saved.isBlank())
+					return null; //keine Auktionen bisher gespeichert
+				
+				String[] savedAuctionsIds = saved.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
+				savedAuctions = new Auction[savedAuctionsIds.length]; //Rückgabearray mit Größe der Anzahl der IDs im Array
+				
+				int newArrayCounter = 0;
+				for(String viewedIdStr : savedAuctionsIds) 
+				{
+					try {
+						int viewedId = Integer.parseInt(viewedIdStr);
+						
+						//Für jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
+						//anschließend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
+						//und in das Array savedAuctions, welches am Ende zurückgegeben wird schreiben
+						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.id='" + viewedId + "'");
+						ResultSet fetchAuctionsInfoResult = fetchAuctionInfo.executeQuery();
+						if(fetchAuctionsInfoResult.next())
+						{
+							
+							Address address = new Address(fetchAuctionsInfoResult.getString("users.fullname"),
+									fetchAuctionsInfoResult.getString("users.country"), fetchAuctionsInfoResult.getInt("users.postalcode"),
+									fetchAuctionsInfoResult.getString("users.city"), fetchAuctionsInfoResult.getString("users.street"),
+									fetchAuctionsInfoResult.getString("users.number"));
+							Customer seller = new Customer(fetchAuctionsInfoResult.getInt("users.id"), fetchAuctionsInfoResult.getString("users.username"),
+									fetchAuctionsInfoResult.getString("users.email"), fetchAuctionsInfoResult.getString("users.password"), 
+									fetchAuctionsInfoResult.getBytes("users.picture"), fetchAuctionsInfoResult.getDouble("users.wallet"), address);
+							
+							
+							int shippingtypeId = fetchAuctionsInfoResult.getInt("auctions.shippingtype_id");
+							ShippingType shippingtype = null;
 
-		return null;
+							if(shippingtypeId==1)
+							{
+							    shippingtype = ShippingType.Shipping;
+							}
+							else if(shippingtypeId==2)
+							{
+							    shippingtype = ShippingType.PickUp;
+							}
+							
+							int currentBidderId = fetchAuctionsInfoResult.getInt("auctions.currentbidder_id");
+							PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
+							ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+							Customer customer = null;
+							if(fetchUserDataResult.next())
+							{
+								customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
+										fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
+										fetchUserDataResult.getBytes("picture"), fetchUserDataResult.getDouble("wallet"), address);
+							}
+							
+							Auction auction = new Auction(viewedId, fetchAuctionsInfoResult.getString("auctions.title"), fetchAuctionsInfoResult.getString("auctions.description"),
+									fetchAuctionsInfoResult.getBytes("auctions.image"), fetchAuctionsInfoResult.getDouble("auctions.minbid"), shippingtype,
+									seller, customer, fetchAuctionsInfoResult.getDouble("auctions.currentbid"), fetchAuctionsInfoResult.getDate("auctions.starttime"), fetchAuctionsInfoResult.getDate("auctions.enddate"));
+							
+							savedAuctions[newArrayCounter] = auction;
+						}
+						newArrayCounter++;
+						} catch (NumberFormatException e) {
+							//Auction mittlerweile gelöscht
+							//ignorieren, für diese ID keine Auktion (null) in das Array schreiben.
+							savedAuctions[newArrayCounter] = null;
+						}
+					}
+					return savedAuctions;
+				}
+				else
+				{
+					//kein Entry mit der BuyerId - eigentlich nicht möglich.
+					return null;
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return null;
+			}
+				
 	}
 
 	protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
@@ -1652,11 +1740,34 @@ public class SQL {
 	}
 
 	protected Response SendRating(Rating rating) {
+		// Bewertung mit Sternen und Text zurückgeben
+		
+		// Wenn erfolgreich Response.Success zurückgeben
+		// Wenn keine Verbindung zur DB: NoDBConnection zurückgeben
+		// Sonstiger Fehler Response.Failure zurückgeben
+		
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
-
-		return null;
+		
+		try {
+		PreparedStatement insertRating = connection.prepareStatement("INSERT INTO ratings(order_id, auction_id, sender_id, receiver_id, stars, text) "
+				+ "VALUES (?, ?, ?, ?, ?, ?)");
+		
+		insertRating.setInt(1, rating.getOrderId());
+		insertRating.setInt(2, rating.getAuctionId());
+		insertRating.setInt(3, rating.getSenderId());
+		insertRating.setInt(4, rating.getReceiverId());
+		insertRating.setInt(5, rating.getStars());
+		insertRating.setString(6, rating.getText());
+		insertRating.execute();
+		return Response.Success;		
+		
+	} catch (SQLException e) {
+		//es ist ein Fehler aufgetreten:
+		e.printStackTrace();
+		return Response.Failure;
+	}
 	}
 
 	protected Rating[] fetchRatings(User user) {
@@ -1678,45 +1789,51 @@ public class SQL {
 	}
 
 	protected Response deleteOrder(Order order, Customer buyer) {
-			// Order anhand von ID aus der Datenbank löschen
+		// Order anhand von ID aus der Datenbank löschen
+	
+		// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
+		// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
+		// Verbindung herstellen, wenn keine Verbindung besteht
+	
+		// OrderID speichern
+		int orderID = order.getId();
+		// Order Date speichern
+		Date date = order.getDate();
+		Double price = order.getProduct().getPrice();
 		
-			// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
-			// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
-			// Verbindung herstellen, wenn keine Verbindung besteht
+		// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
+		SimpleDateFormat date1 = new SimpleDateFormat("dd/MM/YYYY");
+		String orderGetDate = date1.format(date);
+		String ServerDate = date1.format(currentServerDate);
 		
-			// OrderID speichern
-			int orderID = order.getId();
-			// Order Date speichern
-			Date date = order.getDate();
-			
-			// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
-			SimpleDateFormat date1 = new SimpleDateFormat("dd/MM/YYYY");
-			String orderGetDate = date1.format(date);
-			String ServerDate = date1.format(currentServerDate);
-			
-			if (!checkConnection()) {
-			return Response.NoDBConnection;
+		if (!checkConnection()) {
+		return Response.NoDBConnection;
 		}
-			
-			// Order kann am gleichen Tag der Bestellung noch storniert werden
-			if(orderGetDate.equals(ServerDate)) {
-				try
-				{
-					// Order aus Datenbank löschen anahnd der ID
-					Statement statement = connection.createStatement();
-					statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
-					return Response.Success;
-				} catch (SQLException e) {
-					// Fehler zurückgeben
-					return Response.Failure;
-				}		
-			}
-			
-			// Order ist zu lange her und kann nicht mehr gelöscht werden
-			else {
+		
+		// Order kann am gleichen Tag der Bestellung noch storniert werden
+		if(orderGetDate.equals(ServerDate)) {
+			try
+			{
+				// Order aus Datenbank löschen anahnd der ID
+				Statement statement = connection.createStatement();
+				statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
+							
+				Seller seller = order.getProduct().getSeller();
+				increaseWallet(buyer, price);
+				decreaseWallet(seller, price);
+				
+				return Response.Success; 
+				
+			} catch (SQLException e) {
+				// Fehler zurückgeben
 				return Response.Failure;
 			}
-	}
+		}
+		// Order ist zu lange her und kann nicht mehr gelöscht werden
+		else {
+			return Response.Failure;
+		}			
+}
 
 	protected Response checkForNewFinishedAuctions() {
 		// Checken ob es beendete Auktionen gibt, zu welchen noch keine
