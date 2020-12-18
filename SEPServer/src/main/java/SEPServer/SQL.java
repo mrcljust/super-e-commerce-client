@@ -28,16 +28,8 @@ public class SQL {
 	private static Connection connection;			//Connection zum connecten mit DB
 
 	
-	//Quelle: https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
-	//Autor: Aaron Blenkush
-	// Edited: Jan 8'14 at 18:47
-	private static Date d1= new Date();
-	private static SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
-	private static String currentServerDate= df.format(d1);
 	
-	java.util.Date date= new java.util.Date();
 	
-
 	private boolean connect() {
 		try {
 			connection = DriverManager.getConnection(Constants.SQLCONNECTIONSTRING, Constants.SQLUSER, null);
@@ -1327,15 +1319,25 @@ public class SQL {
 		// 1. Fall Auktion bereits beendet
 		// 2. Fall Bid ist zu niedrig
 		// 3. Fall Bid ist in Ordnung und die Auktion läuft noch
-		Date date = auction.getEnddate();
-		SimpleDateFormat auctionEndDate = new SimpleDateFormat("dd/MM/YYYY HH:mm a");
-		String endDate = auctionEndDate.format(date);
+		
+		//Quelle: https://stackoverflow.com/questions/12584992/how-to-get-current-server-time-in-java#:~:text=If%20you%20like%20to%20return,retrieve%20the%20current%20system%20time.
+		//Autor: Aaron Blenkush
+		// Edited: Jan 8'14 at 18:47
+		Date serverDate= new Date();
+	//	SimpleDateFormat df= new SimpleDateFormat("dd/MM/YYYY HH:mm a");
+		//String currentServerDate= df.format(serverDate);
+		
+		
+		Date endDate = auction.getEnddate();
+		Date startDate=auction.getStarttime();
+		//SimpleDateFormat auctionEndDate = new SimpleDateFormat("dd/MM/YYYY HH:mm a");
+		//String endDate = auctionEndDate.format(date);
 
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 
-		else if (currentServerDate.compareTo(endDate) < 0) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
+		else if (serverDate.after(startDate)&& serverDate.before(endDate)) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
 			if (auction.getCurrentBid() >= bid) {
 				return Response.BidTooLow;
 			} else if (decreaseWallet(bidder, bid) == Response.Failure) {
@@ -1481,6 +1483,7 @@ public class SQL {
 		// AuctionType.Active = aktive Auktionen -> serverzeit >= starttime AND serverzeit <=endttime 
 		// AuctionType.Ended = beendete Auktionen -> serverzeit > endtime
 		// AuctionType.Future = zukünftige Auktionen -> serverzeit < starttime
+		Date serverDate= new Date();
 		try {
 			if (auctionType == AuctionType.Active) {
 
@@ -1491,7 +1494,7 @@ public class SQL {
 				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
 				PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ d1 + ">=" + sqlStartTime + "AND" + d1 + " <=" + sqlEndTime);
+								+ serverDate + ">=" + sqlStartTime + "AND" + serverDate + " <=" + sqlEndTime);
 
 				int arraycounterAllActiveAuctions = 0;
 				int sqlcounterAllActiveAuctions = 0;
@@ -1562,7 +1565,7 @@ public class SQL {
 				Date sqlEndTime = sqlTime.getResultSet().getDate("auctions.enddate");
 				PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ d1 + ">" + sqlEndTime);
+								+ serverDate + ">" + sqlEndTime);
 
 				int arraycounterAllEndedAuctions = 0;
 				int sqlcounterAllEndedAuctions = 0;
@@ -1671,7 +1674,7 @@ public class SQL {
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
 				PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
-								+ d1 + "<" + sqlStartTime);
+								+ serverDate + "<" + sqlStartTime);
 				int currentBidderId = pstmtAllFutureAuctions.getResultSet().getInt("auctions.currentbidder_id");
 				int arraycounterAllFutureAuctions= 0;
 				int sqlcounterAllOrders = 0;
@@ -1688,7 +1691,7 @@ public class SQL {
 				}
 			}
 
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -1891,7 +1894,7 @@ public class SQL {
 		// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
 		// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
-	
+		Date serverDate= new Date();
 		// OrderID speichern
 		int orderID = order.getId();
 		// Order Date speichern
@@ -1901,7 +1904,7 @@ public class SQL {
 		// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
 		SimpleDateFormat date1 = new SimpleDateFormat("dd/MM/YYYY");
 		String orderGetDate = date1.format(date);
-		String ServerDate = date1.format(currentServerDate);
+		String ServerDate = date1.format(serverDate);
 		
 		if (!checkConnection()) {
 		return Response.NoDBConnection;
@@ -1950,6 +1953,5 @@ public class SQL {
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
-		System.out.println(currentServerDate);
 	}
 }
