@@ -10,5 +10,5 @@ public enum Response {
 	InsufficientBalance,
 	BidTooLow,
 	AuctionAlreadyEnded,
-	
+	AuctionNotStartedYet
 }
