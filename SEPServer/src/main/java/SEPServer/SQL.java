@@ -1706,7 +1706,7 @@ public class SQL {
 				int arraycounterAllFutureAuctions = 0;
 				int sqlcounterAllOrders = 0;
 				ResultSet allFutureAuctionsResultSet = pstmtAllFutureAuctions.executeQuery();
-				while (allFutureAuctionsResultSet.next()) { // Tupel zählen
+				while (allFutureAuctionsResultSet.next()) { // Tupel zählen test
 					sqlcounterAllOrders++;
 				}
 				allFutureAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0
