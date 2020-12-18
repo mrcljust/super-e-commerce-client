@@ -1494,7 +1494,6 @@ public class SQL {
 				sqlTime = connection.prepareStatement("Select * FROM auctions");
 				ResultSet allActiveAuctions=sqlTime.executeQuery();
 
-				
 				while(allActiveAuctions.next()) {
 					int ActiveAuctionId=allActiveAuctions.getInt("auctions.auction_id");
 					Date sqlStartTime = allActiveAuctions.getDate("auctions.starttime");
