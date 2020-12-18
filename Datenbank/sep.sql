@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 15. Dez 2020 um 02:14
+-- Erstellungszeit: 18. Dez 2020 um 14:31
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -38,8 +38,8 @@ CREATE TABLE `auctions` (
   `minbid` double NOT NULL,
   `currentbid` double NOT NULL,
   `shippingtype_id` int(11) NOT NULL COMMENT 'Fremdschlüssel shippingtype',
-  `starttime` datetime NOT NULL,
-  `enddate` datetime NOT NULL,
+  `starttime` timestamp NULL DEFAULT NULL,
+  `enddate` timestamp NULL DEFAULT NULL,
   `emailsent` tinyint(1) NOT NULL,
   `insertion_date` datetime DEFAULT current_timestamp() COMMENT 'wird autom. befuellt'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -67,7 +67,7 @@ CREATE TABLE `orders` (
   `seller_id` int(11) NOT NULL,
   `buyer_id` int(11) NOT NULL,
   `price` double NOT NULL,
-  `purchasedate` datetime NOT NULL DEFAULT current_timestamp()
+  `purchasedate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -83,7 +83,7 @@ CREATE TABLE `products` (
   `price` double NOT NULL,
   `category_id` int(11) NOT NULL,
   `description` text NOT NULL,
-  `insertdate` datetime NOT NULL DEFAULT current_timestamp()
+  `insertdate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -100,7 +100,7 @@ CREATE TABLE `ratings` (
   `receiver_id` int(11) NOT NULL,
   `stars` int(11) NOT NULL,
   `text` text NOT NULL,
-  `rating_date` datetime NOT NULL DEFAULT current_timestamp()
+  `rating_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -145,7 +145,7 @@ CREATE TABLE `users` (
   `companyname` varchar(255) NOT NULL,
   `lastviewed` varchar(255) DEFAULT NULL COMMENT 'Durch Kommata separierte IDs der zuletzt aufgerufenen Produkte, max. 10',
   `savedauctions` varchar(255) DEFAULT NULL,
-  `registerdate` datetime NOT NULL DEFAULT current_timestamp()
+  `registerdate` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
