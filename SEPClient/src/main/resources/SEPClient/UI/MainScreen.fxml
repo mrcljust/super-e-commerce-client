@@ -115,8 +115,8 @@
                                     <TableColumn fx:id="auctionsCatalogIdColumn" editable="false" prefWidth="45.0" text="ID" />
                                     <TableColumn fx:id="auctionsCatalogTitleColumn" editable="false" prefWidth="284.0" text="Titel" />
                                     <TableColumn fx:id="auctionsCatalogCurrentBidColumn" editable="false" minWidth="0.0" prefWidth="107.0" text="Aktuelles Gebot" />
-                                    <TableColumn fx:id="auctionsCatalogStartpriceColumn" editable="false" text="Startpreis" />
-                                    <TableColumn fx:id="auctionsCatalogStartColumn" editable="false" prefWidth="116.0" text="Start" />
+                                    <TableColumn fx:id="auctionsCatalogMinBidColumn" editable="false" prefWidth="95.0" text="Mindestgebot" />
+                                    <TableColumn fx:id="auctionsCatalogStartColumn" editable="false" prefWidth="101.0" text="Start" />
                                     <TableColumn fx:id="auctionsCatalogEndColumn" editable="false" prefWidth="125.0" text="Ende" />
                                  </columns>
                               </TableView>

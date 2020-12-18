@@ -169,6 +169,60 @@ public class MainScreenController {
     	    }
     	});
     	
+    	//Werte an die Spalten der Auktionslisten zuweisen
+    	auctionsCatalogIdColumn.setCellValueFactory(new PropertyValueFactory<Auction, Integer>("id"));
+        auctionsCatalogTitleColumn.setCellValueFactory(new PropertyValueFactory<Auction, String>("title"));
+        auctionsCatalogCurrentBidColumn.setCellValueFactory(new PropertyValueFactory<Auction, Double>("currentBid"));
+        //Anzeigewert für Gebot anpassen
+        auctionsCatalogCurrentBidColumn.setCellFactory(tc -> new TableCell<Auction, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+        auctionsCatalogMinBidColumn.setCellValueFactory(new PropertyValueFactory<Auction, Double>("minBid"));
+        //Anzeigewert für Gebot anpassen
+        auctionsCatalogMinBidColumn.setCellFactory(tc -> new TableCell<Auction, Double>() {
+    	    @Override
+    	    protected void updateItem(Double price, boolean empty) {
+    	        super.updateItem(price, empty);
+    	        if (empty || price==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        }
+    	    }
+    	});
+        auctionsCatalogStartColumn.setCellValueFactory(new PropertyValueFactory<Auction, Date>("starttime"));
+        auctionsCatalogStartColumn.setCellFactory(tc -> new TableCell<Auction, Date>() {
+    	    @Override
+    	    protected void updateItem(Date date, boolean empty) {
+    	        super.updateItem(date, empty);
+    	        if (empty || date==null) {
+    	            setText("Kein Datum");
+    	        } else {
+    	            setText(Constants.DATEFORMAT.format(date));
+    	        }
+    	    }
+    	});
+        auctionsCatalogEndColumn.setCellValueFactory(new PropertyValueFactory<Auction, Date>("enddate"));
+        auctionsCatalogEndColumn.setCellFactory(tc -> new TableCell<Auction, Date>() {
+    	    @Override
+    	    protected void updateItem(Date date, boolean empty) {
+    	        super.updateItem(date, empty);
+    	        if (empty || date==null) {
+    	            setText("Kein Datum");
+    	        } else {
+    	            setText(Constants.DATEFORMAT.format(date));
+    	        }
+    	    }
+    	});
+    	
     	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
     	{
 	    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
@@ -790,7 +844,7 @@ public class MainScreenController {
     private TableColumn<Auction, Double> auctionsCatalogCurrentBidColumn;
 
     @FXML
-    private TableColumn<Auction, Double> auctionsCatalogStartpriceColumn;
+    private TableColumn<Auction, Double> auctionsCatalogMinBidColumn;
 
     @FXML
     private TableColumn<Auction, Date> auctionsCatalogStartColumn;

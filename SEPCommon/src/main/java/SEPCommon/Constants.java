@@ -1,6 +1,7 @@
 package SEPCommon;
 
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 
 public class Constants {
 	
@@ -19,6 +20,9 @@ public class Constants {
 	public final static String CLIENT_LOGO_RESOURCE_PATH = "/SEPClient/UI/sep-logo.png";
 	
 	public final static DecimalFormat DOUBLEFORMAT = new DecimalFormat("#0.00");
+	
+	public final static SimpleDateFormat DATEFORMAT = new SimpleDateFormat("dd.MM.YYYY HH:mm");
+	public final static SimpleDateFormat DATEFORMATDAYONLY = new SimpleDateFormat("dd.MM.YYYY");
 	
 	public final static String CURRENCY = "$";
 }
