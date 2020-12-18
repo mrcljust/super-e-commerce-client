@@ -1665,7 +1665,7 @@ public class SQL {
 							allEndedAuctionsResultSet.getDate("auctions.enddate"));
 				}
 				arraycounterAllEndedAuctions++;
-				
+				//test
 			} else if (auctionType == AuctionType.Future) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
