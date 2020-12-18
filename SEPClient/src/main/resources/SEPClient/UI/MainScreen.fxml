@@ -57,7 +57,7 @@
       </Pane>
       <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">
         <items>
-            <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+            <TabPane fx:id="tabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
               <tabs>
                 <Tab fx:id="tabArticles" text="Festpreisangebote">
                      <content>

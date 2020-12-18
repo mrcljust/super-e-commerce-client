@@ -362,16 +362,35 @@ public class ServerThread implements Runnable {
 				}
 				
 				//Request FetchAuctions,
-				//HASHMAP: "AuctionType" - AuctionType-Objekt
+				//HASHMAP: "AuctionType" - AuctionType-Objekt --> Active, Ended, Future
+				
+				//Request FetchAuctions,
+				//HASHMAP: "AuctionType" - AuctionType-Objekt, "User" - Userobjekt --> MyBids, MyAuctions, SavedAuctions
 				
 				//Request FetchAuctions mit Suchbegriff
 				//HASHMAP: "AuctionType" - AuctionType-Objekt, "SearchString" - Suchbegriff
 				else if(requestType == Request.FetchAuctions)
 				{
 					AuctionType argAuctionType = (AuctionType)requestMap.get("AuctionType");
-					Auction[] auctions;
+					Auction[] auctions = null;
 					
-					if(requestMap.containsKey("SearchString"))
+					if(requestMap.containsKey("User"))
+					{
+						User argUser = (User)requestMap.get("User");
+						if(argAuctionType==AuctionType.MyAuctions)
+						{
+							auctions = sql.fetchOwnAuctions(argUser);
+						}
+						else if(argAuctionType==AuctionType.MyBids)
+						{
+							auctions = sql.fetchAuctionsUserBiddedOn(argUser);
+						}
+						else if(argAuctionType==AuctionType.SavedAuctions)
+						{
+							auctions = sql.fetchSavedAuctions(argUser);
+						}
+					}
+					else if(requestMap.containsKey("SearchString"))
 					{
 						//nach Produkten mit Suchbegriff suchen
 						String searchString = (String)requestMap.get("SearchString");

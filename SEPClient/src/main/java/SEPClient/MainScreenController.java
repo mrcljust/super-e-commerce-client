@@ -2,7 +2,11 @@ package SEPClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.Date;
 import java.util.HashMap;
+
+import SEPCommon.Auction;
+import SEPCommon.AuctionType;
 import SEPCommon.ClientRequest;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
@@ -21,6 +25,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -56,6 +61,7 @@ public class MainScreenController {
     	loadLastViewedProducts();
     	selectionsChangedListener();
     	categoryChangedListener();
+    	tabChangedListener();
     }
     
     public void refreshView()
@@ -90,18 +96,9 @@ public class MainScreenController {
     	InputStream in = new ByteArrayInputStream(user.getPicture());
 		Image img = new Image(in);
 		MainScreen_ImgProfilePicture.setImage(img);
-    	
-    	//Aktuelle Produktinfos leeren
-    	MainScreen_LabelProductTitle.setText("");
-    	MainScreen_LabelProductPrice.setText("");
-    	MainScreen_LabelProductSeller.setText("");
-    	MainScreen_LabelProductCategory.setText("");
-    	MainScreen_txtAverageRating.setText("");
-    	MainScreen_txtRatingCount.setText("");
-    	MainScreen_WebViewProductDescription.getEngine().loadContent("");
-    	MainScreen_ButtonBuyProduct.setVisible(false);
-    	MainScreen_ButtonShowRatings.setVisible(false);
-    	MainScreen_WebViewProductDescription.setVisible(false);
+		
+		//Aktuelle Produktdetails leeren
+		clearProductDetails();
     	
     	//Alle Kategorien Item hinzufügen
     	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
@@ -194,9 +191,27 @@ public class MainScreenController {
 	    radioFutureAuctions.setToggleGroup(radioAuctionTypeGroup);
     }
     
+    private void clearProductDetails()
+    {
+    	//Aktuelle Produktinfos leeren
+    	MainScreen_LabelProductTitle.setText("");
+    	MainScreen_LabelProductPrice.setText("");
+    	MainScreen_LabelProductSeller.setText("");
+    	MainScreen_LabelProductCategory.setText("");
+    	MainScreen_txtAverageRating.setText("");
+    	MainScreen_txtRatingCount.setText("");
+    	MainScreen_WebViewProductDescription.getEngine().loadContent("");
+    	MainScreen_ButtonBuyProduct.setVisible(false);
+    	MainScreen_ButtonShowRatings.setVisible(false);
+    	MainScreen_WebViewProductDescription.setVisible(false);
+    }
+    
     private void LoadAllProducts()
     {
-    	MainScreen_ListCatalog.getItems().clear();
+    	if(MainScreen_ListCatalog.getItems()!=null)
+    	{
+        	MainScreen_ListCatalog.getItems().clear();
+    	}
     	
     	ClientRequest req = new ClientRequest(Request.FetchProducts, null);
     	Client client = Client.getClient();
@@ -226,8 +241,42 @@ public class MainScreenController {
 		}
     }
     
+    private ObservableList<Auction> LoadAuctions(AuctionType auctionType)
+    {
+    	if(MainScreen_ListAuctions.getItems()!=null)
+    	{
+        	MainScreen_ListAuctions.getItems().clear();
+    	}
+    	
+        HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("AuctionType", auctionType);
+    	
+    	if(auctionType==AuctionType.MyBids||auctionType==AuctionType.MyAuctions||auctionType==AuctionType.SavedAuctions)
+    	{
+    		requestMap.put("User", user);
+    	}
+    	
+    	ClientRequest req = new ClientRequest(Request.FetchAuctions, requestMap);
+    	Client client = Client.getClient();
+		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+		if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Auctions")!=null)
+		{
+			//Product Array
+			Auction[] auctions = (Auction[])queryResponse.getResponseMap().get("Auctions");
+			ObservableList<Auction> ObservableAuctions = FXCollections.observableArrayList(auctions);
+			ObservableAuctions.removeIf(n -> (n==null));
+			
+			return ObservableAuctions;
+		}
+		return null;
+    }
+    
     private void loadLastViewedProducts() {
-    	MainScreen_ListLastViewed.getItems().clear();
+    	if(MainScreen_ListLastViewed.getItems()!=null)
+    	{
+        	MainScreen_ListLastViewed.getItems().clear();
+    	}
         
         HashMap<String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
@@ -285,6 +334,29 @@ public class MainScreenController {
 	    	}
 	    });
 	}
+    
+    private void tabChangedListener() {
+    	//Quelle: https://stackoverflow.com/questions/17522686/javafx-tabpane-how-to-listen-to-selection-changes
+    	//Antwort von Mohammad Jafar Mashhadi, Jul 8 '13 at 9:17
+    	
+    	//Listener prueft ob der gewaehlte Tab geaendert wird
+    	tabPane.getSelectionModel().selectedItemProperty().addListener(
+    		    new ChangeListener<Tab>() {
+    		        @Override
+    		        public void changed(ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab) {
+    		        	System.out.println(newTab.getText());
+    		        	if(newTab==tabLiveAuctions)
+    		        	{
+    		        		tabLiveAuctions_Change();
+    		        	}
+    		        	else if(newTab==tabArticles)
+    		        	{
+    		        		tabArticles_Change();
+    		        	}
+    		        }
+    		    }
+    		);
+    }
     
     private void updateArticleInfo(boolean selectionInCatalog)
     {
@@ -408,13 +480,20 @@ public class MainScreenController {
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
 
-		MainScreen_ListCatalog.getItems().clear();
+    	if(MainScreen_ListCatalog.getItems()!=null)
+    	{
+    		MainScreen_ListCatalog.getItems().clear();
+    	}
 		
 		//keine Kategorie, also alle Kategorien
     	if(newValue>-1)
     	{
         	String selectedCategoryString = (MainScreen_ChoiceBox_Category.getItems().get((Integer) newValue)); //Name der selektierten Kategorie
-    		MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+    		
+        	if(MainScreen_ListCatalog.getItems()!=null)
+        	{
+            	MainScreen_ListCatalog.getItems().clear(); //Katalog Liste leeren
+        	}
     		
     		//keine Kategorie
     		if(newValue==0) {
@@ -479,7 +558,11 @@ public class MainScreenController {
     private void searchChangedEvent()
     {
     	//Katalog leeren
-		MainScreen_ListCatalog.getItems().clear();
+    	
+    	if(MainScreen_ListCatalog.getItems()!=null)
+    	{
+    		MainScreen_ListCatalog.getItems().clear();
+    	}
 		
 		
 		Product[] articlesInSearch = null;
@@ -591,6 +674,9 @@ public class MainScreenController {
     private Label MainScreen_LabelLoggedInAs;
 
     @FXML
+    private TabPane tabPane;
+    
+    @FXML
     private Tab tabArticles;
     
     @FXML
@@ -645,25 +731,25 @@ public class MainScreenController {
     private Button MainScreen_btnAuctionsSearchOK;
 
     @FXML
-    private TableView<?> MainScreen_ListAuctions;
+    private TableView<Auction> MainScreen_ListAuctions;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogIdColumn;
+    private TableColumn<Auction, Integer> auctionsCatalogIdColumn;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogTitleColumn;
+    private TableColumn<Auction, String> auctionsCatalogTitleColumn;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogCurrentBidColumn;
+    private TableColumn<Auction, Double> auctionsCatalogCurrentBidColumn;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogStartpriceColumn;
+    private TableColumn<Auction, Double> auctionsCatalogStartpriceColumn;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogStartColumn;
+    private TableColumn<Auction, Date> auctionsCatalogStartColumn;
 
     @FXML
-    private TableColumn<?, ?> auctionsCatalogEndColumn;
+    private TableColumn<Auction, Date> auctionsCatalogEndColumn;
 
     @FXML
     private RadioButton radioAllAuctions;
@@ -848,21 +934,28 @@ public class MainScreenController {
     	MainScreen_txtSearchAuctions.setText("");
     	MainScreen_txtSearchAuctions.setVisible(true);
     	MainScreen_btnAuctionsSearchOK.setVisible(true);
+    	
+    	fetchCurrentAuctions();
     }
 
     @FXML
     void radioCurrentAuctions_Click(ActionEvent event) {
-
+    	fetchCurrentAuctions();
     }
+    
+    private void fetchCurrentAuctions() {
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Active));
+
+	}
 
     @FXML
     void radioEndedAuctions_Click(ActionEvent event) {
-
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Ended));
     }
 
     @FXML
     void radioFutureAuctions_Click(ActionEvent event) {
-
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Future));
     }
 
     @FXML
@@ -875,6 +968,8 @@ public class MainScreenController {
     	radioFutureAuctions.setVisible(false);
     	MainScreen_txtSearchAuctions.setVisible(false);
     	MainScreen_btnAuctionsSearchOK.setVisible(false);
+
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyAuctions));
     }
 
     @FXML
@@ -887,6 +982,8 @@ public class MainScreenController {
     	radioFutureAuctions.setVisible(false);
     	MainScreen_txtSearchAuctions.setVisible(false);
     	MainScreen_btnAuctionsSearchOK.setVisible(false);
+    	
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyBids));
     }
 
     @FXML
@@ -899,6 +996,32 @@ public class MainScreenController {
     	radioFutureAuctions.setVisible(false);
     	MainScreen_txtSearchAuctions.setVisible(false);
     	MainScreen_btnAuctionsSearchOK.setVisible(false);
+    	
+    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.SavedAuctions));
+    }
+    
+    void tabArticles_Change() {
+    	if(MainScreen_ListAuctions.getItems()!=null)
+    	{
+    		MainScreen_ListAuctions.getItems().clear();
+    	}
+    	clearProductDetails();
+    	LoadAllProducts();
+    	loadLastViewedProducts();
+    }
+
+    void tabLiveAuctions_Change() {
+    	if(MainScreen_ListCatalog.getItems()!=null)
+    	{
+    		MainScreen_ListCatalog.getItems().clear();
+    	}
+    	if(MainScreen_ListLastViewed.getItems()!=null)
+    	{
+    		MainScreen_ListLastViewed.getItems().clear();
+    	}
+    	clearProductDetails();
+    	fetchCurrentAuctions();
+    	
     }
     
     @FXML
