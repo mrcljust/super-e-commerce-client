@@ -1484,6 +1484,9 @@ public class SQL {
 		// AuctionType.Ended = beendete Auktionen -> serverzeit > endtime
 		// AuctionType.Future = zukünftige Auktionen -> serverzeit < starttime
 		Date serverDate= new Date();
+		if (!checkConnection()) {
+			return null;
+		}
 		try {
 			if (auctionType == AuctionType.Active) {
 
@@ -1668,15 +1671,14 @@ public class SQL {
 							allEndedAuctionsResultSet.getDate("auctions.enddate"));
 				}
 				arraycounterAllEndedAuctions++;
-				//test
+				// test
 			} else if (auctionType == AuctionType.Future) {
 				PreparedStatement sqlTime = connection.prepareStatement("Select * FROM auctions");
 				Date sqlStartTime = sqlTime.getResultSet().getDate("auctions.starttime");
 				PreparedStatement pstmtAllFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions JOIN shippingtype ON auctions.shippingtype_id=shippingtype.id JOIN users ON auctions.seller_id=users.id WHERE"
 								+ serverDate + "<" + sqlStartTime);
-				int currentBidderId = pstmtAllFutureAuctions.getResultSet().getInt("auctions.currentbidder_id");
-				int arraycounterAllFutureAuctions= 0;
+				int arraycounterAllFutureAuctions = 0;
 				int sqlcounterAllOrders = 0;
 				ResultSet allFutureAuctionsResultSet = pstmtAllFutureAuctions.executeQuery();
 				while (allFutureAuctionsResultSet.next()) { // Tupel zählen
@@ -1684,10 +1686,37 @@ public class SQL {
 				}
 				allFutureAuctionsResultSet.beforeFirst(); // zurücksetzen des pointers auf 0
 				Auction[] allFutureAuctionsArray = new Auction[sqlcounterAllOrders];
-				
-				while(allFutureAuctionsResultSet.next()) {
-				//	allFutureAuctionsArray[arraycounterAllFutureAuctions]= new Auction(null, null, null, sqlcounterAllOrders, null, null, sqlStartTime, sqlStartTime)
-					
+
+				while (allFutureAuctionsResultSet.next()) {
+
+					Address newAddress = new Address(allFutureAuctionsResultSet.getString("users.fullname"),
+							allFutureAuctionsResultSet.getString("users.country"),
+							allFutureAuctionsResultSet.getInt("users.postalcode"),
+							allFutureAuctionsResultSet.getString("users.city"),
+							allFutureAuctionsResultSet.getString("users.street"),
+							allFutureAuctionsResultSet.getString("users.number"));
+					Customer newSeller = new Customer(allFutureAuctionsResultSet.getInt("users.id"),
+							allFutureAuctionsResultSet.getString("users.username"),
+							allFutureAuctionsResultSet.getString("users.email"),
+							allFutureAuctionsResultSet.getString("users.password"),
+							allFutureAuctionsResultSet.getBytes("users.image"),
+							allFutureAuctionsResultSet.getDouble("users.wallet"), newAddress);
+
+					ShippingType shippingtype = null;
+					if (allFutureAuctionsResultSet.getInt("auctions.shippingtype_id") == 1) {
+						shippingtype = ShippingType.Shipping;
+					} else if (allFutureAuctionsResultSet.getInt("auctions.shippingtype_id") == 2) {
+						shippingtype = ShippingType.PickUp;
+					}
+					allFutureAuctionsArray[arraycounterAllFutureAuctions] = new Auction(
+							allFutureAuctionsResultSet.getString("auctions.title"),
+							allFutureAuctionsResultSet.getString("auctions.description"),
+							allFutureAuctionsResultSet.getBytes("auctions.image"),
+							allFutureAuctionsResultSet.getDouble("auctions.minbid"), shippingtype, newSeller,
+							allFutureAuctionsResultSet.getDate("auctions.starttime"),
+							allFutureAuctionsResultSet.getDate("auctions.enddate"));
+
+					arraycounterAllFutureAuctions++;
 				}
 			}
 
@@ -1696,12 +1725,6 @@ public class SQL {
 			e.printStackTrace();
 		}
 	
-	
-			
-		
-		if (!checkConnection()) {
-			return null;
-		}
 
 		return null;
 	}
