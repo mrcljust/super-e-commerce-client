@@ -1270,7 +1270,7 @@ public class SQL {
 		}
 	}
 
-	protected Response addAuction(Auction auction) {				//done sofern keine weitere nicht berücksichtigte Fälle (Check L1300)
+	protected Response addAuction(Auction auction) {				//fertig
 		if (!checkConnection()) {
 			return null;
 		}
@@ -1464,7 +1464,7 @@ public class SQL {
 		return null;
 	}
 
-	protected Auction[] fetchPurchasedAuctions(User buyer) {
+	protected Auction[] fetchPurchasedAuctions(User buyer) {								//fertig
 		// selbst gekaufte Auktionen (beendet)
 		LocalDateTime serverDate = LocalDateTime.now();
 		if (!checkConnection()) {
@@ -1596,7 +1596,7 @@ try {
 		return null;
 	}
 
-	protected Auction[] fetchAuctions(AuctionType auctionType) {					//fertig
+	protected Auction[] fetchAuctions(AuctionType auctionType) {							//fertig
 		// je nach AuctionType alle aktuell laufenden, beendeten oder zukünftigen
 		// Auktionen zurückgeben
 
@@ -2008,7 +2008,7 @@ Auction[] savedAuctions;
 	protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
 		// Auktionen mit searchString im Titel/Name zurückgeben
 
-		// je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen
+		// je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen a
 		// Auktionen mit dem searchstring zurückgeben
 
 		// AuctionType:
