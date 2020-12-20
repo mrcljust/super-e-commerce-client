@@ -2404,7 +2404,7 @@ public class SQL {
 			{
 				return null;
 			}
-			//Liste in Array umwandeln
+			//Liste in Array umwandeln test
 			Rating[] ratings = new Rating[ratingList.size()];
 			ratingList.toArray(ratings);
 			
