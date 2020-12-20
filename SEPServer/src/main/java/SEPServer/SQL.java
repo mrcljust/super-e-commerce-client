@@ -1432,25 +1432,34 @@ public class SQL {
 								+ orderId + "WHERE users.id=" + newSeller.getId());
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
+				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
+				allSellerRatings.beforeFirst();
+				Rating newSellerRating=null;
+				Rating newBuyerRating=null;
 
-				Rating newBuyerRating = null;
-				if (allBuyerRatings.next() != false) {
-					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
-							allBuyerRatings.getInt("ratings.stars"), allBuyerRatings.getString("ratings.text"), // selbst wenn String bspw leer, wird leer sein
-							allBuyerRatings.getInt("ratings.sender_id"),
-							allBuyerRatings.getInt("ratings.receiver_id"), allBuyerRatings.getInt("ratings.order_id"),
-							false);
+				if (allSellerRatings.next() != false) {
+					String sellerText = null;
+					if (allSellerRatings.getString("ratings.text") != null) {
+						sellerText = allSellerRatings.getString("ratings.text");
+					}
+					newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+							allSellerRatings.getInt("ratings.stars"), sellerText,
+							allSellerRatings.getInt("ratings.sender_id"),
+							allSellerRatings.getInt("ratings.receiver_id"),
+							allSellerRatings.getInt("ratings.order_id"), false);
 				}
 
-				Rating newSellerRating = null;
-				if (allSellerRatings.next() != false) {
+				if (allBuyerRatings.next() != false) {
+					String buyerText = null;
+					if (allSellerRatings.getString("ratings.text") != null) {
 
-					newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
-							allSellerRatings.getInt("ratings.stars"), null,
-							allSellerRatings.getInt("ratings.sender_id"),
-							allSellerRatings.getInt("ratings.receiver_id"), allSellerRatings.getInt("ratings.order_id"),
-							false);
+					}
+					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+							allBuyerRatings.getInt("ratings.stars"), buyerText,
+							allBuyerRatings.getInt("ratings.sender_id"),
+							allBuyerRatings.getInt("ratings.receiver_id"),
+							allBuyerRatings.getInt("ratings.order_id"), false);
 
 				}
 
@@ -1536,6 +1545,7 @@ public class SQL {
 				}
 				Rating newSellerRating = null;
 				Rating newBuyerRating = null;
+			
 				if (currentBidder != null) {
 					PreparedStatement pstmtSellerRatingsEndedAuction = connection.prepareStatement(
 							"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id="
@@ -1546,23 +1556,33 @@ public class SQL {
 									+ wonAuctionId + "WHERE users.id=" + currentBidder.getId());
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
+					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
+					allBuyerRatings.beforeFirst();
+					
 
 					if (allSellerRatings.next() != false) {
+						String sellerText = null;
+						if (allSellerRatings.getString("ratings.text") != null) {
+							sellerText = allSellerRatings.getString("ratings.text");
+						}
 						newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
-								allSellerRatings.getInt("ratings.stars"), allSellerRatings.getString("ratings.text"),
+								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), false);
+								allSellerRatings.getInt("ratings.order_id"), true);
 					}
 
 					if (allBuyerRatings.next() != false) {
+						String buyerText = null;
+						if (allSellerRatings.getString("ratings.text") != null) {
 
-						newSellerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
-								allBuyerRatings.getInt("ratings.stars"), null,
+						}
+						newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.order_id"), false);
+								allBuyerRatings.getInt("ratings.order_id"), true);
 
 					}
 				}
@@ -1623,7 +1643,7 @@ public class SQL {
 				while (activeAuctions.next()) {
 					sumAuctions++;
 				}
-				System.out.println(sumAuctions);
+				
 				activeAuctions.beforeFirst();
 
 				allActiveAuctionsArray = new Auction[sumAuctions];
@@ -1777,7 +1797,9 @@ public class SQL {
 										+ currentBidder.getId() + "' AND auctions.auction_id='" + endedAuctionId + "'");
 
 						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
+						allSellerRatings.beforeFirst();
 						ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
+						allBuyerRatings.beforeFirst();
 
 						if (allSellerRatings.next() != false) {
 							String sellerText= null;
@@ -1979,7 +2001,9 @@ public class SQL {
 											+ currentBidder.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'");
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
+					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
+					allBuyerRatings.beforeFirst();
 
 					if (allSellerRatings.next() != false) {
 						String sellerText = null;
