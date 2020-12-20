@@ -1705,7 +1705,7 @@ public class SQL {
 				while (activeAuctions.next()) {
 					sumAuctions++;
 				}
-				
+				System.out.println(sumAuctions);
 				activeAuctions.beforeFirst();
 
 				allActiveAuctionsArray = new Auction[sumAuctions];
@@ -1926,6 +1926,7 @@ public class SQL {
 				while (futureAuctions.next()) {
 					sumAuctions++;
 				}
+				System.out.println(sumAuctions);
 
 				System.out.println(sumAuctions);
 				futureAuctions.beforeFirst();
@@ -2057,11 +2058,11 @@ public class SQL {
 				if (currentBidder != null) {
 							PreparedStatement pstmtSellerRatingsEndedAuction = connection.prepareStatement(
 									"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id='"
-											+ newSeller.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'");
+											+ newSeller.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'",ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 							PreparedStatement pstmtBuyerEndedAuction = connection.prepareStatement(
 									"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id='"
-											+ currentBidder.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'");
+											+ currentBidder.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'",ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
 					allSellerRatings.beforeFirst();
@@ -2110,8 +2111,9 @@ public class SQL {
 
 				arraycounter++;
 
+			}else {
+				return allOwnAuctionsArray;
 			}
-				return null;
 			}
 			return allOwnAuctionsArray;
 
@@ -2403,7 +2405,7 @@ public class SQL {
 			{
 				return null;
 			}
-			//Liste in Array umwandeln
+			//Liste in Array umwandeln test
 			Rating[] ratings = new Rating[ratingList.size()];
 			ratingList.toArray(ratings);
 			return ratings;
