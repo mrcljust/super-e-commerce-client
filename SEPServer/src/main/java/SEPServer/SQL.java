@@ -2372,7 +2372,7 @@ public class SQL {
 		if (!checkConnection()) {
 			return null;
 		}
-   
+   int i = 0;
 		try {
 			
 			PreparedStatement fetchRatingsInfo = connection.prepareStatement("SELECT * FROM ratings WHERE receiver_id =" + user.getId());
@@ -2390,6 +2390,7 @@ public class SQL {
 				{
 					isAuction=false;
 					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), orderId, isAuction));
+					i = i + fetchRatingsInfoResult.getInt("stars");
 				}
 				else if(auctionId>=0)
 				{
@@ -2405,7 +2406,6 @@ public class SQL {
 			//Liste in Array umwandeln
 			Rating[] ratings = new Rating[ratingList.size()];
 			ratingList.toArray(ratings);
-			
 			return ratings;
 		} catch (SQLException e) {
 			//es ist ein Fehler aufgetreten:
@@ -2415,12 +2415,23 @@ public class SQL {
 	}
 
 	protected double[] fetchAvgRating(User user) {
-		// index 0 ist Average, Index 1 ist Anzahl
+		// index 0 ist Average, Index 1 ist Anzahl der Bewertungen
+		
 		if (!checkConnection()) {
 			return null;
 		}
-
-		return null;
+	
+		double result = 0;
+		Rating[] allRatings = fetchRatings(user);	    
+		int numberOfRatings = allRatings.length;
+			for (Rating rating : allRatings) {
+				result += rating.getStars();
+			}	
+		
+		double [] avgRatings = new double [2];
+		avgRatings[0] = result / allRatings.length;
+		avgRatings[1] = numberOfRatings;
+		return avgRatings;
 	}
 
 	protected Response deleteOrder(Order order, Customer buyer) {
