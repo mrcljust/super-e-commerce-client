@@ -2323,7 +2323,7 @@ public class SQL {
 	protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
 		// Auktionen mit searchString im Titel/Name zurückgeben
 
-		// je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen a
+		// je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen anzeigen
 		// Auktionen mit dem searchstring zurückgeben
 
 		// AuctionType:
@@ -2335,7 +2335,39 @@ public class SQL {
 			return null;
 		}
 
-		return null;
+		try {
+			int arrayCounter = 0;
+			int sqlcounter = 0;
+			PreparedStatement pstmt;
+			pstmt = connection.prepareStatement("SELECT * \r\n"
+					 + "FROM auctions\r\n"
+					 + "JOIN shippingtype\r\n"
+					 + "ON (auctions.shippingtype_id = shippingtype.id)\r\n"
+					 + "JOIN users\r\n"
+			 		 + "ON users.id=auctions.seller_id\r\n"
+					 + "WHERE auctions.title LIKE ?");				//? Wildcard
+			// + "OR Products.Description LIKE"+ searchString+ "%\r\n"
+			// + "OR Categories.Title LIKE" + searchString+"%\r\n";
+			pstmt.setString(1,"%"+ searchstring+"%");				//1, erstes Wildcard
+			ResultSet allAuctionsByFullString = pstmt.executeQuery();
+
+			while (allAuctionsByFullString.next()) {
+				sqlcounter++;
+			}
+			
+			ResultSet AllAuctionsByFullString2 = pstmt.executeQuery(); // nach der 1 Schleife pointer zeigt auf Null -> ggf könnte man pointer resetten(?) NCAR
+			
+			
+			Auction[] AllAuctionsByFullString = new Auction[sqlcounter];
+			while (AllAuctionsByFullString2.next()) {
+				arrayCounter++;
+			}
+			return AllAuctionsByFullString;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	protected Response SendRating(Rating rating) {
