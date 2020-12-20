@@ -1394,8 +1394,11 @@ public class SQL {
 
 			PreparedStatement pstmtOrders = connection.prepareStatement("SELECT * \r\n" + "FROM users\r\n"
 					+ "JOIN orders\r\n" + "ON users.id=orders.buyer_id\r\n" + "JOIN products\r\n"
-					+ "ON products.id=orders.product_id" + "WHERE users.id=" + buyer.getId());
-
+					+ "ON products.id=orders.product_id" + "WHERE users.id=" + buyer.getId(), ResultSet.TYPE_SCROLL_SENSITIVE, 
+                    ResultSet.CONCUR_UPDATABLE);
+			
+			//Quelle: https://stackoverflow.com/questions/6367737/resultset-exception-set-type-is-type-forward-only-why
+			//answered Jun 16 '11 at 6:14  by Adithya Surampudi
 			int arraycounterAllOrders = 0;
 			int sqlcounterAllOrders = 0;
 			ResultSet allOrdersResultSet = pstmtOrders.executeQuery();
