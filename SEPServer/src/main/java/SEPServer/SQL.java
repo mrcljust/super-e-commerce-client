@@ -9,8 +9,8 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.time.ZoneId;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 import SEPCommon.Response;
 import SEPCommon.Seller;
@@ -1368,12 +1368,71 @@ public class SQL {
 	}
 
 	protected Response saveAuction(User buyer, Auction auction) {		
-		// Auktion in die Merkliste des Objekt buyer setzen
-		if (!checkConnection()) {
+		// ID der Auktion in die Merkliste des Objekt buyer setzen
+		
+		//Wenn erfolgreich hinzugefügt, Response.Success returnen
+		//wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+		//wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+		
+		//Verbindung herstellen, wenn keine Verbindung besteht
+		if (!checkConnection())
+		{
 			return Response.NoDBConnection;
 		}
-
-		return null;
+		
+		int viewedAuctionId = auction.getId();
+		
+		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
+		Auction[] currentSavedAuctions = fetchSavedAuctions(buyer);
+		
+		String newSavedAuctionsProductsString = "";
+		if(currentSavedAuctions!=null)
+		{
+			if(currentSavedAuctions.length==10)
+			{
+				//Maximale Lünge (10), setze viewedProductId an den Anfang und ersetze die letzte Id
+				newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
+				
+				for(int i=0;i<9;i++)
+				{
+					if(currentSavedAuctions[i]!=null)
+					{
+						//wenn currentLastViewedProducts[i] = null, ist das Produkt gelöscht. Dann ist es aus der Liste der zuletzt aufgerufenen Produkte zu entfernen
+						newSavedAuctionsProductsString += "," + String.valueOf(currentSavedAuctions[i].getId());
+					}
+				}
+			}
+			else
+			{
+				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
+				
+				for(int i=0;i<currentSavedAuctions.length;i++)
+				{
+					if(currentSavedAuctions[i]!=null)
+					{
+						//wenn currentLastViewedProducts[i] = null, ist das Produkt gelöscht. Dann ist es aus der Liste der zuletzt aufgerufenen Produkte zu entfernen
+						newSavedAuctionsProductsString += "," + String.valueOf(currentSavedAuctions[i].getId());
+					}
+				}
+			}
+		}
+		else
+		{
+			//Keine zuletzt angesehenen Produkte gespeichert oder Fehler
+			newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
+		}
+		
+		try {
+			PreparedStatement updateSavedAuctionIds = connection.prepareStatement("UPDATE users SET savedauctions='" + newSavedAuctionsProductsString
+					+ "' WHERE id='" + buyer.getId() + "'");
+			updateSavedAuctionIds.execute();
+			return Response.Success;
+		} catch (SQLException e) {
+			//Fehler aufgetreten
+			e.printStackTrace();
+			return Response.Failure;
+		}
 	}
 
 	protected Order[] fetchOrders(User buyer) {												//fertig
@@ -2172,7 +2231,7 @@ public class SQL {
 			return null;
 		}
 		
-Auction[] savedAuctions;
+		Auction[] savedAuctions;
 		
 		try {
 			PreparedStatement fetchSavedAuctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
@@ -2315,8 +2374,46 @@ Auction[] savedAuctions;
 		if (!checkConnection()) {
 			return null;
 		}
+   
+		try {
+			
+			PreparedStatement fetchRatingsInfo = connection.prepareStatement("SELECT * FROM ratings WHERE receiver_id =" + user.getId());
 
-		return null;
+			ResultSet fetchRatingsInfoResult = fetchRatingsInfo.executeQuery();
+			
+			List<Rating> ratingList = new ArrayList<Rating>();
+			while (fetchRatingsInfoResult.next())
+			{
+				//ggf tritt Exception auf, spaeter pruefen
+				int orderId = fetchRatingsInfoResult.getInt("order_id");
+				int auctionId = fetchRatingsInfoResult.getInt("auction_id");
+				boolean isAuction;
+				if(orderId>=0)
+				{
+					isAuction=false;
+					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), orderId, isAuction));
+				}
+				else if(auctionId>=0)
+				{
+					isAuction=true;
+					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), auctionId, isAuction));
+				}
+			}
+			
+			if(ratingList.size()<=0)
+			{
+				return null;
+			}
+			//Liste in Array umwandeln
+			Rating[] ratings = new Rating[ratingList.size()];
+			ratingList.toArray(ratings);
+			
+			return ratings;
+		} catch (SQLException e) {
+			//es ist ein Fehler aufgetreten:
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	protected double[] fetchAvgRating(User user) {

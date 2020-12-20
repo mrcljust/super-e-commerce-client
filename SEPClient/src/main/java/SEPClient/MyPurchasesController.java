@@ -2,6 +2,10 @@ package SEPClient;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,8 +13,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import SEPCommon.Auction;
+import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
 import SEPCommon.Order;
+import SEPCommon.Request;
+import SEPCommon.Response;
+import SEPCommon.ServerResponse;
 
 public class MyPurchasesController {
 
@@ -21,7 +29,7 @@ public class MyPurchasesController {
 	}
 
 	public void initialize() throws IOException {
-
+		loadAllOrders();
 	}
 
     @FXML
@@ -79,12 +87,47 @@ public class MyPurchasesController {
 
     @FXML
     void MyPurchases_CreateRating_Order_Click(ActionEvent event) {
-
+    	if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem() != null) {
+    		MyPurchases_CreateRating_Order.setDisable(false);
+    	}
+    	// ? FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewerten", true, true);
     }
+    	
+    
     
     @FXML
     void MyPurchases_DeleteOrderButton_Click(ActionEvent event) {
 
+    }
+    
+    private ObservableList<Order> loadAllOrders() { //funktioniert noch nicht 
+    	
+    	if(MyPurchases_ListOrders.getItems()!=null)
+    	{
+    		MyPurchases_ListOrders.getItems().clear();
+    	}
+        
+    	
+    	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("Customer", customer);
+    	
+    	ClientRequest req = new ClientRequest(Request.FetchOrders, null);
+    	Client client = Client.getClient();
+    	ServerResponse queryResponse = client.sendClientRequest(req);
+    	
+    	if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Orders")!=null){
+    		
+    		Order [] orders = (Order[])queryResponse.getResponseMap().get("Orders");
+    		ObservableList<Order> ObservableOrders = FXCollections.observableArrayList(orders);
+    		ObservableOrders.removeIf(n -> (n==null));
+    		
+    		return ObservableOrders;
+    	}
+    	return null;
+    }
+    
+    void loadAllAuctions() {
+    	
     }
     
 
