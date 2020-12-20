@@ -1944,9 +1944,10 @@ public class SQL {
 			while (allOwnAuctions.next()) {
 				int currentAuctionId = allOwnAuctions.getInt("auctions.auction_id");
 
+				if(buyer.getId()!=0) {
 				PreparedStatement pstmtAllSellerInformation = connection.prepareStatement(
-						" SELECT* FROM auctions JOIN users ON auctions.auction_id = users.id WHERE auctions.auction_id ='"
-								+ currentAuctionId + "' AND auctions.auction_id='" + currentAuctionId + "'",
+						" SELECT* FROM auctions JOIN users ON auctions.seller_id = users.id WHERE auctions.seller_id ='"
+								+ buyer.getId() + "' AND auctions.auction_id='" + currentAuctionId + "'",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allSellerInformation = pstmtAllSellerInformation.executeQuery();
@@ -2048,6 +2049,8 @@ public class SQL {
 				arraycounter++;
 
 			}
+				return null;
+			}
 			return allOwnAuctionsArray;
 
 		} catch (SQLException e) {
@@ -2086,6 +2089,7 @@ public class SQL {
 			allActiveAuctionsArray = new Auction[sqlcounter];
 
 			while (allBiddedAuctions.next()) {
+
 				int currentAuctionId = allBiddedAuctions.getInt("auctions.auction_id");
 				PreparedStatement pstmtAllSellerInformation = connection.prepareStatement(
 						" SELECT* FROM auctions JOIN users ON auctions.seller_id= users.id WHERE auctions.auction_id ='"
