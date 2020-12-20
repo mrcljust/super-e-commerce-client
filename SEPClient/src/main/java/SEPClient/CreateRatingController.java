@@ -12,6 +12,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.stage.Stage;
 
 public class CreateRatingController {
 
@@ -66,6 +67,6 @@ public class CreateRatingController {
 
     @FXML
     void CreateRating_ButtonReturn_Click(ActionEvent event) {
-
+    	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 }

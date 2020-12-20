@@ -1,10 +1,16 @@
 package SEPClient;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
+
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -13,9 +19,12 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.web.HTMLEditor;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import net.coobird.thumbnailator.Thumbnails;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
 import SEPCommon.Request;
@@ -106,9 +115,10 @@ public class CreateAuctionController {
 
     @FXML
     void Auction_InsertClick(ActionEvent event) {
-    	//DATUM IN CET KONVERTIEREN UND PRUEFEN
+     	//DATUM IN CET KONVERTIEREN UND PRUEFEN
     	Date startDateAndTime;
     	Date endDateAndTime;
+
     	if(Auction_radioStartNow.isSelected())
     	{
         	//Startzeitpunkt jetzt
@@ -141,8 +151,6 @@ public class CreateAuctionController {
 			return;
 		}
     	
-
-    	
     	//Anhand Serveruhrzeit prüfen ob gültig (in Zukunft) und ob Endzeit nach Startzeit
         ClientRequest req = new ClientRequest(Request.GetServerDateTime, null);
     	Client client = Client.getClient();
@@ -166,21 +174,42 @@ public class CreateAuctionController {
 			FXMLHandler.ShowMessageBox("Das Datum vom Server kann nicht geprüft werden, ggf. ist der Server nicht erreichbar.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
 		}
+		
+		FXMLHandler.OpenSceneInStage((Stage) Auction_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+		
     }
 
     @FXML
     void Auction_OpenPictureClick(ActionEvent event) {
-
-    }
+    	FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Bild auswählen");
+		File file = fileChooser.showOpenDialog(FXMLHandler.getStage()); 
+		if (file != null) {
+			if(!file.toURI().toString().toLowerCase().contains(".png") && !file.toURI().toString().toLowerCase().contains(".jpg") && !file.toURI().toString().toLowerCase().contains(".jpeg"))
+    	    	
+			{
+    			//Bild weder .jpg, .jpeg noch .png
+    	    	FXMLHandler.ShowMessageBox("Bitte wählen Sie eine .jpg-, .jpeg- oder .png-Datei aus.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    	    	return;
+    	    }
+			Image selectedImage = new Image (file.toURI().toString());
+			Auction_imgPicture.setImage(selectedImage);
+		}
+    	
+    	
+    	
+    };
 
     @FXML
     void Auction_ReturnClick(ActionEvent event) {
-    	FXMLHandler.OpenSceneInStage((Stage) Auction_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+    	FXMLHandler.OpenSceneInStage((Stage) Auction_Insert.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 
     @FXML
     void Auction_StartDatePicker_Choice(ActionEvent event) {
-
+    	
     }
 
     @FXML
