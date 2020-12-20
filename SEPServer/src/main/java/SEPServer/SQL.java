@@ -1696,8 +1696,8 @@ public class SQL {
 
 				Auction[] allActiveAuctionsArray = null;
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.enddate) >= '" + timestamp
-								+ "' AND DATE(auctions.starttime) <= '" + timestamp + "'",
+						"Select * FROM auctions " + "WHERE DATE(auctions.enddate) >='" + timestamp
+								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -1735,7 +1735,7 @@ public class SQL {
 					int currentBidderId = activeAuctions.getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id= '"
+							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id='"
 									+ activeAuctionId + "' AND auctions.currentbidder_id='" + currentBidderId + "'",
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
@@ -1764,6 +1764,7 @@ public class SQL {
 					} else if (activeAuctions.getInt("auctions.shippingtype_id") == 2) {
 						shippingtype = ShippingType.PickUp;
 					}
+					
 					allActiveAuctionsArray[arraycounter] = new Auction(activeAuctions.getInt("auctions.auction_id"),
 							activeAuctions.getString("auctions.title"),
 							activeAuctions.getString("auctions.description"), activeAuctions.getBytes("auctions.image"),
@@ -1824,8 +1825,8 @@ public class SQL {
 					int currentBidderId = pstmtAllEndedAuctions.getResultSet().getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id"
-									+ "' WHERE auctions.auction_id= '" + endedAuctionId + "' AND auctions.currentbidder_id='" +currentBidderId+ "'",
+							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id= '"
+									+ endedAuctionId + "' AND auctions.currentbidder_id='" + currentBidderId + "'",
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
 					currentBidderInformation.first();
@@ -2498,6 +2499,6 @@ public class SQL {
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		 User denis= new Customer(100, null, null, null, null, 0, null);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
-		testSQLObject.fetchOwnAuctions(denis);
+		testSQLObject.fetchAuctions(AuctionType.Active);
 	}
 }
