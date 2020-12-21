@@ -1651,7 +1651,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), true);
+								allSellerRatings.getInt("ratings.auction_id"), true);
 					}
 					//t
 					if (allBuyerRatings.next() != false) {
@@ -1663,7 +1663,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.order_id"), true);
+								allBuyerRatings.getInt("ratings.auction_id"), true);
 
 					}
 				}
@@ -1901,7 +1901,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
 									allSellerRatings.getInt("ratings.receiver_id"),
-									allSellerRatings.getInt("ratings.order_id"), true);
+									allSellerRatings.getInt("ratings.auction_id"), true);
 						}
 
 						if (allBuyerRatings.next() != false) {
@@ -1913,7 +1913,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									allBuyerRatings.getInt("ratings.stars"), buyerText,
 									allBuyerRatings.getInt("ratings.sender_id"),
 									allBuyerRatings.getInt("ratings.receiver_id"),
-									allBuyerRatings.getInt("ratings.order_id"), true);
+									allBuyerRatings.getInt("ratings.auction_id"), true);
 
 						}
 					}
@@ -2116,7 +2116,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.order_id"), true);
+								allSellerRatings.getInt("ratings.auction_id"), true);
 					}
 
 					if (allBuyerRatings.next() != false) {
@@ -2128,7 +2128,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.order_id"), true);
+								allBuyerRatings.getInt("ratings.auction_id"), true);
 
 					}
 				}
