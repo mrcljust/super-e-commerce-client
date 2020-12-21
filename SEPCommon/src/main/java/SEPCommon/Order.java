@@ -7,6 +7,8 @@ public class Order implements Serializable {
 
 	private int id;
 	private Product product;
+	private String productName;
+	private Double productPrice;
 	private LocalDateTime date;
 	private Rating sellerRating;
 	private Rating buyerRating;
@@ -15,6 +17,8 @@ public class Order implements Serializable {
 
 		this.id = _id;
 		this.product= _Product;
+		productName = _Product.getName();
+		productPrice = _Product.getPrice();
 		this.date = _date;
 		this.sellerRating = _sellerRating;
 		this.buyerRating = _buyerRating;
@@ -23,6 +27,16 @@ public class Order implements Serializable {
 	public int getId() {
 		return id;
 
+	}
+	
+	public double getProductPrice()
+	{
+		return productPrice;
+	}
+	
+	public String getProductName()
+	{
+		return productName;
 	}
 
 	public void setId(int id) {

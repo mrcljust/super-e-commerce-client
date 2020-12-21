@@ -1479,22 +1479,24 @@ public class SQL {
 						allOrdersResultSet.getString("users.companyname"));
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
-						newSeller, allOrdersResultSet.getString("categories.title"),
+						newSeller, allOrdersResultSet.getString("products.title"),
 						allOrdersResultSet.getString("products.description"));
 
 				int orderId = allOrdersResultSet.getInt("orders.order_id");
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + buyer.getId());
+								+ orderId + " WHERE users.id=" + buyer.getId(),
+								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				PreparedStatement pstmtSellerRatings = connection.prepareStatement(		
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + newSeller.getId());
+								+ orderId + " WHERE users.id=" + newSeller.getId(),
+								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
-				allBuyerRatings.first();
+				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
-				allSellerRatings.first();
+				allSellerRatings.beforeFirst();
 				Rating newSellerRating=null;
 				Rating newBuyerRating=null;
 
@@ -1523,7 +1525,7 @@ public class SQL {
 
 				}
 
-				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.id"), newProduct,
+				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.order_id"), newProduct,
 						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
 
 				arraycounterAllOrders++;
