@@ -622,7 +622,6 @@ public class SQL {
 				{
 					stmt.setString(10, "");
 				}
-				System.out.println(stmt);
 				stmt.execute();
 
 				return Response.Success;
@@ -824,7 +823,6 @@ public class SQL {
 
 		// Verbindung herstellen, wenn keine Verbindung besteht
 		if (!checkConnection()) {
-			System.out.println("connection probleme");
 			return null;
 		}
 		
@@ -1283,8 +1281,8 @@ public class SQL {
 			PreparedStatement pstmt=connection.prepareStatement("INSERT INTO auctions(currentbid, currentbidder_id, description, emailsent, enddate, image, minbid, seller_id, shippingtype_id, startprice, starttime, title)"
 					+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
 
-			pstmt.setDouble(1, auction.getCurrentBid());
-			pstmt.setInt(2, auction.getCurrentBidder().getId());
+			pstmt.setDouble(1, auction.getStartPrice());
+			pstmt.setInt(2, 0);
 			pstmt.setString(3, auction.getDescription());
 			pstmt.setBoolean(4, false);
 			pstmt.setTimestamp(5, java.sql.Timestamp.valueOf(auction.getEnddate())); // cast weil unterschiedliche arten von date in java und sql
@@ -1299,7 +1297,7 @@ public class SQL {
 			{
 				pstmt.setInt(9, 2); 
 			}
-			pstmt.setDouble(10, auction.getMinBid());
+			pstmt.setDouble(10, auction.getStartPrice());
 			pstmt.setTimestamp(11, java.sql.Timestamp.valueOf(auction.getStarttime()));		//cast unterschiedliche Dates
 			pstmt.setString(12, auction.getTitle());
 
@@ -1337,14 +1335,14 @@ public class SQL {
 
 		else if (serverDate.isAfter(startDate) == true) {
 			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
-				if (auction.getCurrentBid() >= bid) {
+				if (auction.getCurrentBid() >= bid || auction.getMinBid() > bid || auction.getStartPrice() > bid) {
 					return Response.BidTooLow;
 				} else if (bidder.getWallet()-bid <0) {
 					return Response.InsufficientBalance;
 				} else if (bid > auction.getCurrentBid() && bidder.getWallet()-bid >=0) {
 					try {
 						PreparedStatement pstmt = connection
-								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=?");
+								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id=" + auction.getId());
 						pstmt.setDouble(1, bid);
 						pstmt.setInt(2, bidder.getId());
 						pstmt.execute();
@@ -1388,9 +1386,9 @@ public class SQL {
 		String newSavedAuctionsProductsString = "";
 		if(currentSavedAuctions!=null)
 		{
-			if(currentSavedAuctions.length==10)
+			if(currentSavedAuctions.length==50)
 			{
-				//Maximale Lünge (10), setze viewedProductId an den Anfang und ersetze die letzte Id
+				//Maximale Lünge (50), setze viewedProductId an den Anfang und ersetze die letzte Id
 				newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
 				
 				for(int i=0;i<9;i++)
@@ -1558,14 +1556,19 @@ public class SQL {
 				sumAuctions++;
 			}
 			purchasedAuctions.beforeFirst();
+			
+			if(sumAuctions<=0)
+			{
+				return null;
+			}
 			allPurchasedAuctionsArray = new Auction[sumAuctions];
 			while (purchasedAuctions.next()) {
 
 				int wonAuctionId = purchasedAuctions.getInt("auctions.auction_id");
 
 				PreparedStatement pstmtAllPurchasedAuctions = connection.prepareStatement(
-						"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id='"
-								+ wonAuctionId + "'",
+						"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
+								+ wonAuctionId,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet allSellerInformation = pstmtAllPurchasedAuctions.executeQuery();
 				allSellerInformation.first();
@@ -1658,6 +1661,7 @@ public class SQL {
 						purchasedAuctions.getString("auctions.title"),
 						purchasedAuctions.getString("auctions.description"),
 						purchasedAuctions.getBytes("auctions.image"),
+						purchasedAuctions.getDouble("auctions.minbid"),
 						purchasedAuctions.getDouble("auctions.startprice"),
 						purchasedAuctions.getDouble("auctions.currentbid"), shippingtype, newSeller, currentBidder,
 						newSellerRating, newBuyerRating,
@@ -1772,7 +1776,8 @@ public class SQL {
 					allActiveAuctionsArray[arraycounter] = new Auction(activeAuctions.getInt("auctions.auction_id"),
 							activeAuctions.getString("auctions.title"),
 							activeAuctions.getString("auctions.description"), activeAuctions.getBytes("auctions.image"),
-							activeAuctions.getDouble("auctions.startprice"), shippingtype, newSeller, currentBidder,
+							activeAuctions.getDouble("auctions.minbid"),activeAuctions.getDouble("auctions.startprice"),
+							shippingtype, newSeller, currentBidder,
 							activeAuctions.getDouble("auctions.currentbid"),
 							activeAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
 							activeAuctions.getTimestamp("auctions.enddate").toLocalDateTime());
@@ -1904,7 +1909,8 @@ public class SQL {
 					}
 					allEndedAuctionsArray[arraycounter] = new Auction(endedAuctions.getInt("auctions.auction_id"),
 							endedAuctions.getString("auctions.title"), endedAuctions.getString("auctions.description"),
-							endedAuctions.getBytes("auctions.image"), endedAuctions.getDouble("auctions.startprice"),
+							endedAuctions.getBytes("auctions.image"), endedAuctions.getDouble("auctions.minbid"),
+							endedAuctions.getDouble("auctions.startprice"),
 							endedAuctions.getDouble("auctions.currentbid"), shippingtype, newSeller, currentBidder,
 							newSellerRating, newBuyerRating,
 							endedAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
@@ -1973,12 +1979,13 @@ public class SQL {
 						shippingtype = ShippingType.PickUp;
 					}
 
-					allFutureAuctionsArray[arraycounter] = new Auction(futureAuctions.getString("auctions.title"),
+					allFutureAuctionsArray[arraycounter] = new Auction(futureAuctions.getInt("auctions.auction_id"), futureAuctions.getString("auctions.title"),
 							futureAuctions.getString("auctions.description"), futureAuctions.getBytes("auctions.image"),
-							futureAuctions.getDouble("auctions.minbid"), shippingtype, newSeller,
+							futureAuctions.getDouble("auctions.minbid"), futureAuctions.getDouble("auctions.startprice"),
+							shippingtype, newSeller, null, futureAuctions.getDouble("auctions.currentbid"),
 							futureAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
 							futureAuctions.getTimestamp("auctions.enddate").toLocalDateTime());
-
+					
 					arraycounter++;
 				}
 
@@ -1988,9 +1995,8 @@ public class SQL {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println(e.getMessage());
 		}
-
+		
 		return null;
 	}
 
@@ -2014,6 +2020,11 @@ public class SQL {
 			}
 			allOwnAuctions.beforeFirst();
 
+			if(sqlcounter<=0)
+			{
+				return null;
+			}
+			
 			Auction[] allOwnAuctionsArray = new Auction[sqlcounter];
 			while (allOwnAuctions.next()) {
 				int currentAuctionId = allOwnAuctions.getInt("auctions.auction_id");
@@ -2114,7 +2125,8 @@ public class SQL {
 
 				allOwnAuctionsArray[arraycounter] = new Auction(allOwnAuctions.getInt("auctions.auction_id"),
 						allOwnAuctions.getString("auctions.title"), allOwnAuctions.getString("auctions.description"),
-						allOwnAuctions.getBytes("auctions.image"), allOwnAuctions.getDouble("auctions.startprice"),
+						allOwnAuctions.getBytes("auctions.image"), allOwnAuctions.getDouble("auctions.minbid"),
+						allOwnAuctions.getDouble("auctions.startprice"),
 						allOwnAuctions.getDouble("auctions.currentbid"), shippingtype, newSeller, currentBidder,
 						newSellerRating, newBuyerRating,
 						allOwnAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
@@ -2161,6 +2173,11 @@ public class SQL {
 			}
 			allBiddedAuctions.beforeFirst();
 
+			if(sqlcounter<=0)
+			{
+				return null;
+			}
+			
 			allActiveAuctionsArray = new Auction[sqlcounter];
 
 			while (allBiddedAuctions.next()) {
@@ -2217,7 +2234,7 @@ public class SQL {
 				allActiveAuctionsArray[arraycounter] = new Auction(allBiddedAuctions.getInt("auctions.auction_id"),
 						allBiddedAuctions.getString("auctions.title"),
 						allBiddedAuctions.getString("auctions.description"),
-						allBiddedAuctions.getBytes("auctions.image"),
+						allBiddedAuctions.getBytes("auctions.image"), allBiddedAuctions.getDouble("auctions.minbid"),
 						allBiddedAuctions.getDouble("auctions.startprice"), shippingtype, newSeller, currentBidder,
 						allBiddedAuctions.getDouble("auctions.currentbid"),
 						allBiddedAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
@@ -2237,6 +2254,7 @@ public class SQL {
 
 	protected Auction[] fetchSavedAuctions(User buyer) {
 		// Auktionen die buyer gespeichert hat (aktuell + beendete + zukünftige)
+		// maximal 50 Stk
 		
 		if (!checkConnection()) {
 			return null;
@@ -2268,7 +2286,7 @@ public class SQL {
 						//Fr jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
 						//anschlieend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
 						//und in das Array savedAuctions, welches am Ende zurckgegeben wird schreiben
-						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.id='" + viewedId + "'");
+						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.auction_id='" + viewedId + "'");
 						ResultSet fetchAuctionsInfoResult = fetchAuctionInfo.executeQuery();
 						if(fetchAuctionsInfoResult.next())
 						{
@@ -2279,7 +2297,7 @@ public class SQL {
 									fetchAuctionsInfoResult.getString("users.number"));
 							Customer seller = new Customer(fetchAuctionsInfoResult.getInt("users.id"), fetchAuctionsInfoResult.getString("users.username"),
 									fetchAuctionsInfoResult.getString("users.email"), fetchAuctionsInfoResult.getString("users.password"), 
-									fetchAuctionsInfoResult.getBytes("users.picture"), fetchAuctionsInfoResult.getDouble("users.wallet"), address);
+									fetchAuctionsInfoResult.getBytes("users.image"), fetchAuctionsInfoResult.getDouble("users.wallet"), address);
 							
 							
 							int shippingtypeId = fetchAuctionsInfoResult.getInt("auctions.shippingtype_id");
@@ -2306,7 +2324,7 @@ public class SQL {
 							}
 							
 							Auction auction = new Auction(viewedId, fetchAuctionsInfoResult.getString("auctions.title"), fetchAuctionsInfoResult.getString("auctions.description"),
-									fetchAuctionsInfoResult.getBytes("auctions.image"), fetchAuctionsInfoResult.getDouble("auctions.minbid"), shippingtype,
+									fetchAuctionsInfoResult.getBytes("auctions.image"), fetchAuctionsInfoResult.getDouble("auctions.minbid"), fetchAuctionsInfoResult.getDouble("auctions.startprice"), shippingtype,
 									seller, customer, fetchAuctionsInfoResult.getDouble("auctions.currentbid"), fetchAuctionsInfoResult.getTimestamp("auctions.starttime").toLocalDateTime(), fetchAuctionsInfoResult.getTimestamp("auctions.enddate").toLocalDateTime());
 							
 							savedAuctions[newArrayCounter] = auction;
@@ -2450,8 +2468,8 @@ public class SQL {
 		Double price = order.getProduct().getPrice();
 		
 		// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
-		String orderGetDate = SEPCommon.Constants.DATEFORMATDAYONLY.format(date);
-		String ServerDate = SEPCommon.Constants.DATEFORMATDAYONLY.format(serverDate);
+		String orderGetDate = date.format(SEPCommon.Constants.DATEFORMATDAYONLY);
+		String ServerDate = serverDate.format(SEPCommon.Constants.DATEFORMATDAYONLY);
 		
 		if (!checkConnection()) {
 		return Response.NoDBConnection;
@@ -2484,27 +2502,34 @@ public class SQL {
 
 	protected Response checkForNewFinishedAuctions() {
 		// Checken ob es beendete Auktionen gibt, zu welchen noch keine
-		// Verkaufsbestätigungsemail verschickt wurde,
+		// Verkaufsbestätigungsemail verschickt wurde (Spalte emailsent = 0),
 		// falls ja, das Guthaben des Käufers reduzieren, und das Guthaben des Verkäufers erhöhen (wie bei BuyItem)
-		// Spezialfall: User hat inzwischen kein Guthaben mehr (wird beim Gebot geprüft, aber er kann es zwischenzeitlich
-		// ausgegeben haben) - in diesem Fall die Zeile currentbidder_id auf "" und currentbid auf 0 - also keinen Käufer
+		// und anschließend EmailHandler.sendAuctionEndedEmail versenden
+		
+		// Spezialfall: User hat inzwischen kein Guthaben mehr (wird beim Zeitpunkt des Gebots geprüft, aber er kann es zwischenzeitlich
+		// ausgegeben haben) - in diesem Fall die Zeile currentbidder_id auf "0" und currentbid auf startprice - also keinen Käufer
 		// in der DB speichern
-		// (Spalte emailsent in der Auctions-DB-Tabelle), ggf Email schicken
+		
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 
 		EmailHandler.sendAuctionEndedEmail(null);
+		
+		//bei o.g. Spezialfall:
+		EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(null);
+		
+		//nach dem Senden der Email emailsent bei der jeweiligen Aktion auf 1 setzen
 		return null;
 	}
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
-		 LocalDateTime aDateTime = LocalDateTime.of(2022, 
-                 Month.JULY, 29, 19, 30, 40);
-		 LocalDateTime aDateTime2 = LocalDateTime.of(2022, 
-                 Month.JULY, 30, 19, 30, 40);
-		testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
+		 LocalDateTime aDateTime = LocalDateTime.of(2018, 
+                 Month.JULY, 29, 19, 30, 00);
+		 LocalDateTime aDateTime2 = LocalDateTime.of(2021, 
+                 Month.JULY, 30, 19, 30, 00);
+		testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
 	//	testSQLObject.fetchAuctions(AuctionType.Ended);
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		 User denis= new Customer(100, null, null, null, null, 0, null);

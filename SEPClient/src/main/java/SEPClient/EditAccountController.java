@@ -65,7 +65,10 @@ public class EditAccountController {
 		
 		InputStream in = new ByteArrayInputStream(user.getPicture());
 		Image img = new Image(in);
-		EditAccount_imgPicture.setImage(img);
+		if(!img.isError())
+		{
+			EditAccount_imgPicture.setImage(img);
+		}
 		
 		EditAccount_radioCustomer.setSelected(true);
 		EditAccount_radioSeller.setSelected(true);

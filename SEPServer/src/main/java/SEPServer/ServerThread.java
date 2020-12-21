@@ -424,6 +424,22 @@ public class ServerThread implements Runnable {
 					out.writeObject(response);
 				}
 				
+				//Request SaveAuction
+				//HASHMAP: "Auction" - Zu speichernde Auktion, "User" - Userobjekt, 
+				
+				else if(requestType == Request.SaveAuction)
+				{
+					Auction argAuction = (Auction)requestMap.get("Auction");
+					User argUser = (User)requestMap.get("User");
+					
+					//SQL-Abfrage ausführen
+					Response responseType = sql.saveAuction(argUser, argAuction);
+					ServerResponse response = new ServerResponse(responseType, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
 				//Request DeleteOrder
 				//HASHMAP: "Order" - Order-Objekt, "Customer" - Customer-Objekt des Kaeufers
 				else if(requestType == Request.DeleteOrder)
