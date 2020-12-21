@@ -1513,7 +1513,7 @@ public class SQL {
 
 				}
 
-				if (allSellerRatings.next() != false) {
+				if (allSellerRatings.next()) {
 					String sellerText = null;
 					if (allSellerRatings.getString("ratings.text") != null) {
 						sellerText = allSellerRatings.getString("ratings.text");
@@ -1525,7 +1525,7 @@ public class SQL {
 							false);
 				}
 				
-				if (allBuyerRatings.next() != false) {
+				if (allBuyerRatings.next()) {
 					String buyerText = null;
 					if (allSellerRatings.getString("ratings.text") != null) {
 
