@@ -1632,12 +1632,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			
 				if (currentBidder != null) {
 					PreparedStatement pstmtSellerRatingsEndedAuction = connection.prepareStatement(
-							"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id="
-									+ wonAuctionId + " WHERE users.id=" + newSeller.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+							"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id"
+									+  " WHERE users.id=" + newSeller.getId()+" AND auctions.auction_id="+wonAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					PreparedStatement pstmtBuyerEndedAuction = connection.prepareStatement(
-							"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.order_id="
-									+ wonAuctionId + " WHERE users.id=" + currentBidder.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+							"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id"
+									+  " WHERE users.id=" + currentBidder.getId()+" AND auctions.auction_id="+ wonAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
 					allSellerRatings.beforeFirst();
