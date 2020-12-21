@@ -1486,35 +1486,21 @@ public class SQL {
 				
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id="
-<<<<<<< HEAD
-								+ orderId + " WHERE users.id=" + buyer.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, 
-			                    ResultSet.CONCUR_UPDATABLE);
-=======
 								+ orderId + " WHERE users.id=" + buyer.getId(),
 								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
->>>>>>> refs/remotes/origin/gradle
 
 				PreparedStatement pstmtSellerRatings = connection.prepareStatement(		
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
-<<<<<<< HEAD
-								+ orderId + " WHERE users.id=" + newSeller.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, 
-			                    ResultSet.CONCUR_UPDATABLE);
-=======
 								+ orderId + " WHERE users.id=" + newSeller.getId(),
 								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
->>>>>>> refs/remotes/origin/gradle
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
 				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
 				allSellerRatings.beforeFirst();
-<<<<<<< HEAD
 				
-=======
 				Rating newSellerRating=null;
->>>>>>> refs/remotes/origin/gradle
 				Rating newBuyerRating=null;
-				Rating newSellerRating = null;
 				if (allBuyerRatings.next() != false) {
 					String buyerText = null;
 					if (allBuyerRatings.getString("ratings.text") != null) {
@@ -1539,9 +1525,6 @@ public class SQL {
 							false);
 				}
 				
-
-<<<<<<< HEAD
-=======
 				if (allBuyerRatings.next() != false) {
 					String buyerText = null;
 					if (allSellerRatings.getString("ratings.text") != null) {
@@ -1555,7 +1538,6 @@ public class SQL {
 
 				}
 
->>>>>>> refs/remotes/origin/gradle
 				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.order_id"), newProduct,
 						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
 
