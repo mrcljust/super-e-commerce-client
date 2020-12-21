@@ -2450,6 +2450,7 @@ public class SQL {
 
 	protected double[] fetchAvgRating(User user) {
 		// index 0 ist Average, Index 1 ist Anzahl der Bewertungen
+		// Array mit Anzahl und Durchschnitt zurückgeben
 		
 		if (!checkConnection()) {
 			return null;
