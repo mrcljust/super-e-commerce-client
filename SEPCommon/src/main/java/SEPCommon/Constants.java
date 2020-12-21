@@ -1,6 +1,7 @@
 package SEPCommon;
 
 import java.text.DecimalFormat;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 public class Constants {
@@ -21,8 +22,10 @@ public class Constants {
 	
 	public final static DecimalFormat DOUBLEFORMAT = new DecimalFormat("#0.00");
 	
-	public final static DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("dd.MM.YYYY HH:mm");
-	public final static DateTimeFormatter DATEFORMATDAYONLY = DateTimeFormatter.ofPattern("dd.MM.YYYY");
+	static ZoneId CET = ZoneId.of("CET");
+
+	public final static DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("dd.MM.YYYY HH:mm").withZone(CET);
+	public final static DateTimeFormatter DATEFORMATDAYONLY = DateTimeFormatter.ofPattern("dd.MM.YYYY").withZone(CET);
 	
 	public final static String CURRENCY = "$";
 }

@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import javax.imageio.ImageIO;
@@ -118,13 +119,13 @@ public class CreateAuctionController {
      	//DATUM IN CET KONVERTIEREN UND PRUEFEN
     	
     	
-    	Date startDateAndTime;
-    	Date endDateAndTime;
+    	ZonedDateTime startDateAndTime;
+    	ZonedDateTime endDateAndTime;
 
     	if(Auction_radioStartNow.isSelected())
     	{
         	//Startzeitpunkt jetzt
-    		startDateAndTime = SEPCommon.Methods.convertToDate(LocalDateTime.now());
+    		startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now());
     	}
     	else
     	{
@@ -134,7 +135,7 @@ public class CreateAuctionController {
     			String[] startTimeSplit = Auction_StartTime.getText().split(":");
             	int starthour = Integer.parseInt(startTimeSplit[0]);
             	int startminute = Integer.parseInt(startTimeSplit[1]);
-            	startDateAndTime = SEPCommon.Methods.convertToDate(Auction_StartDatePicker.getValue().atTime(starthour, startminute));
+            	startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_StartDatePicker.getValue().atTime(starthour, startminute));
     		
 			} catch (Exception e) {
 				FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige Start-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
@@ -147,7 +148,7 @@ public class CreateAuctionController {
     		String[] endTimeSplit = Auction_EndTime.getText().split(":");
         	int endhour  = Integer.parseInt(endTimeSplit[0]);
         	int endminute  = Integer.parseInt(endTimeSplit[1]);
-        	endDateAndTime = SEPCommon.Methods.convertToDate(Auction_EndDatePicker.getValue().atTime(endhour, endminute));
+        	endDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_EndDatePicker.getValue().atTime(endhour, endminute));
 		} catch (Exception e) {
 			FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige End-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;

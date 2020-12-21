@@ -2,14 +2,13 @@ package SEPClient;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -23,7 +22,6 @@ import SEPCommon.Customer;
 import SEPCommon.Order;
 import SEPCommon.Rating;
 import SEPCommon.Request;
-import SEPCommon.Response;
 import SEPCommon.ServerResponse;
 import SEPCommon.ShippingType;
 import SEPCommon.User;
@@ -31,14 +29,36 @@ import SEPCommon.User;
 public class MySalesController {
 
 	private static User user = null;
+	private boolean isDeleteable = false;
 
 	public static void setUser(User _user) {
 		user = _user;
 	}
 
 	public void initialize() throws IOException {
+		startView();
 		MySales_ListOrders.setItems(loadAllOrders());
-		
+        MySales_ListAuctions.setItems(loadAllAuctions());
+        
+        if(user instanceof Customer)
+        {
+        	MySales_ListOrders.setVisible(false);
+        	MySales_LabelListOrders.setVisible(false);
+        	MySales_CreateRating_Order.setVisible(false);
+        	MySales_DeleteOrderButton.setVisible(false);
+        }
+        else
+        {
+        	MySales_ListOrders.setVisible(true);
+        	MySales_LabelListOrders.setVisible(true);
+        	MySales_CreateRating_Order.setVisible(true);
+        	MySales_DeleteOrderButton.setVisible(true);
+		}
+		selectionsChangedListener();
+	}
+	
+	private void startView()
+	{
 		//Werte an die Spalten der ListOrders zuweisen
     	ordersIdColumn.setCellValueFactory(new PropertyValueFactory<Order, Integer>("id"));
     	ordersProductnameColumn.setCellValueFactory(new PropertyValueFactory<Order, String>("productName"));
@@ -81,9 +101,7 @@ public class MySalesController {
     	        }
     	    }
     	});
-		
-        MySales_ListAuctions.setItems(loadAllAuctions());
-        
+		        
 		//Werte an die Spalten der ListAuctions zuweisen
     	auctionsIdColumn.setCellValueFactory(new PropertyValueFactory<Auction, Integer>("id"));
     	auctionsEndColumn.setCellValueFactory(new PropertyValueFactory<Auction, LocalDateTime>("enddate"));
@@ -191,27 +209,140 @@ public class MySalesController {
 
     @FXML
     private Button MySales_Return;
+    
+    @FXML
+    private Label MySales_LabelListOrders;
+    
+    @FXML
+    private Label MySales_LabelListAuctions;
 
     @FXML
     void MySales_CreateRating_Auction_Click(ActionEvent event) {
-    	
+    	if (MySales_ListAuctions.getSelectionModel().getSelectedItem() != null) {
+    		CreateRatingController.setOrder(null);
+    		CreateRatingController.setAuction(MySales_ListAuctions.getSelectionModel().getSelectedItem());
+    		CreateRatingController.setSender(user);
+    		CreateRatingController.setRecipient(MySales_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBidder());
+    		CreateRatingController.setRatingIsBySeller(true);
+    		FXMLHandler.OpenSceneInStage((Stage) MySales_CreateRating_Auction.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
+    	}
     }
 
     @FXML
     void MySales_CreateRating_Order_Click(ActionEvent event) {
     	if (MySales_ListOrders.getSelectionModel().getSelectedItem() != null) {
+    		CreateRatingController.setAuction(null);
     		CreateRatingController.setOrder(MySales_ListOrders.getSelectionModel().getSelectedItem());
-    		CreateRatingController.setUser(user);
+    		CreateRatingController.setSender(user);
+    		CreateRatingController.setRecipient(MySales_ListOrders.getSelectionModel().getSelectedItem().getBuyer());
+    		CreateRatingController.setRatingIsBySeller(true);
     		FXMLHandler.OpenSceneInStage((Stage) MySales_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
     	}
     }
     	
+    private void selectionsChangedListener() {
+    	//Listener mit Hilfe folgender Quelle geschrieben: https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	//Antwort von James_D, Oct 17 '14 at 14:11
+    	
+    	//ListCatalog Selection Change Listener
+    	
+    	MySales_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		//was passiert, wenn ein Eintrag in der ListCatalog ausgewählt wird
+    		if(newSelection != null)
+    		{
+	    		updateOrderButtons();
+    		}
+    		else
+    		{
+    			MySales_DeleteOrderButton.setDisable(true);
+        		MySales_CreateRating_Order.setDisable(true);
+			}
+    	});
+    	   	
+    	//ListLastViewed Selection Change Listener
+    	
+    	MySales_ListAuctions.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+	    	//was passiert, wenn ein Eintrag in der ListLastViewed ausgewählt wird
+	    	if(newSelection != null)
+	    	{
+		    	updateAuctionButton();
+	    	}
+	    	else {
+	    		MySales_CreateRating_Auction.setDisable(true);
+			}
+	    });
+    }
     
+    private void updateOrderButtons()
+    {
+    	if(MySales_ListOrders.getSelectionModel().getSelectedItem()!=null)
+    	{
+    		MySales_ListAuctions.getSelectionModel().clearSelection();
+    		MySales_CreateRating_Auction.setDisable(true);
+        	
+        	if(MySales_ListOrders.getSelectionModel().getSelectedItem().getSellerRating()!=null)
+        	{
+        		MySales_CreateRating_Order.setDisable(true);
+        	}
+        	else
+        	{
+        		//Bewertung noch nicht abgegeben
+        		MySales_CreateRating_Order.setDisable(false);
+    		}
+        	
+    		String dateToday = SEPCommon.Constants.DATEFORMATDAYONLY.format(LocalDateTime.now());
+    		
+    		
+        	if(MySales_ListOrders.getSelectionModel().getSelectedItem().getDate()!=null)
+        	{
+        		String dateAuctionEnd = SEPCommon.Constants.DATEFORMATDAYONLY.format(MySales_ListOrders.getSelectionModel().getSelectedItem().getDate());
+        		if(dateToday==dateAuctionEnd)
+        		{
+        			MySales_DeleteOrderButton.setDisable(false);
+        			isDeleteable=true;
+        		}
+        		else {
+        			MySales_DeleteOrderButton.setDisable(false);
+    				isDeleteable=false;
+    			}
+        	}
+    	}
+	}
+    
+    private void updateAuctionButton()
+    {
+    	if(MySales_ListAuctions.getSelectionModel().getSelectedItem()!=null)
+    	{
+    		MySales_ListOrders.getSelectionModel().clearSelection();
+    		MySales_CreateRating_Order.setDisable(true);
+    		MySales_DeleteOrderButton.setDisable(true);
+        	
+        	if(MySales_ListAuctions.getSelectionModel().getSelectedItem().getSellerRating()!=null)
+        	{
+        		MySales_CreateRating_Auction.setDisable(true);
+        	}
+        	else
+        	{
+        		//Bewertung noch nicht abgegeben
+        		MySales_CreateRating_Auction.setDisable(false);
+    		}
+    	}
+	}
     
     @FXML
     void MySales_DeleteOrderButton_Click(ActionEvent event) {
-
+    	if(isDeleteable)
+    	{
+    		
+    	}
+    	else
+    	{
+			//Datum zu alt
+    		
+		}
     }
+    
+    
     
     private ObservableList<Order> loadAllOrders() { //funktioniert noch nicht 
     	

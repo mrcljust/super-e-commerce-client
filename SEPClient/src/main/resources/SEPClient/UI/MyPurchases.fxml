@@ -18,12 +18,12 @@
             <TableColumn fx:id="ordersRatingGivenColumn" editable="false" prefWidth="169.0" text="Bewertung abgegeben?" />
          </columns>
       </TableView>
-      <Label layoutX="14.0" layoutY="14.0" text="Von mir gekaufte Festpreisprodukte">
+      <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" prefHeight="17.0" prefWidth="759.0" text="Von mir gekaufte Festpreisprodukte" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label layoutX="10.0" layoutY="298.0" text="Von mir gewonnene Auktionen">
+      <Label alignment="CENTER" layoutX="10.0" layoutY="298.0" prefHeight="17.0" prefWidth="759.0" text="Von mir gewonnene Auktionen" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

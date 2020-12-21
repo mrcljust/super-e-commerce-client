@@ -12,8 +12,10 @@ public class Order implements Serializable {
 	private LocalDateTime date;
 	private Rating sellerRating;
 	private Rating buyerRating;
+	private Seller seller;
+	private Customer buyer;
 
-	public Order(int _id, Product _Product, LocalDateTime _date, Rating _sellerRating, Rating _buyerRating) {
+	public Order(int _id, Product _Product, LocalDateTime _date, Rating _sellerRating, Rating _buyerRating, Seller _seller, Customer _customer) {
 
 		this.id = _id;
 		this.product= _Product;
@@ -22,6 +24,18 @@ public class Order implements Serializable {
 		this.date = _date;
 		this.sellerRating = _sellerRating;
 		this.buyerRating = _buyerRating;
+		this.seller = _seller;
+		this.buyer = _customer;
+	}
+	
+	public Seller getSeller()
+	{
+		return seller;
+	}
+	
+	public Customer getBuyer()
+	{
+		return buyer;
 	}
 
 	public int getId() {

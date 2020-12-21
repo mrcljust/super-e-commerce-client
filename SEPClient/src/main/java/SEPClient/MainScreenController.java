@@ -944,7 +944,8 @@ public class MainScreenController {
 			ServerResponse queryResponse = client.sendClientRequest(req);
 			if(queryResponse.getResponseType() == Response.Success)
 			{
-				MainScreen_ButtonRefresh.fire();
+				//MainScreen_ButtonRefresh.fire();
+				return;
 			}
     	}
     	else {

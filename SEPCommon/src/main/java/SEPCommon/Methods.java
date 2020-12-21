@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
@@ -75,6 +76,12 @@ public class Methods {
 		ZonedDateTime zdt = instant.atZone(ZoneId.of("CET"));
 		LocalTime localTime = zdt.toLocalTime();
 	    return localTime;
+	}
+	
+	public static ZonedDateTime convertLocalDateTimeToCET(LocalDateTime localDateTimeToConvert)
+	{
+		ZoneId zone = ZoneId.of("CET");
+		return localDateTimeToConvert.atZone(zone);
 	}
 	
 	//Methode zum Umwandeln eines java.time.LocalDateTime zu java.util.Date

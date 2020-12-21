@@ -27,18 +27,18 @@ import javafx.stage.Stage;
 
 public class CreateRatingController {
 
-	private static User user = null;
-	private static int receiverId;
+	private static User sender = null;
+	private static User recipient = null;
 	private static Order order = null;
 	private static Auction auction = null;
 	private static boolean ratingIsBySeller = false;
 
-	public static void setUser(User _user) {
-		user = _user;
+	public static void setSender(User _sender) {
+		sender = _sender;
 	}
-
-	public static void setReceiverId(Integer _id) {
-		receiverId = _id;
+	
+	public static void setRecipient(User _recipient) {
+		recipient = _recipient;
 	}
 
 	public static void setOrder(Order _order) {
@@ -55,7 +55,7 @@ public class CreateRatingController {
 
 	public void initialize() throws IOException {
     	CreateRating_Stars.getItems().addAll(1, 2, 3, 4, 5);
-    	CreateRating_Stars.getSelectionModel().select(5);
+    	CreateRating_Stars.getSelectionModel().select(4);
     	
     	//entweder Auktion oder Order zugewiesen
     	
@@ -64,38 +64,28 @@ public class CreateRatingController {
     	CreateRating_ImgProfilePicture.setImage(defaultImage);
     	
     	//Bild setzen
-    	InputStream in = new ByteArrayInputStream(user.getPicture());
+    	InputStream in = new ByteArrayInputStream(recipient.getPicture());
 		Image img = new Image(in);
 		CreateRating_ImgProfilePicture.setImage(img);
 		
 		if(order!=null)
 		{
 			CreateRating_txtIDDate.setText("Bestell-ID " + order.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(order.getDate()));
-			if(ratingIsBySeller)
-			{
-				//Rating vom VK fuer Kaeufer
-				CreateRating_txtSellerBuyerName.setText("Bewertung für den Käufer abgeben");
-			}
-			else
-			{
-				//Rating vom Kaeufer fuer VK
-				CreateRating_txtSellerBuyerName.setText("Bewertung für den Verkäufer abgeben");
-			}
 		}
 		else if(auction!=null)
 		{
 			CreateRating_txtIDDate.setText("Auktion-ID " + auction.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(auction.getEnddate()));
-			if(ratingIsBySeller)
-			{
-				//Rating vom VK fuer Kaeufer
-				CreateRating_txtSellerBuyerName.setText("Bewertung für den Käufer abgeben");
-				
-			}
-			else
-			{
-				//Rating vom Kaeufer fuer VK
-				CreateRating_txtSellerBuyerName.setText("Bewertung für den Verkäufer abgeben");
-			}
+		}
+		
+		if(ratingIsBySeller)
+		{
+			//Rating vom VK fuer Kaeufer
+			CreateRating_txtSellerBuyerName.setText("Bewertung für den Käufer " + recipient.getUsername() + " (ID " + recipient.getId() + ") abgeben");				
+		}
+		else
+		{
+			//Rating vom Kaeufer fuer VK
+			CreateRating_txtSellerBuyerName.setText("Bewertung für den Verkäufer " + recipient.getUsername() + " (ID " + recipient.getId() + ") abgeben");
 		}
 	}
 	
@@ -135,11 +125,11 @@ public class CreateRatingController {
     	Rating newRating = null;
     	if(order!=null)
     	{
-			newRating = new Rating(rating, report, user.getId(), receiverId, order.getId(), false);
+			newRating = new Rating(rating, report, sender.getId(), recipient.getId(), order.getId(), false);
     	}
     	else if(auction!=null)
     	{
-			newRating = new Rating(rating, report, user.getId(), receiverId, auction.getId(), true);
+			newRating = new Rating(rating, report, sender.getId(), recipient.getId(), auction.getId(), true);
     	}
 		
     	
@@ -158,20 +148,35 @@ public class CreateRatingController {
 					"Fehler", "Fehler", AlertType.ERROR, true, false);
 			return;
 		}
+
+    	else if (queryResponse.getResponseType() == Response.Failure) {
+    		FXMLHandler.ShowMessageBox("Es ist ein Fehler beim Verarbeiten Ihrer Anfrage aufgetreten, Ihre Bewertung wurde daher nicht abgeschickt.",
+					"Fehler", "Fehler", AlertType.ERROR, true, false);
+			return;
+		}
     	
     	else if (queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Ihre Bewertung wurde erfolgreich übermittelt.",
-					"Bewertung abgeschlossen", "Bewertung abgeschlossen", AlertType.INFORMATION, true, false);
-		}
-    	
-    	else if (queryResponse.getResponseType() == Response.Failure) {
-			//TODO MELDUNG
+					"Bewertung gespeichert", "Bewertung gespeichert", AlertType.INFORMATION, true, false);
+	    	if(ratingIsBySeller)
+	    	{
+	        	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MySales", "Meine Verkäufe", true, true);
+	    	}
+	    	else {
+	        	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MyPurchases", "Meine Käufe", true, true);
+			}
 		}
     	
     }
 
     @FXML
     void CreateRating_ButtonReturn_Click(ActionEvent event) {
-    	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+    	if(ratingIsBySeller)
+    	{
+        	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MySales", "Meine Verkäufe", true, true);
+    	}
+    	else {
+        	FXMLHandler.OpenSceneInStage((Stage) CreateRating_ButtonReturn.getScene().getWindow(), "MyPurchases", "Meine Käufe", true, true);
+		}
     }
 }

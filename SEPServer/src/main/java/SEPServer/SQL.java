@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ShippingType;
@@ -1539,7 +1538,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				}
 
 				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.order_id"), newProduct,
-						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
+						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating, newSeller, (Customer)buyer);
 
 				arraycounterAllOrders++;
 
@@ -1553,7 +1552,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		return null;
 	}
 	
-	protected Order[] fetchSales(User buyer) {												
+	protected Order[] fetchSales(User seller) {												
 		// Alle sales die das Objekt buyer verkauft hat in einem Order-Array
 		// zurückgeben.
 		// Wenn erfolgreich gefetcht, Product-Array returnen
@@ -1571,7 +1570,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			PreparedStatement pstmtOrders = connection.prepareStatement("SELECT * FROM users "
 					+ "JOIN orders ON users.id=orders.seller_id JOIN products "
-					+ "ON products.id=orders.product_id JOIN categories ON categories.id=products.category_id WHERE users.id=" + buyer.getId(), ResultSet.TYPE_SCROLL_SENSITIVE, 
+					+ "ON products.id=orders.product_id JOIN categories ON categories.id=products.category_id WHERE users.id=" + seller.getId(), ResultSet.TYPE_SCROLL_SENSITIVE, 
                     ResultSet.CONCUR_UPDATABLE);
 			
 			//Quelle: https://stackoverflow.com/questions/6367737/resultset-exception-set-type-is-type-forward-only-why
@@ -1595,23 +1594,42 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"),
 						allOrdersResultSet.getString("users.username"), allOrdersResultSet.getString("users.email"),
 						allOrdersResultSet.getString("users.password"), allOrdersResultSet.getBytes("users.image"),
-						allOrdersResultSet.getDouble("users.wallet"), newAddress,
-						allOrdersResultSet.getString("users.companyname"));
+						allOrdersResultSet.getDouble("users.wallet"), newAddress, allOrdersResultSet.getString("users.companyname"));
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
-						newSeller, allOrdersResultSet.getString("categories.title"),
+						(Seller)seller, allOrdersResultSet.getString("categories.title"),
 						allOrdersResultSet.getString("products.description"));
 
 				int orderId = allOrdersResultSet.getInt("orders.order_id");
 				
+				PreparedStatement pstmtBuyerDetails = connection.prepareStatement(
+						"Select * FROM users WHERE id="
+								+ allOrdersResultSet.getInt("orders.buyer_id"),
+								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				
+				ResultSet buyerDetails = pstmtBuyerDetails.executeQuery();
+				buyerDetails.beforeFirst();
+				
+				Customer newBuyer = null;
+				if (buyerDetails.next() != false) {
+					Address newAddressBuyer = new Address(buyerDetails.getString("users.fullname"),
+							buyerDetails.getString("users.country"), buyerDetails.getInt("users.postalcode"),
+							buyerDetails.getString("users.city"), buyerDetails.getString("users.street"),
+							buyerDetails.getString("users.number"));
+					newBuyer = new Customer(buyerDetails.getInt("users.id"),
+							buyerDetails.getString("users.username"), buyerDetails.getString("users.email"),
+							buyerDetails.getString("users.password"), buyerDetails.getBytes("users.image"),
+							buyerDetails.getDouble("users.wallet"), newAddressBuyer);
+				}
+				
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + buyer.getId(),
+								+ orderId + " WHERE users.id=" + seller.getId(),
 								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				PreparedStatement pstmtSellerRatings = connection.prepareStatement(		
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + newSeller.getId(),
+								+ orderId + " WHERE users.id=" + newBuyer.getId(),
 								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
@@ -1659,7 +1677,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				}
 
 				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.order_id"), newProduct,
-						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
+						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating, (Seller)seller, newBuyer);
 
 				arraycounterAllOrders++;
 
