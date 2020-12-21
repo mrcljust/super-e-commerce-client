@@ -1554,14 +1554,17 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	}
 
 	protected Auction[] fetchPurchasedAuctions(User buyer) { // fertig
+		if (!checkConnection()) {
+			return null;
+		}
 		LocalDateTime now = LocalDateTime.now();
 		Timestamp timestamp = Timestamp.valueOf(now);
 
 		Auction[] allPurchasedAuctionsArray = null;
 		try {
 			PreparedStatement allPurchasedAuctions = connection.prepareStatement(
-					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=" + buyer.getId()
-							+ " WHERE DATE(auctions.enddate)> '" + timestamp + "'",
+					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=users.id WHERE DATE(auctions.enddate) < '"
+							+ timestamp + "' AND users.id=" + buyer.getId(),
 					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 			ResultSet purchasedAuctions = allPurchasedAuctions.executeQuery();
@@ -1630,11 +1633,11 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				if (currentBidder != null) {
 					PreparedStatement pstmtSellerRatingsEndedAuction = connection.prepareStatement(
 							"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id="
-									+ wonAuctionId + " WHERE users.id=" + newSeller.getId());
+									+ wonAuctionId + " WHERE users.id=" + newSeller.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					PreparedStatement pstmtBuyerEndedAuction = connection.prepareStatement(
 							"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.order_id="
-									+ wonAuctionId + " WHERE users.id=" + currentBidder.getId());
+									+ wonAuctionId + " WHERE users.id=" + currentBidder.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
 					allSellerRatings.beforeFirst();
@@ -1691,6 +1694,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return allPurchasedAuctionsArray;
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -2871,14 +2875,15 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		SQL testSQLObject= new SQL();
 		 LocalDateTime aDateTime = LocalDateTime.of(2018, 
                  Month.JULY, 29, 19, 30, 00);
-		 LocalDateTime aDateTime2 = LocalDateTime.of(2021, 
+		 LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
                  Month.JULY, 30, 19, 30, 00);
-		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
-	
+		 Customer denis= new Customer(77, null, null, null, null, 0, null);
+		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), denis, 20.55,aDateTime,aDateTime2));
+	//Customer denis= new Customer(77, null, null, null, null, 0, null);
 		//	testSQLObject.fetchAuctions(AuctionType.Ended);
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
-		//testSQLObject.fetchOrders(denis)
+		testSQLObject.fetchPurchasedAuctions(denis);
 		
 	}
 }
