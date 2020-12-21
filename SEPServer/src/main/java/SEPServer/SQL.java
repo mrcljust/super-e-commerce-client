@@ -2498,6 +2498,7 @@ public class SQL {
 		avgRatings[1] = numberOfRatings;
 		return avgRatings;
 	}
+	
 
 	protected Response deleteOrder(Order order, Customer buyer) {
 		// Order anhand von ID aus der Datenbank löschen
