@@ -2103,9 +2103,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 											+ currentBidder.getId() + " AND auctions.auction_id=" + currentAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-					allSellerRatings.first();
+					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-					allBuyerRatings.first();
+					allBuyerRatings.beforeFirst();
 
 					if (allSellerRatings.next() != false) {
 						String sellerText = null;
