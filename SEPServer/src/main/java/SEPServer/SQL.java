@@ -1479,7 +1479,7 @@ public class SQL {
 						allOrdersResultSet.getString("users.companyname"));
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
-						newSeller, allOrdersResultSet.getString("products.title"),
+						newSeller, allOrdersResultSet.getString("categories.title"),
 						allOrdersResultSet.getString("products.description"));
 
 				int orderId = allOrdersResultSet.getInt("orders.order_id");
