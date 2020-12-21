@@ -1,12 +1,15 @@
 package SEPClient;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 
 import SEPCommon.Auction;
 import SEPCommon.ClientRequest;
 import SEPCommon.Order;
 import SEPCommon.Preferences;
+import SEPCommon.Rating;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.ServerResponse;
@@ -18,17 +21,24 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class CreateRatingController {
 
 	private static User user = null;
+	private static int receiverId;
 	private static Order order = null;
 	private static Auction auction = null;
+	private static boolean ratingIsBySeller = false;
 
 	public static void setUser(User _user) {
 		user = _user;
+	}
+
+	public static void setReceiverId(Integer _id) {
+		receiverId = _id;
 	}
 
 	public static void setOrder(Order _order) {
@@ -38,12 +48,55 @@ public class CreateRatingController {
 	public static void setAuction(Auction _auction) {
 		auction = _auction;
 	}
+	
+	public static void setRatingIsBySeller(Boolean val) {
+		ratingIsBySeller = val;
+	}
 
 	public void initialize() throws IOException {
     	CreateRating_Stars.getItems().addAll(1, 2, 3, 4, 5);
     	CreateRating_Stars.getSelectionModel().select(5);
     	
     	//entweder Auktion oder Order zugewiesen
+    	
+    	//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	CreateRating_ImgProfilePicture.setImage(defaultImage);
+    	
+    	//Bild setzen
+    	InputStream in = new ByteArrayInputStream(user.getPicture());
+		Image img = new Image(in);
+		CreateRating_ImgProfilePicture.setImage(img);
+		
+		if(order!=null)
+		{
+			CreateRating_txtIDDate.setText("Bestell-ID " + order.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(order.getDate()));
+			if(ratingIsBySeller)
+			{
+				//Rating vom VK fuer Kaeufer
+				CreateRating_txtSellerBuyerName.setText("Bewertung für den Käufer abgeben");
+			}
+			else
+			{
+				//Rating vom Kaeufer fuer VK
+				CreateRating_txtSellerBuyerName.setText("Bewertung für den Verkäufer abgeben");
+			}
+		}
+		else if(auction!=null)
+		{
+			CreateRating_txtIDDate.setText("Auktion-ID " + auction.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(auction.getEnddate()));
+			if(ratingIsBySeller)
+			{
+				//Rating vom VK fuer Kaeufer
+				CreateRating_txtSellerBuyerName.setText("Bewertung für den Käufer abgeben");
+				
+			}
+			else
+			{
+				//Rating vom Kaeufer fuer VK
+				CreateRating_txtSellerBuyerName.setText("Bewertung für den Verkäufer abgeben");
+			}
+		}
 	}
 	
     @FXML
@@ -71,16 +124,30 @@ public class CreateRatingController {
     void CreateRating_ButtonOK_Click(ActionEvent event) {
     	//datum und name fehlt noch 
     	
-    	String rating = CreateRating_Stars.getValue().toString();
+    	Integer rating = CreateRating_Stars.getValue();
     	String report = CreateRating_Text.getText();
     	
-    	if (rating == null || rating == "") {
+    	if (rating == null) {
     		FXMLHandler.ShowMessageBox("Bitte füllen Sie alle mit einem Stern (*) versehenen Felder aus.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
     	}
     	
+    	Rating newRating = null;
+    	if(order!=null)
+    	{
+			newRating = new Rating(rating, report, user.getId(), receiverId, order.getId(), false);
+    	}
+    	else if(auction!=null)
+    	{
+			newRating = new Rating(rating, report, user.getId(), receiverId, auction.getId(), true);
+    	}
+		
+    	
+    	
     	HashMap <String, Object> requestMap = new HashMap<String, Object>();
-    	requestMap.put("User", user);
+    	requestMap.put("Rating", newRating);
+    	
+    	
     	
     	ClientRequest req = new ClientRequest(Request.SendRating, requestMap);
     	Client client = Client.getClient();
@@ -95,6 +162,10 @@ public class CreateRatingController {
     	else if (queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Ihre Bewertung wurde erfolgreich übermittelt.",
 					"Bewertung abgeschlossen", "Bewertung abgeschlossen", AlertType.INFORMATION, true, false);
+		}
+    	
+    	else if (queryResponse.getResponseType() == Response.Failure) {
+			//TODO MELDUNG
 		}
     	
     }

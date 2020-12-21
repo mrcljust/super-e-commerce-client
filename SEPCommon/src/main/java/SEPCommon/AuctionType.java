@@ -6,5 +6,6 @@ public enum AuctionType {
 	Future, //zukünftige Auktionen
 	MyBids, //Auktionen auf die man geboten hat
 	MyAuctions, //eigene Auktionen
-	SavedAuctions //gemerkte Auktionen
+	SavedAuctions, //gemerkte Auktionen
+	PurchasedAuctions //gekaufte Auktionen
 }
