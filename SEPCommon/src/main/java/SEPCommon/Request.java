@@ -17,6 +17,7 @@ public enum Request {
 	CreateAuction,
 	SendBid,
 	FetchAuctions,			//AuctionType Enum, MyBids, MyAuctions, SavedAuctions
+	SaveAuction,
 	DeleteOrder,
 	SendRating,
 	FetchRatings,			// 2 Typen, alle Bewertungen und Durchschnitt

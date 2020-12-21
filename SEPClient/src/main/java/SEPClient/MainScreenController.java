@@ -2,9 +2,8 @@ package SEPClient;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-
 import SEPCommon.Auction;
 import SEPCommon.AuctionType;
 import SEPCommon.ClientRequest;
@@ -37,6 +36,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.web.WebView;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -47,63 +47,25 @@ public class MainScreenController {
 	private static User user = null;
 	private Product[] lastSearchResult;
 	private boolean currentSearchEvent = false;
+	private boolean avoidCategoryChangedEvent = false;
+	private boolean avoidClearAuctions = false;
 	
 	public static void setUser(User _user)
 	{
 		user = _user;
 	}
 	
-	
     @FXML
     public void initialize() {
-    	refreshView();
-    	LoadAllProducts();
-    	loadLastViewedProducts();
+    	startView();
+    	refreshViewArticles();
     	selectionsChangedListener();
     	categoryChangedListener();
     	tabChangedListener();
     }
     
-    public void refreshView()
+    private void startView()
     {
-    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.DOUBLEFORMAT.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
-    	
-		//Standardbild setzen
-    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
-    	MainScreen_ImgProfilePicture.setImage(defaultImage);
-    	
-    	if(user instanceof Seller)
-    	{
-    		//Gewerbekunde
-        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
-    		MainScreen_ButtonAddWallet.setDisable(true);
-    		MainScreen_ButtonSellProduct.setDisable(false);
-    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber erst in 3. Iteration benötigt
-    		MainScreen_ButtonPurchases.setDisable(true);
-    		MainScreen_ButtonCreateAuction.setDisable(true);
-    	}
-    	else
-    	{
-    		//Privatkunde
-        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
-    		MainScreen_ButtonAddWallet.setDisable(false);
-    		MainScreen_ButtonSellProduct.setDisable(true);
-    		MainScreen_ButtonMyProducts.setDisable(true);
-    		MainScreen_ButtonPurchases.setDisable(false);
-    		MainScreen_ButtonCreateAuction.setDisable(false);
-    	}
-    	
-    	InputStream in = new ByteArrayInputStream(user.getPicture());
-		Image img = new Image(in);
-		MainScreen_ImgProfilePicture.setImage(img);
-		
-		//Aktuelle Produktdetails leeren
-		clearProductDetails();
-    	
-    	//Alle Kategorien Item hinzufügen
-    	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
-    	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
-    	
     	//Werte an die Spalten der Kataloglisten zuweisen
     	catalogIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
         catalogProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
@@ -198,40 +160,30 @@ public class MainScreenController {
     	        }
     	    }
     	});
-        auctionsCatalogStartColumn.setCellValueFactory(new PropertyValueFactory<Auction, Date>("starttime"));
-        auctionsCatalogStartColumn.setCellFactory(tc -> new TableCell<Auction, Date>() {
+        auctionsCatalogStartColumn.setCellValueFactory(new PropertyValueFactory<Auction, LocalDateTime>("starttime"));
+        auctionsCatalogStartColumn.setCellFactory(tc -> new TableCell<Auction, LocalDateTime>() {
     	    @Override
-    	    protected void updateItem(Date date, boolean empty) {
+    	    protected void updateItem(LocalDateTime date, boolean empty) {
     	        super.updateItem(date, empty);
     	        if (empty || date==null) {
-    	            setText("Kein Datum");
+    	            setText(null);
     	        } else {
-    	            setText(Constants.DATEFORMAT.format(date));
+    	            setText(date.format(SEPCommon.Constants.DATEFORMAT));
     	        }
     	    }
     	});
-        auctionsCatalogEndColumn.setCellValueFactory(new PropertyValueFactory<Auction, Date>("enddate"));
-        auctionsCatalogEndColumn.setCellFactory(tc -> new TableCell<Auction, Date>() {
+        auctionsCatalogEndColumn.setCellValueFactory(new PropertyValueFactory<Auction, LocalDateTime>("enddate"));
+        auctionsCatalogEndColumn.setCellFactory(tc -> new TableCell<Auction, LocalDateTime>() {
     	    @Override
-    	    protected void updateItem(Date date, boolean empty) {
+    	    protected void updateItem(LocalDateTime date, boolean empty) {
     	        super.updateItem(date, empty);
     	        if (empty || date==null) {
-    	            setText("Kein Datum");
+    	            setText(null);
     	        } else {
-    	            setText(Constants.DATEFORMAT.format(date));
+    	            setText(date.format(SEPCommon.Constants.DATEFORMAT));
     	        }
     	    }
     	});
-    	
-    	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
-    	{
-	    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
-    	}
-		
-		if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
-    	{
-	    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
-    	}
 		
 	    ToggleGroup radioViewAuctionsGroup = new ToggleGroup();
 	    radioAllAuctions.setToggleGroup(radioViewAuctionsGroup);
@@ -243,6 +195,198 @@ public class MainScreenController {
 	    radioCurrentAuctions.setToggleGroup(radioAuctionTypeGroup);
 	    radioEndedAuctions.setToggleGroup(radioAuctionTypeGroup);
 	    radioFutureAuctions.setToggleGroup(radioAuctionTypeGroup);
+    }
+    
+    private void refreshUserDetails()
+    {
+    	//Aktualisierte Nutzerdetails laden
+    	MainScreen_LabelWallet.setText("Guthaben: " + Constants.DOUBLEFORMAT.format(SEPCommon.Methods.round(user.getWallet(), 2)) + Constants.CURRENCY);
+    	
+		//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	MainScreen_ImgProfilePicture.setImage(defaultImage);
+    	
+    	if(user instanceof Seller)
+    	{
+    		//Gewerbekunde
+        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Gewerbekunde)");
+    		MainScreen_ButtonAddWallet.setDisable(true);
+    		MainScreen_ButtonSellProduct.setDisable(false);
+    		MainScreen_ButtonMyProducts.setDisable(true); //eig false, aber erst in 3. Iteration benötigt
+    		MainScreen_ButtonPurchases.setDisable(true);
+    		MainScreen_ButtonCreateAuction.setDisable(true);
+    	}
+    	else
+    	{
+    		//Privatkunde
+        	MainScreen_LabelLoggedInAs.setText("Angemeldet als: " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
+    		MainScreen_ButtonAddWallet.setDisable(false);
+    		MainScreen_ButtonSellProduct.setDisable(true);
+    		MainScreen_ButtonMyProducts.setDisable(true);
+    		MainScreen_ButtonPurchases.setDisable(false);
+    		MainScreen_ButtonCreateAuction.setDisable(false);
+    	}
+    	
+    	InputStream in = new ByteArrayInputStream(user.getPicture());
+		Image img = new Image(in);
+		if(!img.isError())
+		{
+			MainScreen_ImgProfilePicture.setImage(img);
+		}
+    }
+    
+    private void refreshViewArticles()
+    {
+    	refreshUserDetails();
+		
+		//Aktuelle Produktdetails leeren
+		clearProductDetails();
+		AnchorPaneAuctionDetails.setVisible(false);
+		AnchorPaneArticleDetails.setVisible(true);
+		
+		//Selektierte Artikel deselektieren
+    	if(MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null)
+    	{
+	    	MainScreen_ListCatalog.getSelectionModel().clearSelection();
+    	}
+		
+		if(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null)
+    	{
+	    	MainScreen_ListLastViewed.getSelectionModel().clearSelection();
+    	}
+
+		
+    	MainScreen_txtSearch.setText("");
+    	currentSearchEvent=false;
+    	lastSearchResult=null;
+		
+    	LoadAllProducts();
+    	loadLastViewedProducts();
+    	
+    	//Alle Kategorien auswählen
+    	MainScreen_ChoiceBox_Category.getSelectionModel().select(0);
+    }
+    
+    private void refreshViewAuctions(AuctionType auctionType)
+    {
+    	//AuctionType auctionType = aktuell ausgewaehltes Fenster
+    	
+    	refreshUserDetails();
+		
+		//Aktuelle Auktionsdetails leeren
+		clearAuctionDetails();
+		AnchorPaneAuctionDetails.setVisible(true);
+		AnchorPaneArticleDetails.setVisible(false);
+    	
+		//Selektierte Auktion deselektieren
+    	if(MainScreen_ListAuctions.getSelectionModel().getSelectedItem() != null)
+    	{
+    		MainScreen_ListAuctions.getSelectionModel().clearSelection();
+    	}
+    	
+    	if(auctionType==AuctionType.Active)
+    	{
+    		radioAllAuctions.setSelected(true);
+        	radioCurrentAuctions.setSelected(true);
+        	
+        	radioCurrentAuctions.setVisible(true);
+        	radioEndedAuctions.setVisible(true);
+        	radioFutureAuctions.setVisible(true);
+        	
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(true);
+        	MainScreen_btnAuctionsSearchOK.setVisible(true);
+        	
+    		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle aktuellen Auktionen geladen
+        	auctionsSearchChangedEvent(AuctionType.Active);
+    	}
+    	else if(auctionType==AuctionType.Ended)
+    	{
+    		radioAllAuctions.setSelected(true);
+        	radioEndedAuctions.setSelected(true);
+        	
+        	radioCurrentAuctions.setVisible(true);
+        	radioEndedAuctions.setVisible(true);
+        	radioFutureAuctions.setVisible(true);
+        	
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(true);
+        	MainScreen_btnAuctionsSearchOK.setVisible(true);
+    		
+    		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle geendeten Auktionen geladen
+        	auctionsSearchChangedEvent(AuctionType.Ended);
+    	}
+    	else if(auctionType==AuctionType.Future)
+    	{
+    		radioAllAuctions.setSelected(true);
+        	radioFutureAuctions.setSelected(true);
+        	
+        	radioCurrentAuctions.setVisible(true);
+        	radioEndedAuctions.setVisible(true);
+        	radioFutureAuctions.setVisible(true);
+        	
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(true);
+        	MainScreen_btnAuctionsSearchOK.setVisible(true);
+    		
+    		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle zukünftigen Auktionen geladen
+        	auctionsSearchChangedEvent(AuctionType.Future);
+    	}
+    	else if(auctionType==AuctionType.SavedAuctions)
+    	{
+    		radioSavedAuctions.setSelected(true);
+    		
+    		radioCurrentAuctions.setSelected(false);
+        	radioEndedAuctions.setSelected(false);
+        	radioFutureAuctions.setSelected(false);
+        	
+        	radioCurrentAuctions.setVisible(false);
+        	radioEndedAuctions.setVisible(false);
+        	radioFutureAuctions.setVisible(false);
+
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(false);
+        	MainScreen_btnAuctionsSearchOK.setVisible(false);
+        	
+        	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.SavedAuctions));
+    	}
+    	else if(auctionType==AuctionType.MyBids)
+    	{
+    		radioMyBids.setSelected(true);
+    		
+    		radioCurrentAuctions.setSelected(false);
+        	radioEndedAuctions.setSelected(false);
+        	radioFutureAuctions.setSelected(false);
+        	
+        	radioCurrentAuctions.setVisible(false);
+        	radioEndedAuctions.setVisible(false);
+        	radioFutureAuctions.setVisible(false);
+
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(false);
+        	MainScreen_btnAuctionsSearchOK.setVisible(false);
+        	
+        	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyBids));
+    	}
+    	else if(auctionType==AuctionType.MyAuctions)
+    	{
+    		radioMyAuctions.setSelected(true);
+    		
+    		radioCurrentAuctions.setSelected(false);
+        	radioEndedAuctions.setSelected(false);
+        	radioFutureAuctions.setSelected(false);
+        	
+        	radioCurrentAuctions.setVisible(false);
+        	radioEndedAuctions.setVisible(false);
+        	radioFutureAuctions.setVisible(false);
+
+        	MainScreen_txtSearchAuctions.setText("");
+        	MainScreen_txtSearchAuctions.setVisible(false);
+        	MainScreen_btnAuctionsSearchOK.setVisible(false);
+
+        	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyAuctions));
+    	}
+    	
     }
     
     private void clearProductDetails()
@@ -260,6 +404,27 @@ public class MainScreenController {
     	MainScreen_WebViewProductDescription.setVisible(false);
     }
     
+    private void clearAuctionDetails()
+    {
+    	MainScreen_LabelProductTitleAuction.setText("");
+    	MainScreen_LabelMinBidAuction.setText("");
+    	MainScreen_LabelStartPriceAuction.setText("");
+    	MainScreen_LabelAuctionSeller.setText("");
+    	MainScreen_LabelCurrentBidAuction.setText("");
+    	MainScreen_LabelShippingAuction.setText("");
+    	MainScreen_LabelTimeAuction.setText("");
+    	MainScreen_txtAverageRatingAuction.setText("");
+    	MainScreen_txtRatingCountAuction.setText("");
+    	MainScreen_WebViewAuctionDescription.getEngine().loadContent("");
+    	MainScreen_ImgAuction.setVisible(false);
+    	MainScreen_txtDollarBidAmount.setVisible(false);
+    	MainScreen_TextboxBidAmount.setVisible(false);
+    	MainScreen_ButtonBidAuction.setVisible(false);
+    	MainScreen_ButtonSaveAuction.setVisible(false);
+    	MainScreen_ButtonShowRatingsAuction.setVisible(false);
+    	MainScreen_WebViewAuctionDescription.setVisible(false);
+    }
+    
     private void LoadAllProducts()
     {
     	if(MainScreen_ListCatalog.getItems()!=null)
@@ -267,9 +432,18 @@ public class MainScreenController {
         	MainScreen_ListCatalog.getItems().clear();
     	}
     	
+    	if(MainScreen_ChoiceBox_Category.getItems()!=null)
+    	{
+    		MainScreen_ChoiceBox_Category.getItems().clear();
+        	MainScreen_ChoiceBox_Category.getItems().add("Alle Kategorien");
+        	MainScreen_ChoiceBox_Category.getSelectionModel().select("Alle Kategorien");
+    	}
+    	
     	ClientRequest req = new ClientRequest(Request.FetchProducts, null);
     	Client client = Client.getClient();
 		ServerResponse queryResponse = client.sendClientRequest(req);
+		
+    	//Alle Kategorien Item hinzufügen
 		
 		if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Products")!=null)
 		{
@@ -299,7 +473,13 @@ public class MainScreenController {
     {
     	if(MainScreen_ListAuctions.getItems()!=null)
     	{
-        	MainScreen_ListAuctions.getItems().clear();
+    		if(avoidClearAuctions)
+    		{
+    			avoidClearAuctions=false;
+    		}
+    		else {
+            	MainScreen_ListAuctions.getItems().clear();
+			}
     	}
     	
         HashMap<String, Object> requestMap = new HashMap<String, Object>();
@@ -385,6 +565,15 @@ public class MainScreenController {
 	    	if(newSelection != null)
 	    	{
 		    	updateArticleInfo(false);
+	    	}
+	    });
+	    
+    	//MainScreen_ListAuctions Selection Change Listener
+	    MainScreen_ListAuctions.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+	    	//Eintrag in ListAuctions ausgewaehlt
+	    	if(newSelection != null)
+	    	{
+		    	updateAuctionInfo();
 	    	}
 	    });
 	}
@@ -498,6 +687,92 @@ public class MainScreenController {
     	}
     }
     
+    private void updateAuctionInfo()
+    {
+    	if(MainScreen_ListAuctions.getSelectionModel().getSelectedItem() != null)
+    	{
+    		//Daten einfügen
+    		
+    		MainScreen_LabelProductTitleAuction.setText(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getTitle());
+        	MainScreen_LabelMinBidAuction.setText("Mindestgebot: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getMinBid()) + "$");
+        	MainScreen_LabelStartPriceAuction.setText("Startpreis: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getStartPrice()) + "$");
+        	MainScreen_LabelAuctionSeller.setText("Verkäufer: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getAddress().getFullname() + " (Benutzer " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
+        	MainScreen_LabelCurrentBidAuction.setText("Aktuelles Gebot: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBid()) + "$");
+        	MainScreen_LabelShippingAuction.setText("Versandart: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getShippingType().toString());
+        	MainScreen_LabelTimeAuction.setText("Auktionszeitraum: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getStarttime().format(SEPCommon.Constants.DATEFORMAT) + " - " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getEnddate().format(SEPCommon.Constants.DATEFORMAT));
+        	MainScreen_txtAverageRatingAuction.setText("");
+        	MainScreen_txtRatingCountAuction.setText("");
+        	MainScreen_WebViewAuctionDescription.getEngine().loadContent(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+        	
+        	//Standardbild setzen
+        	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+	    	MainScreen_ImgAuction.setImage(defaultImage);
+
+	    	InputStream in = new ByteArrayInputStream(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getImage());
+			Image img = new Image(in);
+			if(!img.isError())
+			{
+				MainScreen_ImgAuction.setImage(img);
+			}
+        	MainScreen_ImgAuction.setVisible(true);
+        	
+        	MainScreen_ButtonSaveAuction.setVisible(true);
+        	
+        	MainScreen_TextboxBidAmount.setVisible(true);
+        	MainScreen_txtDollarBidAmount.setVisible(true);
+        	MainScreen_ButtonBidAuction.setVisible(true);
+        	if(user.getId() == MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getId())
+        	{
+        		//Verkaeufer = aktueller Nutzer, nicht bieten lassen und Auktion merken deaktivieren
+            	MainScreen_TextboxBidAmount.setDisable(true);
+            	MainScreen_ButtonBidAuction.setDisable(true);
+            	MainScreen_ButtonSaveAuction.setDisable(true);
+        	}
+        	else
+        	{
+            	MainScreen_TextboxBidAmount.setDisable(false);
+            	MainScreen_ButtonBidAuction.setDisable(false);
+        		MainScreen_ButtonSaveAuction.setDisable(false);
+        		
+            	if(radioSavedAuctions.isSelected())
+            	{
+            		//Wenn aktuell in der Liste gespeicherter Auktionen, Auktionen merken deaktivieren, da die aktuell
+            		//selektierte Auktion bereits gemerkt ist
+                	MainScreen_ButtonSaveAuction.setDisable(true);
+            	}
+            	else
+            	{
+            		MainScreen_ButtonSaveAuction.setDisable(false);
+    			}
+			}
+        	
+        	if(user instanceof Customer)
+        	{
+        		//Aktueller Nutzer ist Privatkunde, erlaube das Bieten
+            	MainScreen_TextboxBidAmount.setDisable(false);
+            	MainScreen_ButtonBidAuction.setDisable(false);
+        	}
+        	else {
+				//Aktueller Nutzer ist Gewerbekunde, deaktiviere das Bieten
+            	MainScreen_TextboxBidAmount.setDisable(true);
+            	MainScreen_ButtonBidAuction.setDisable(true);
+			}
+        	
+        	MainScreen_ButtonShowRatingsAuction.setVisible(true);
+        	MainScreen_WebViewAuctionDescription.setVisible(true);
+	    	
+	    	//Kaufen Button nur für Customer enablen
+	    	if(user instanceof Customer)
+	    	{
+	    		MainScreen_ButtonBuyProduct.setDisable(false);
+	    	}
+	    	else
+	    	{
+	    		MainScreen_ButtonBuyProduct.setDisable(true);
+			}
+    	}
+    }
+    
     private void addToLastViewedItems() {
     	//Zu zuletzt angesehenen Produkten hinzufügen
     	Product viewedProduct = MainScreen_ListCatalog.getSelectionModel().getSelectedItem();
@@ -531,6 +806,47 @@ public class MainScreenController {
     	}
 	}
     
+    private void saveAuction()
+    {
+    	//Zu gespeicherten Auktionen hinzufügen
+    	Auction viewedAuction = MainScreen_ListAuctions.getSelectionModel().getSelectedItem();
+    	
+    	boolean alreadyInSavedAuctions = false;
+    	
+    	//Vor ClientRequest an den Server pruefen ob die Auktion bereits bei dem User gespeichert ist
+    	avoidClearAuctions=true;
+    	ObservableList<Auction> savedAuctions = LoadAuctions(AuctionType.SavedAuctions); 
+    	
+    	if(savedAuctions != null)
+    	{
+			for(Auction a: savedAuctions)
+	    	{
+	    		if(a != null && a.getId() == viewedAuction.getId())
+	    		{
+	    			alreadyInSavedAuctions = true;
+	    		}
+	    	}
+    	}
+    	if(!alreadyInSavedAuctions)
+    	{
+    		//Auktion noch nicht bei User gespeichert, hinzufügen
+    		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+	    	requestMap.put("Auction", viewedAuction);
+	    	requestMap.put("User", user);
+	    	ClientRequest req = new ClientRequest(Request.SaveAuction, requestMap);
+	    	Client client = Client.getClient();
+			ServerResponse queryResponse = client.sendClientRequest(req);
+			if(queryResponse.getResponseType() == Response.Success)
+			{
+				MainScreen_ButtonRefresh.fire();
+			}
+    	}
+    	else {
+			FXMLHandler.ShowMessageBox("Die ausgewählte Auktion ist bereits in Ihrer Merkliste gespeichert.", "Bereits gespeichert", "Bereits gespeichert", AlertType.INFORMATION, true, false);
+			return;
+		}
+    }
+    
     private void categoryChangedEvent(int newValue) {
     	//Katalog leeren
 
@@ -552,9 +868,17 @@ public class MainScreenController {
     		//keine Kategorie
     		if(newValue==0) {
     			//Alle Kategorien ausgewählt und kein Suchbegriff ist eingegeben
+    			if(avoidCategoryChangedEvent)
+    			{
+    				avoidCategoryChangedEvent=false;
+    				return;
+    			}
+    			
     			if(currentSearchEvent) {
-    				LoadAllProducts();
     				currentSearchEvent=false;
+    				avoidCategoryChangedEvent=true;
+    				LoadAllProducts();
+    				return;
     			}
     			//Alle Kategorien ausgewählt und Suchbegriff ist eingegeben
     			else {
@@ -623,15 +947,15 @@ public class MainScreenController {
 			//Wenn kein Text eingegeben, alle laden
 	    	if(radioCurrentAuctions.isSelected())
 	    	{
-	    		LoadAuctions(AuctionType.Active);
+	    		MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Active));
 	    	}
 	    	else if(radioEndedAuctions.isSelected())
 	    	{
-	    		LoadAuctions(AuctionType.Ended);
+	    		MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Ended));
 	    	}
 	    	else if(radioFutureAuctions.isSelected())
 	    	{
-	    		LoadAuctions(AuctionType.Future);
+	    		MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.Future));
 	    	}
 	    	return;
 		}
@@ -781,6 +1105,12 @@ public class MainScreenController {
     private Tab tabArticles;
     
     @FXML
+    private AnchorPane AnchorPaneArticleDetails;
+    
+    @FXML
+    private AnchorPane AnchorPaneAuctionDetails;
+    
+    @FXML
     private TextField MainScreen_txtSearch;
     
     @FXML
@@ -847,10 +1177,10 @@ public class MainScreenController {
     private TableColumn<Auction, Double> auctionsCatalogMinBidColumn;
 
     @FXML
-    private TableColumn<Auction, Date> auctionsCatalogStartColumn;
+    private TableColumn<Auction, LocalDateTime> auctionsCatalogStartColumn;
 
     @FXML
-    private TableColumn<Auction, Date> auctionsCatalogEndColumn;
+    private TableColumn<Auction, LocalDateTime> auctionsCatalogEndColumn;
 
     @FXML
     private RadioButton radioAllAuctions;
@@ -895,17 +1225,73 @@ public class MainScreenController {
     private Label MainScreen_txtAverageRating;
     
     @FXML
+    private Label MainScreen_txtDollarBidAmount;
+    
+    @FXML
+    private Label MainScreen_LabelProductTitleAuction;
+
+    @FXML
+    private Label MainScreen_LabelStartPriceAuction;
+
+    @FXML
+    private Label MainScreen_LabelAuctionSeller;
+
+    @FXML
+    private Button MainScreen_ButtonBidAuction;
+
+    @FXML
+    private WebView MainScreen_WebViewAuctionDescription;
+
+    @FXML
+    private Label MainScreen_txtRatingCountAuction;
+
+    @FXML
+    private Label MainScreen_txtAverageRatingAuction;
+
+    @FXML
+    private Button MainScreen_ButtonShowRatingsAuction;
+
+    @FXML
+    private Label MainScreen_LabelMinBidAuction;
+
+    @FXML
+    private Label MainScreen_LabelCurrentBidAuction;
+
+    @FXML
+    private Label MainScreen_LabelShippingAuction;
+
+    @FXML
+    private Label MainScreen_LabelTimeAuction;
+
+    @FXML
+    private ImageView MainScreen_ImgAuction;
+
+    @FXML
+    private TextField MainScreen_TextboxBidAmount;
+
+    @FXML
+    private Button MainScreen_ButtonSaveAuction;
+    
+    @FXML
+    private Button MainScreen_ButtonRefresh;
+    
+    @FXML
     private ImageView MainScreen_ImgProfilePicture;
 
     @FXML
     void MainScreen_CloseButtonMenuClick(ActionEvent event) {
     	System.exit(0);
     }
+    
+    @FXML
+    void MainScreen_RefreshButtonMenuClick(ActionEvent event) {
+    	MainScreen_ButtonRefresh.fire();
+    }
 
     @FXML
     void MainScreen_InfoButtonMenuClick(ActionEvent event) {
 
-    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Kamil Chahrour, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
+    	FXMLHandler.ShowMessageBox("© 'Super-E-commerce-Platform' wurde entwickelt von Denis Artjuch, Yannis Bromby, Marcel Just und Hannah Kalker. Gruppe B, Modul Software Entwicklung & Programmierung, Universität Duisburg-Essen, 2020/21.",
     			"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true,
 				false);
     }
@@ -954,197 +1340,6 @@ public class MainScreenController {
     	}
 		ShowRatingsController.setViewOwnRatings(false);
 		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonShowRatings.getScene().getWindow(), "ShowRatings", "Bewertungen des Verkäufers", false, true);
-    }
-
-    @FXML
-    void MainScreen_btnMyProductsClick(ActionEvent event) {
-    	//3 Iteration ToDo
-    }
-
-    @FXML
-    void MainScreen_btnMyPurchasesClick(ActionEvent event) {
-    	MyPurchasesController.setCustomer((Customer)user); //nur für Customer enabled
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonPurchases.getScene().getWindow(), "MyPurchases", "Meine Käufe", false, true);
-    }
-    
-    @FXML
-    void tabArticles_SelectionChange(ActionEvent event) {
-
-    }
-
-    @FXML
-    void tabLiveAuctions_SelectionChange(ActionEvent event) {
-
-    }
-
-    @FXML
-    void MainScreen_btnSearchOKClick(ActionEvent event) {
-    	searchChangedEvent();
-    }
-    
-    @FXML
-    void MainScreen_txtSearch_KeyPressed(KeyEvent event) {
-    	//Taste wird gedrückt
-    	//Bei Enter: Button Search Klick simulieren
-    	if (event.getCode().equals(KeyCode.ENTER))
-        {
-    		MainScreen_btnSearchOK.fire();
-        }
-    }
-    
-    @FXML
-    void MainScreen_txtSearchAuctions_KeyPressed(KeyEvent event) {
-    	//Taste wird gedrückt
-    	//Bei Enter: Button Auction Search Klick simulieren
-    	if (event.getCode().equals(KeyCode.ENTER))
-        {
-    		MainScreen_btnAuctionsSearchOK.fire();
-        }
-    }
-
-    @FXML
-    //OfferProduct oeffnen
-    void MainScreen_btnSellProductClick(ActionEvent event) {
-    	OfferProductController.setUser(user);
-    	
-    	//ggf. Kategorien mit übergeben
-    	if(MainScreen_ChoiceBox_Category.getItems() != null)
-    	{
-    		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
-    	}
-    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", false, true);
-    }
-    
-    @FXML
-    void MainScreen_btnAuctionsSearchOK_Click(ActionEvent event)
-    {
-    	//Suche kann bei aktiven, beendeten, zukünftigen Auktionen aufgerufen werden.
-    	if(radioCurrentAuctions.isSelected())
-    	{
-    		auctionsSearchChangedEvent(AuctionType.Active);
-    	}
-    	else if(radioEndedAuctions.isSelected())
-    	{
-    		auctionsSearchChangedEvent(AuctionType.Ended);
-    	}
-    	else if(radioFutureAuctions.isSelected())
-    	{
-    		auctionsSearchChangedEvent(AuctionType.Future);
-    	}
-    }
-    
-    @FXML
-    void radioAllAuctions_Click(ActionEvent event) {
-    	radioCurrentAuctions.setSelected(true);
-    	radioCurrentAuctions.setVisible(true);
-    	radioEndedAuctions.setVisible(true);
-    	radioFutureAuctions.setVisible(true);
-    	MainScreen_txtSearchAuctions.setText("");
-    	MainScreen_txtSearchAuctions.setVisible(true);
-    	MainScreen_btnAuctionsSearchOK.setVisible(true);
-    	
-    	fetchCurrentAuctions();
-    }
-
-    @FXML
-    void radioCurrentAuctions_Click(ActionEvent event) {
-    	fetchCurrentAuctions();
-    }
-    
-    private void fetchCurrentAuctions() {
-    	auctionsSearchChangedEvent(AuctionType.Active);
-	}
-
-    @FXML
-    void radioEndedAuctions_Click(ActionEvent event) {
-    	//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle geendeten Auktionen geladen
-    	auctionsSearchChangedEvent(AuctionType.Ended);
-    }
-
-    @FXML
-    void radioFutureAuctions_Click(ActionEvent event) {
-    	//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle zukünftigen Auktionen geladen
-    	auctionsSearchChangedEvent(AuctionType.Future);
-    }
-
-    @FXML
-    void radioMyAuctions_Click(ActionEvent event) {
-    	radioCurrentAuctions.setSelected(false);
-    	radioEndedAuctions.setSelected(false);
-    	radioFutureAuctions.setSelected(false);
-    	radioCurrentAuctions.setVisible(false);
-    	radioEndedAuctions.setVisible(false);
-    	radioFutureAuctions.setVisible(false);
-    	MainScreen_txtSearchAuctions.setVisible(false);
-    	MainScreen_btnAuctionsSearchOK.setVisible(false);
-
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyAuctions));
-    }
-
-    @FXML
-    void radioMyBids_Click(ActionEvent event) {
-    	radioCurrentAuctions.setSelected(false);
-    	radioEndedAuctions.setSelected(false);
-    	radioFutureAuctions.setSelected(false);
-    	radioCurrentAuctions.setVisible(false);
-    	radioEndedAuctions.setVisible(false);
-    	radioFutureAuctions.setVisible(false);
-    	MainScreen_txtSearchAuctions.setVisible(false);
-    	MainScreen_btnAuctionsSearchOK.setVisible(false);
-    	
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyBids));
-    }
-
-    @FXML
-    void radioSavedAuctions_Click(ActionEvent event) {
-    	radioCurrentAuctions.setSelected(false);
-    	radioEndedAuctions.setSelected(false);
-    	radioFutureAuctions.setSelected(false);
-    	radioCurrentAuctions.setVisible(false);
-    	radioEndedAuctions.setVisible(false);
-    	radioFutureAuctions.setVisible(false);
-    	MainScreen_txtSearchAuctions.setVisible(false);
-    	MainScreen_btnAuctionsSearchOK.setVisible(false);
-    	
-    	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.SavedAuctions));
-    }
-    
-    void tabArticles_Select() {
-    	if(MainScreen_ListAuctions.getItems()!=null)
-    	{
-    		MainScreen_ListAuctions.getItems().clear();
-    	}
-    	clearProductDetails();
-    	LoadAllProducts();
-    	loadLastViewedProducts();
-    	
-    	MainScreen_txtSearch.setText("");
-    	MainScreen_ChoiceBox_Category.getSelectionModel().select(0);
-    	currentSearchEvent=false;
-    	lastSearchResult=null;
-    }
-
-    void tabLiveAuctions_Select() {
-    	radioAllAuctions.setSelected(true);
-    	radioCurrentAuctions.setSelected(true);
-    	radioCurrentAuctions.setVisible(true);
-    	radioEndedAuctions.setVisible(true);
-    	radioFutureAuctions.setVisible(true);
-    	MainScreen_txtSearchAuctions.setText("");
-    	MainScreen_txtSearchAuctions.setVisible(true);
-    	MainScreen_btnAuctionsSearchOK.setVisible(true);
-    	if(MainScreen_ListCatalog.getItems()!=null)
-    	{
-    		MainScreen_ListCatalog.getItems().clear();
-    	}
-    	if(MainScreen_ListLastViewed.getItems()!=null)
-    	{
-    		MainScreen_ListLastViewed.getItems().clear();
-    	}
-    	clearProductDetails();
-    	fetchCurrentAuctions();
-
-    	MainScreen_txtSearchAuctions.setText("");
     }
     
     @FXML
@@ -1221,8 +1416,170 @@ public class MainScreenController {
 			//MainScreen oeffnen
 			user.setWallet(user.getWallet() - productToBuy.getPrice());
 			MainScreenController.setUser(user);
-			refreshView();
+			refreshViewArticles();
 		}
     }
+
+    @FXML
+    void MainScreen_btnMyProductsClick(ActionEvent event) {
+    	//3 Iteration ToDo
+    }
+
+    @FXML
+    void MainScreen_btnMyPurchasesClick(ActionEvent event) {
+    	MyPurchasesController.setCustomer((Customer)user); //nur für Customer enabled
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonPurchases.getScene().getWindow(), "MyPurchases", "Meine Käufe", false, true);
+    }
+
+    @FXML
+    void MainScreen_btnSearchOKClick(ActionEvent event) {
+    	searchChangedEvent();
+    }
     
+    @FXML
+    void MainScreen_txtSearch_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button Search Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+    		MainScreen_btnSearchOK.fire();
+        }
+    }
+    
+    @FXML
+    void MainScreen_txtSearchAuctions_KeyPressed(KeyEvent event) {
+    	//Taste wird gedrückt
+    	//Bei Enter: Button Auction Search Klick simulieren
+    	if (event.getCode().equals(KeyCode.ENTER))
+        {
+    		MainScreen_btnAuctionsSearchOK.fire();
+        }
+    }
+
+    @FXML
+    //OfferProduct oeffnen
+    void MainScreen_btnSellProductClick(ActionEvent event) {
+    	OfferProductController.setUser(user);
+    	
+    	//ggf. Kategorien mit übergeben
+    	if(MainScreen_ChoiceBox_Category.getItems() != null)
+    	{
+    		OfferProductController.setCategoryList(MainScreen_ChoiceBox_Category.getItems());
+    	}
+    	FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonSellProduct.getScene().getWindow(), "OfferProduct", "Produkt(e) anbieten", false, true);
+    }
+    
+    @FXML
+    void MainScreen_btnAuctionsSearchOK_Click(ActionEvent event)
+    {
+    	//Suche kann bei aktiven, beendeten, zukünftigen Auktionen aufgerufen werden.
+    	if(radioCurrentAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Active);
+    	}
+    	else if(radioEndedAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Ended);
+    	}
+    	else if(radioFutureAuctions.isSelected())
+    	{
+    		auctionsSearchChangedEvent(AuctionType.Future);
+    	}
+    }
+    
+    @FXML
+    void radioAllAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.Active);
+    }
+
+    @FXML
+    void radioCurrentAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.Active);;
+    }
+
+    @FXML
+    void radioEndedAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.Ended);
+    }
+
+    @FXML
+    void radioFutureAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.Future);
+    }
+
+    @FXML
+    void radioMyAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.MyAuctions);
+    }
+
+    @FXML
+    void radioMyBids_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.MyBids);
+    }
+
+    @FXML
+    void radioSavedAuctions_Click(ActionEvent event) {
+    	refreshViewAuctions(AuctionType.SavedAuctions);
+    }
+    
+    void tabArticles_Select() {
+    	refreshViewArticles();
+    }
+
+    void tabLiveAuctions_Select() {
+    	refreshViewAuctions(AuctionType.Active);
+    }
+    
+    @FXML
+    void MainScreen_ButtonShowRatingsAuctionClick (ActionEvent event)
+    {
+    	//Alle Bewertungen eines Verkäufers anzeigen
+    	if(MainScreen_ListAuctions.getSelectionModel().getSelectedItem() != null)
+    	{
+    		ShowRatingsController.setUser(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller());
+    	}
+		ShowRatingsController.setViewOwnRatings(false);
+		FXMLHandler.OpenSceneInStage((Stage) MainScreen_ButtonShowRatingsAuction.getScene().getWindow(), "ShowRatings", "Bewertungen des Verkäufers", false, true);
+    
+    }
+    
+    @FXML
+    void MainScreen_SaveAuctionClick (ActionEvent event)
+    {
+    	saveAuction();
+    }
+    
+    @FXML
+    void MainScreen_BidAuctionClick (ActionEvent event)
+    {
+    	
+    }
+    
+    @FXML
+    void MainScreen_ButtonRefresh_Click (ActionEvent event)
+    {
+    	refreshUserDetails();
+    	if(tabPane.getSelectionModel().getSelectedItem()==tabArticles)
+    	{
+    		refreshViewArticles();
+    	}
+    	else if(tabPane.getSelectionModel().getSelectedItem()==tabLiveAuctions)
+    	{
+    		AuctionType auctionType = AuctionType.Active;
+    		if(radioAllAuctions.isSelected() && radioCurrentAuctions.isSelected())
+    			auctionType=AuctionType.Active;
+    		else if(radioAllAuctions.isSelected() && radioEndedAuctions.isSelected())
+    			auctionType=AuctionType.Ended;
+    		else if(radioAllAuctions.isSelected() && radioFutureAuctions.isSelected())
+    			auctionType=AuctionType.Future;
+    		else if(radioMyAuctions.isSelected())
+    			auctionType=AuctionType.MyAuctions;
+    		else if(radioMyBids.isSelected())
+    			auctionType=AuctionType.MyBids;
+    		else if(radioSavedAuctions.isSelected())
+    			auctionType=AuctionType.SavedAuctions;
+    		
+			refreshViewAuctions(auctionType);
+    	}
+    }
 }

@@ -1,7 +1,7 @@
 package SEPCommon;
 
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 public class Constants {
 	
@@ -21,8 +21,8 @@ public class Constants {
 	
 	public final static DecimalFormat DOUBLEFORMAT = new DecimalFormat("#0.00");
 	
-	public final static SimpleDateFormat DATEFORMAT = new SimpleDateFormat("dd.MM.YYYY HH:mm");
-	public final static SimpleDateFormat DATEFORMATDAYONLY = new SimpleDateFormat("dd.MM.YYYY");
+	public final static DateTimeFormatter DATEFORMAT = DateTimeFormatter.ofPattern("dd.MM.YYYY HH:mm");
+	public final static DateTimeFormatter DATEFORMATDAYONLY = DateTimeFormatter.ofPattern("dd.MM.YYYY");
 	
 	public final static String CURRENCY = "$";
 }

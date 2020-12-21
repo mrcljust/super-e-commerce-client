@@ -10,6 +10,7 @@ public class Auction implements Serializable {
 	private String description;
 	private byte[] image;
 	private double minBid;
+	private double startPrice;
 	private double currentBid;
 	private ShippingType shippingType;
 	private Customer seller;
@@ -60,10 +61,19 @@ public class Auction implements Serializable {
 	public void setEnded(boolean _isEnded) {
 		this.isEnded = _isEnded;
 	}
+	
+	public void setStartPrice(double _startprice) {
+		this.startPrice = _startprice;
+	}
+	
+	public double getStartPrice()
+	{
+		return startPrice;
+	}
 
 
 
-	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,
+	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _startprice, ShippingType _shippingType,
 			Customer _seller, Customer _currentBidder, Double _currentBid, LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird aufgerufen, wenn laufende Auktion aus DB geholt wird
 		this.id = _id;
@@ -71,6 +81,7 @@ public class Auction implements Serializable {
 		this.description = _description;
 		this.image = _image;
 		this.minBid = _minBid;
+		this.startPrice = _startprice;
 		this.shippingType = _shippingType;
 		this.seller = _seller;
 		this.isEnded = false;
@@ -80,7 +91,7 @@ public class Auction implements Serializable {
 		this.currentBidder = _currentBidder;
 	}
 
-	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _currentBid,
+	public Auction(int _id, String _title, String _description, byte[] _image, double _minBid, double _startprice, double _currentBid,
 			ShippingType _shippingType, Customer _seller, Customer _currentBidder, Rating _sellerRating, Rating _buyerRating,
 			LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird bei beendeten Auktionen in der DB aufgerufen.
@@ -100,7 +111,7 @@ public class Auction implements Serializable {
 		this.isEnded=true;
 	}
 
-	public Auction(String _title, String _description, byte[] _image, double _minBid, ShippingType _shippingType,	
+	public Auction(String _title, String _description, byte[] _image, double _minBid, double _startprice, ShippingType _shippingType,	
 			Customer _seller, LocalDateTime _starttime, LocalDateTime _enddate) {
 		//wird aufgerufen, wenn neue Auktion angelegt wird (noch keine ID vergeben)
 		this.title = _title;
