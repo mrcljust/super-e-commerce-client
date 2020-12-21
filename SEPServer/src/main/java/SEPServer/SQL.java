@@ -2439,7 +2439,7 @@ public class SQL {
    int i = 0;
 		try {
 			
-			PreparedStatement fetchRatingsInfo = connection.prepareStatement("SELECT * FROM ratings WHERE receiver_id =" + user.getId());
+			PreparedStatement fetchRatingsInfo = connection.prepareStatement("SELECT * FROM ratings WHERE receiver_id=" + user.getId());
 
 			ResultSet fetchRatingsInfoResult = fetchRatingsInfo.executeQuery();
 			
@@ -2487,16 +2487,20 @@ public class SQL {
 		}
 	
 		double result = 0;
-		Rating[] allRatings = fetchRatings(user);	    
-		int numberOfRatings = allRatings.length;
+		Rating[] allRatings = fetchRatings(user);	
+		if(allRatings!=null)
+		{
+			int numberOfRatings = allRatings.length;
 			for (Rating rating : allRatings) {
 				result += rating.getStars();
 			}	
 		
-		double [] avgRatings = new double [2];
-		avgRatings[0] = result / allRatings.length;
-		avgRatings[1] = numberOfRatings;
-		return avgRatings;
+			double [] avgRatings = new double [2];
+			avgRatings[0] = result / allRatings.length;
+			avgRatings[1] = numberOfRatings;
+			return avgRatings;
+		}
+		return null;
 	}
 	
 
@@ -2537,12 +2541,13 @@ public class SQL {
 				
 			} catch (SQLException e) {
 				// Fehler zurückgeben
+				e.printStackTrace();
 				return Response.Failure;
 			}
 		}
 		// Order ist zu lange her und kann nicht mehr gelöscht werden
 		else {
-			return Response.Failure;
+			return Response.OrderTooOld;
 		}			
 }
 

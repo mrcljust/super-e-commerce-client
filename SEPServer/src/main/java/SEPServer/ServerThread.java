@@ -495,7 +495,7 @@ public class ServerThread implements Runnable {
 							// index 0 ist Average, Index 1 ist Anzahl
 							responseType = Response.Success;
 							double avgRating = avgDoubleArray[0];
-							double ratingCount = avgDoubleArray[1];
+							Integer ratingCount = (int)avgDoubleArray[1];
 							responseMap.put("Average", avgRating);
 							responseMap.put("Amount", ratingCount);
 						}

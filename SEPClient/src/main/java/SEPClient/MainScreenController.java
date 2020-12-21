@@ -629,7 +629,33 @@ public class MainScreenController {
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
 		    	MainScreen_WebViewProductDescription.getEngine().loadContent(MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
-
+		    	
+		    	
+		    	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+				requestMap.put("User", MainScreen_ListCatalog.getSelectionModel().getSelectedItem().getSeller());
+				requestMap.put("FetchAvg", true);
+		    	
+		    	ClientRequest req = new ClientRequest(Request.FetchRatings, requestMap);
+		    	Client client = Client.getClient();
+				ServerResponse queryResponse = client.sendClientRequest(req);
+				
+				if(queryResponse.getResponseType()!=null && queryResponse.getResponseType()==Response.Success)	{
+					Double ratingAvg = (Double)queryResponse.getResponseMap().get("Average");
+					int ratingCount = (Integer)queryResponse.getResponseMap().get("Amount");
+					if(ratingAvg!=null)
+					{
+						MainScreen_txtAverageRating.setText("Durchschnittliche Bewertung: " + SEPCommon.Constants.DOUBLEFORMAT.format(ratingAvg));
+				    	MainScreen_txtRatingCount.setText("(Anzahl: " + ratingCount + ")");
+				    	MainScreen_ButtonShowRatings.setDisable(false);
+				    	MainScreen_txtRatingCount.setVisible(true);
+					}
+				}
+				else {
+					MainScreen_txtAverageRating.setText("Bisher keine Bewertung erhalten");
+			    	MainScreen_ButtonShowRatings.setDisable(true);
+			    	MainScreen_txtRatingCount.setVisible(false);
+				}
+		    	
 		    	MainScreen_ButtonShowRatings.setVisible(true);
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
 		    	MainScreen_WebViewProductDescription.setVisible(true);
@@ -669,6 +695,31 @@ public class MainScreenController {
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
 		    	MainScreen_WebViewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+		    	
+		    	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+				requestMap.put("User", MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller());
+				requestMap.put("FetchAvg", true);
+		    	
+		    	ClientRequest req = new ClientRequest(Request.FetchRatings, requestMap);
+		    	Client client = Client.getClient();
+				ServerResponse queryResponse = client.sendClientRequest(req);
+				
+				if(queryResponse.getResponseType()!=null && queryResponse.getResponseType()==Response.Success)	{
+					Double ratingAvg = (Double)queryResponse.getResponseMap().get("Average");
+					int ratingCount = (Integer)queryResponse.getResponseMap().get("Amount");
+					if(ratingAvg!=null)
+					{
+						MainScreen_txtAverageRating.setText("Durchschnittliche Bewertung: " + SEPCommon.Constants.DOUBLEFORMAT.format(ratingAvg));
+				    	MainScreen_txtRatingCount.setText("(Anzahl: " + ratingCount + ")");
+				    	MainScreen_ButtonShowRatings.setDisable(false);
+				    	MainScreen_txtRatingCount.setVisible(true);
+					}
+				}
+				else {
+					MainScreen_txtAverageRating.setText("Bisher keine Bewertung erhalten");
+			    	MainScreen_ButtonShowRatings.setDisable(true);
+			    	MainScreen_txtRatingCount.setVisible(false);
+				}
 		    	
 		    	MainScreen_ButtonShowRatings.setVisible(true);
 		    	MainScreen_ButtonBuyProduct.setVisible(true);
@@ -717,6 +768,31 @@ public class MainScreenController {
         	MainScreen_ImgAuction.setVisible(true);
         	
         	MainScreen_ButtonSaveAuction.setVisible(true);
+        	
+        	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+			requestMap.put("User", MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller());
+			requestMap.put("FetchAvg", true);
+	    	
+	    	ClientRequest req = new ClientRequest(Request.FetchRatings, requestMap);
+	    	Client client = Client.getClient();
+			ServerResponse queryResponse = client.sendClientRequest(req);
+			
+			if(queryResponse.getResponseType()!=null && queryResponse.getResponseType()==Response.Success)	{
+				Double ratingAvg = (Double)queryResponse.getResponseMap().get("Average");
+				int ratingCount = (Integer)queryResponse.getResponseMap().get("Amount");
+				if(ratingAvg!=null)
+				{
+					MainScreen_txtAverageRatingAuction.setText("Durchschnittliche Bewertung: " + SEPCommon.Constants.DOUBLEFORMAT.format(ratingAvg));
+			    	MainScreen_txtRatingCountAuction.setText("(Anzahl: " + ratingCount + ")");
+			    	MainScreen_ButtonShowRatingsAuction.setDisable(false);
+			    	MainScreen_txtRatingCountAuction.setVisible(true);
+				}
+			}
+			else {
+				MainScreen_txtAverageRatingAuction.setText("Bisher keine Bewertung erhalten");
+		    	MainScreen_ButtonShowRatingsAuction.setDisable(true);
+		    	MainScreen_txtRatingCountAuction.setVisible(false);
+			}
         	
         	MainScreen_TextboxBidAmount.setVisible(true);
         	MainScreen_txtDollarBidAmount.setVisible(true);
