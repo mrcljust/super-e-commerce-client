@@ -1451,7 +1451,7 @@ public class SQL {
 
 			PreparedStatement pstmtOrders = connection.prepareStatement("SELECT * FROM users "
 					+ "JOIN orders ON users.id=orders.buyer_id JOIN products "
-					+ "ON products.id=orders.product_id WHERE users.id=" + buyer.getId(), ResultSet.TYPE_SCROLL_SENSITIVE, 
+					+ "ON products.id=orders.product_id JOIN categories ON categories.id=products.category_id WHERE users.id=" + buyer.getId(), ResultSet.TYPE_SCROLL_SENSITIVE, 
                     ResultSet.CONCUR_UPDATABLE);
 			
 			//Quelle: https://stackoverflow.com/questions/6367737/resultset-exception-set-type-is-type-forward-only-why
@@ -1483,47 +1483,50 @@ public class SQL {
 						allOrdersResultSet.getString("products.description"));
 
 				int orderId = allOrdersResultSet.getInt("orders.order_id");
+				
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + buyer.getId());
+								+ orderId + " WHERE users.id=" + buyer.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, 
+			                    ResultSet.CONCUR_UPDATABLE);
 
 				PreparedStatement pstmtSellerRatings = connection.prepareStatement(		
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
-								+ orderId + " WHERE users.id=" + newSeller.getId());
+								+ orderId + " WHERE users.id=" + newSeller.getId(),ResultSet.TYPE_SCROLL_SENSITIVE, 
+			                    ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
-				allBuyerRatings.first();
+				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
-				allSellerRatings.first();
-				Rating newSellerRating=null;
+				allSellerRatings.beforeFirst();
+				
 				Rating newBuyerRating=null;
+				Rating newSellerRating = null;
+				if (allBuyerRatings.next() != false) {
+					String buyerText = null;
+					if (allBuyerRatings.getString("ratings.text") != null) {
+						buyerText=allBuyerRatings.getString("ratings.text");
+					}
+					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
+							allBuyerRatings.getInt("ratings.stars"), buyerText,
+							allBuyerRatings.getInt("ratings.sender_id"), allBuyerRatings.getInt("ratings.receiver_id"),
+							orderId, false);
+
+				}
 
 				if (allSellerRatings.next() != false) {
 					String sellerText = null;
 					if (allSellerRatings.getString("ratings.text") != null) {
 						sellerText = allSellerRatings.getString("ratings.text");
 					}
-					newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+					newSellerRating = new Rating(allSellerRatings.getInt("ratings.rating_id"),
 							allSellerRatings.getInt("ratings.stars"), sellerText,
 							allSellerRatings.getInt("ratings.sender_id"),
-							allSellerRatings.getInt("ratings.receiver_id"),
-							allSellerRatings.getInt("ratings.order_id"), false);
+							allSellerRatings.getInt("ratings.receiver_id"), orderId,
+							false);
 				}
+				
 
-				if (allBuyerRatings.next() != false) {
-					String buyerText = null;
-					if (allSellerRatings.getString("ratings.text") != null) {
-
-					}
-					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
-							allBuyerRatings.getInt("ratings.stars"), buyerText,
-							allBuyerRatings.getInt("ratings.sender_id"),
-							allBuyerRatings.getInt("ratings.receiver_id"),
-							allBuyerRatings.getInt("ratings.order_id"), false);
-
-				}
-
-				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.id"), newProduct,
+				allOrdersArray[arraycounterAllOrders] = new Order(allOrdersResultSet.getInt("orders.order_id"), newProduct,
 						allOrdersResultSet.getTimestamp("orders.purchasedate").toLocalDateTime(), newBuyerRating, newSellerRating);
 
 				arraycounterAllOrders++;
@@ -1622,9 +1625,9 @@ public class SQL {
 									+ wonAuctionId + " WHERE users.id=" + currentBidder.getId());
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-					allSellerRatings.first();
+					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-					allBuyerRatings.first();
+					allBuyerRatings.beforeFirst();
 					
 
 					if (allSellerRatings.next() != false) {
@@ -1632,7 +1635,7 @@ public class SQL {
 						if (allSellerRatings.getString("ratings.text") != null) {
 							sellerText = allSellerRatings.getString("ratings.text");
 						}
-						newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+						newSellerRating = new Rating(allSellerRatings.getInt("ratings.rating_id"),
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
@@ -1641,10 +1644,10 @@ public class SQL {
 
 					if (allBuyerRatings.next() != false) {
 						String buyerText = null;
-						if (allSellerRatings.getString("ratings.text") != null) {
-
+						if (allBuyerRatings.getString("ratings.text") != null) {
+							buyerText=allBuyerRatings.getString("ratings.text");
 						}
-						newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+						newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
@@ -1872,16 +1875,16 @@ public class SQL {
 										+ currentBidder.getId() + " AND auctions.auction_id=" + endedAuctionId);
 
 						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-						allSellerRatings.first();		//ggf. beforeFirst checken
+						allSellerRatings.beforeFirst();		
 						ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-						allBuyerRatings.first();
+						allBuyerRatings.beforeFirst();
 
 						if (allSellerRatings.next() != false) {
 							String sellerText= null;
 							if(allSellerRatings.getString("ratings.text")!=null) {
 								sellerText=allSellerRatings.getString("ratings.text");
 							}
-							newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+							newSellerRating = new Rating(allSellerRatings.getInt("ratings.rating_id"),
 									allSellerRatings.getInt("ratings.stars"),
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
@@ -1891,10 +1894,10 @@ public class SQL {
 
 						if (allBuyerRatings.next() != false) {
 							String buyerText=null;
-							if(allSellerRatings.getString("ratings.text")!=null) {
-								
+							if(allBuyerRatings.getString("ratings.text")!=null) {
+								buyerText=allBuyerRatings.getString("ratings.text");
 							}
-							newSellerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+							newSellerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 									allBuyerRatings.getInt("ratings.stars"), buyerText,
 									allBuyerRatings.getInt("ratings.sender_id"),
 									allBuyerRatings.getInt("ratings.receiver_id"),
@@ -2097,7 +2100,7 @@ public class SQL {
 						if (allSellerRatings.getString("ratings.text") != null) {
 							sellerText = allSellerRatings.getString("ratings.text");
 						}
-						newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+						newSellerRating = new Rating(allSellerRatings.getInt("ratings.rating_id"),
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
@@ -2106,10 +2109,10 @@ public class SQL {
 
 					if (allBuyerRatings.next() != false) {
 						String buyerText = null;
-						if (allSellerRatings.getString("ratings.text") != null) {
-
+						if (allBuyerRatings.getString("ratings.text") != null) {
+buyerText=allBuyerRatings.getString("ratings.text");
 						}
-						newSellerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+						newSellerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
@@ -2581,10 +2584,11 @@ public class SQL {
 		 LocalDateTime aDateTime2 = LocalDateTime.of(2021, 
                  Month.JULY, 30, 19, 30, 00);
 		testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
-	//	testSQLObject.fetchAuctions(AuctionType.Ended);
+	
+		//	testSQLObject.fetchAuctions(AuctionType.Ended);
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		 User denis= new Customer(100, null, null, null, null, 0, null);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
-		testSQLObject.fetchAuctions(AuctionType.Active);
+		testSQLObject.fetchOrders(denis);
 	}
 }
