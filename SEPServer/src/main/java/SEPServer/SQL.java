@@ -3189,21 +3189,24 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			if(customer.getWallet() > price) 
 			{
 				
-				PreparedStatement stmt;
-				stmt = connection.prepareStatement("UPDATE auctions "
-						+ "SET emailsent = ?");
-				// Neue Angaben bekommen
-				stmt.setInt(1, 1);
-				stmt.execute();	
-				
+				Statement stmt = connection.createStatement();
+				stmt.execute("UPDATE auctions "
+						+ "SET emailsent = 1");
+			
 			EmailHandler.sendAuctionEndedEmail(auction);
 			increaseWallet(seller, price);
 			decreaseWallet(customer, price);
+			
 			return Response.Success;
 			}
 			
 			else {
+				
 				EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
+				
+				Statement statement = connection.createStatement();
+				statement.execute("DELETE FROM auctions WHERE id ='" + auction.getId() + "'");
+				
 				return Response.Failure;
 			}
 		}
