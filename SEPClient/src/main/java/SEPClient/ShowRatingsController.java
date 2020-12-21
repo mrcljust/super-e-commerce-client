@@ -89,9 +89,6 @@ public class ShowRatingsController {
     private TableColumn<Rating, String> TableRatings_ColumnText;
 
     @FXML
-    private Button ShowRatings_CreateRatingForBuyer;
-
-    @FXML
     private Button ShowRatings_ReturnButton;
 
     @FXML
@@ -99,12 +96,6 @@ public class ShowRatingsController {
 
     @FXML
     private Label ShowRatings_txtRatingCount;
-
-    @FXML
-    void ShowRatings_CreateRatingForBuyer_Click(ActionEvent event) {
-
-    }
-
     @FXML
     void ShowRatings_ReturnButton_Click(ActionEvent event) {
     	FXMLHandler.OpenSceneInStage((Stage) ShowRatings_ReturnButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);

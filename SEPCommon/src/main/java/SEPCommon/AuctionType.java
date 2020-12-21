@@ -7,5 +7,6 @@ public enum AuctionType {
 	MyBids, //Auktionen auf die man geboten hat
 	MyAuctions, //eigene Auktionen
 	SavedAuctions, //gemerkte Auktionen
-	PurchasedAuctions //gekaufte Auktionen
+	PurchasedAuctions, //gekaufte Auktionen
+	SoldAuctions //verkaufte Auktionen
 }

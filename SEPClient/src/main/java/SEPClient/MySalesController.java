@@ -26,17 +26,18 @@ import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.ServerResponse;
 import SEPCommon.ShippingType;
+import SEPCommon.User;
 
-public class MyPurchasesController {
+public class MySalesController {
 
-	private static Customer customer = null;
+	private static User user = null;
 
-	public static void setCustomer(Customer _customer) {
-		customer = _customer;
+	public static void setUser(User _user) {
+		user = _user;
 	}
 
 	public void initialize() throws IOException {
-		MyPurchases_ListOrders.setItems(loadAllOrders());
+		MySales_ListOrders.setItems(loadAllOrders());
 		
 		//Werte an die Spalten der ListOrders zuweisen
     	ordersIdColumn.setCellValueFactory(new PropertyValueFactory<Order, Integer>("id"));
@@ -69,11 +70,11 @@ public class MyPurchasesController {
         ordersRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Order, Rating>("sellerRating")); //evtl BuyerRating
         ordersRatingGivenColumn.setCellFactory(tc -> new TableCell<Order, Rating>() {
     	    @Override
-    	    protected void updateItem(Rating sellerRating, boolean empty) {
-    	        super.updateItem(sellerRating, empty);
+    	    protected void updateItem(Rating buyerRating, boolean empty) {
+    	        super.updateItem(buyerRating, empty);
     	        if(empty) {
     	        	setText(null);
-    	        } else if (sellerRating==null) {
+    	        } else if (buyerRating==null) {
     	            setText("Noch nicht abgegeben");
     	        } else {
     	            setText("Abgegeben");
@@ -81,7 +82,7 @@ public class MyPurchasesController {
     	    }
     	});
 		
-        MyPurchases_ListAuctions.setItems(loadAllAuctions());
+        MySales_ListAuctions.setItems(loadAllAuctions());
         
 		//Werte an die Spalten der ListAuctions zuweisen
     	auctionsIdColumn.setCellValueFactory(new PropertyValueFactory<Auction, Integer>("id"));
@@ -127,11 +128,11 @@ public class MyPurchasesController {
         auctionsRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Auction, Rating>("sellerRating")); //evtl BuyerRating
         auctionsRatingGivenColumn.setCellFactory(tc -> new TableCell<Auction, Rating>() {
     	    @Override
-    	    protected void updateItem(Rating sellerRating, boolean empty) {
-    	        super.updateItem(sellerRating, empty);
+    	    protected void updateItem(Rating buyerRating, boolean empty) {
+    	        super.updateItem(buyerRating, empty);
     	        if(empty) {
     	        	setText(null);
-    	        } else if (sellerRating==null) {
+    	        } else if (buyerRating==null) {
     	            setText("Noch nicht abgegeben");
     	        } else {
     	            setText("Abgegeben");
@@ -141,7 +142,7 @@ public class MyPurchasesController {
 	}
 
     @FXML
-    private TableView<Order> MyPurchases_ListOrders;
+    private TableView<Order> MySales_ListOrders;
 
     @FXML
     private TableColumn<Order, Integer> ordersIdColumn;
@@ -159,7 +160,7 @@ public class MyPurchasesController {
     private TableColumn<Order, Rating> ordersRatingGivenColumn;
 
     @FXML
-    private TableView<Auction> MyPurchases_ListAuctions;
+    private TableView<Auction> MySales_ListAuctions;
 
     @FXML
     private TableColumn<Auction, Integer> auctionsIdColumn;
@@ -180,55 +181,56 @@ public class MyPurchasesController {
     private TableColumn<Auction, Rating> auctionsRatingGivenColumn;
 
     @FXML
-    private Button MyPurchases_CreateRating_Order;
+    private Button MySales_CreateRating_Order;
 
     @FXML
-    private Button MyPurchases_CreateRating_Auction;
+    private Button MySales_CreateRating_Auction;
     
     @FXML
-    private Button MyPurchases_DeleteOrderButton;
+    private Button MySales_DeleteOrderButton;
 
     @FXML
-    private Button MyPurchases_Return;
+    private Button MySales_Return;
 
     @FXML
-    void MyPurchases_CreateRating_Auction_Click(ActionEvent event) {
+    void MySales_CreateRating_Auction_Click(ActionEvent event) {
     	
     }
 
     @FXML
-    void MyPurchases_CreateRating_Order_Click(ActionEvent event) {
-    	if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem() != null) {
-    		MyPurchases_CreateRating_Order.setDisable(false);
+    void MySales_CreateRating_Order_Click(ActionEvent event) {
+    	if (MySales_ListOrders.getSelectionModel().getSelectedItem() != null) {
+    		CreateRatingController.setOrder(MySales_ListOrders.getSelectionModel().getSelectedItem());
+    		CreateRatingController.setUser(user);
+    		FXMLHandler.OpenSceneInStage((Stage) MySales_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
     	}
-    	// ? FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewerten", true, true);
     }
     	
     
     
     @FXML
-    void MyPurchases_DeleteOrderButton_Click(ActionEvent event) {
+    void MySales_DeleteOrderButton_Click(ActionEvent event) {
 
     }
     
     private ObservableList<Order> loadAllOrders() { //funktioniert noch nicht 
     	
-    	if(MyPurchases_ListOrders.getItems()!=null)
+    	if(MySales_ListOrders.getItems()!=null)
     	{
-    		MyPurchases_ListOrders.getItems().clear();
+    		MySales_ListOrders.getItems().clear();
     	}
         
     	
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
-    	requestMap.put("Buyer", customer);
+    	requestMap.put("User", user);
     	
-    	ClientRequest req = new ClientRequest(Request.FetchOrders, requestMap);
+    	ClientRequest req = new ClientRequest(Request.FetchSales, requestMap);
     	Client client = Client.getClient();
     	ServerResponse queryResponse = client.sendClientRequest(req);
     	
-    	if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Orders")!=null){
+    	if(queryResponse!=null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Sales")!=null){
     		
-    		Order [] orders = (Order[])queryResponse.getResponseMap().get("Orders");
+    		Order [] orders = (Order[])queryResponse.getResponseMap().get("Sales");
     		ObservableList<Order> ObservableOrders = FXCollections.observableArrayList(orders);
     		ObservableOrders.removeIf(n -> (n==null));
     		
@@ -238,15 +240,15 @@ public class MyPurchasesController {
     }
     
     private ObservableList<Auction> loadAllAuctions() {
-    	if(MyPurchases_ListAuctions.getItems()!=null)
+    	if(MySales_ListAuctions.getItems()!=null)
     	{
-    		MyPurchases_ListAuctions.getItems().clear();
+    		MySales_ListAuctions.getItems().clear();
     	}
         
     	
     	HashMap<String, Object> requestMap = new HashMap<String, Object>();
-    	requestMap.put("AuctionType", AuctionType.PurchasedAuctions);
-    	requestMap.put("User", customer);
+    	requestMap.put("AuctionType", AuctionType.SoldAuctions);
+    	requestMap.put("User", user);
     	
     	ClientRequest req = new ClientRequest(Request.FetchAuctions, requestMap);
     	Client client = Client.getClient();
@@ -265,7 +267,7 @@ public class MyPurchasesController {
     
 
     @FXML
-    void MyPurchases_Return_Click(ActionEvent event) {
-    	FXMLHandler.OpenSceneInStage((Stage) MyPurchases_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+    void MySales_Return_Click(ActionEvent event) {
+    	FXMLHandler.OpenSceneInStage((Stage) MySales_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 }

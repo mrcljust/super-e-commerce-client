@@ -46,22 +46,23 @@
             <Label fx:id="MainScreen_LabelWallet" alignment="TOP_LEFT" layoutX="59.0" layoutY="24.0" prefHeight="17.0" prefWidth="111.0" text="Guthaben:" />
             <Button fx:id="MainScreen_ButtonPurchases" layoutX="14.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyPurchasesClick" text="Meine Käufe" />
             <Button fx:id="MainScreen_ButtonAddWallet" layoutX="101.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnAddWalletClick" text="Guthaben aufladen" />
-            <Button fx:id="MainScreen_ButtonCreateAuction" layoutX="222.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonCreateAuctionClick" text="Auktion erstellen" />
-            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="356.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Festpreisangebote" />
-            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="511.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Festpreisangebot(e) erstellen" />
-            <Button fx:id="MainScreen_ButtonMyRatings" layoutX="710.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonMyRatingsClick" text="Meine Bewertungen" />
-            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="838.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
-            <Button fx:id="MainScreen_ButtonLogout" layoutX="1041.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
+            <Button fx:id="MainScreen_ButtonCreateAuction" layoutX="223.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonCreateAuctionClick" text="Auktion erstellen" />
+            <Button fx:id="MainScreen_ButtonMyProducts" layoutX="338.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnMyProductsClick" text="Meine Festpreisangebote" />
+            <Button fx:id="MainScreen_ButtonSellProduct" layoutX="493.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnSellProductClick" text="Festpreisangebot(e) erstellen" />
+            <Button fx:id="MainScreen_ButtonMyRatings" layoutX="776.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonMyRatingsClick" text="Meine Bewertungen" />
+            <Button fx:id="MainScreen_ButtonEditAccount" layoutX="903.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnEditAccountClick" text="Konto bearbeiten" />
+            <Button fx:id="MainScreen_ButtonLogout" layoutX="1106.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_btnLogoutClick" text="Abmelden" />
             <ImageView fx:id="MainScreen_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="14.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
                <image>
                   <Image url="@no-image.jpg" />
                </image>
             </ImageView>
-            <Button fx:id="MainScreen_ButtonRefresh" layoutX="951.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonRefresh_Click" prefHeight="25.0" prefWidth="85.0" text="Aktualisieren">
+            <Button fx:id="MainScreen_ButtonRefresh" layoutX="1016.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonRefresh_Click" prefHeight="25.0" prefWidth="85.0" text="Aktualisieren">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
             </Button>
+            <Button fx:id="MainScreen_ButtonSales" layoutX="672.0" layoutY="49.0" mnemonicParsing="false" onAction="#MainScreen_ButtonSalesClick" text="Meine Verkäufe" />
          </children>
       </Pane>
       <SplitPane dividerPositions="0.6373534338358459" layoutY="108.0" prefHeight="437.0" prefWidth="1196.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="108.0">
@@ -126,13 +127,13 @@
                                     <TableColumn fx:id="auctionsCatalogCurrentBidColumn" editable="false" minWidth="0.0" prefWidth="107.0" text="Aktuelles Gebot" />
                                     <TableColumn fx:id="auctionsCatalogMinBidColumn" editable="false" prefWidth="95.0" text="Mindestgebot" />
                                     <TableColumn fx:id="auctionsCatalogStartColumn" editable="false" prefWidth="101.0" text="Start" />
-                                    <TableColumn fx:id="auctionsCatalogEndColumn" editable="false" prefWidth="125.0" text="Ende" />
+                                    <TableColumn fx:id="auctionsCatalogEndColumn" editable="false" prefWidth="124.0" text="Ende" />
                                  </columns>
                               </TableView>
                               <RadioButton fx:id="radioAllAuctions" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioAllAuctions_Click" selected="true" text="Alle Auktionen" />
-                              <RadioButton fx:id="radioMyBids" layoutX="119.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyBids_Click" text="Meine Gebote" />
-                              <RadioButton fx:id="radioMyAuctions" layoutX="228.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyAuctions_Click" text="Meine Auktionen" />
-                              <RadioButton fx:id="radioSavedAuctions" layoutX="347.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioSavedAuctions_Click" text="Gemerkte Auktionen" />
+                              <RadioButton fx:id="radioMyBids" layoutX="117.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyBids_Click" text="Meine aktuellen Gebote" />
+                              <RadioButton fx:id="radioMyAuctions" layoutX="269.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyAuctions_Click" text="Meine Auktionen" />
+                              <RadioButton fx:id="radioSavedAuctions" layoutX="385.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioSavedAuctions_Click" text="Gemerkte Auktionen" />
                               <RadioButton fx:id="radioCurrentAuctions" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioCurrentAuctions_Click" selected="true" text="Aktuelle Auktionen" />
                               <RadioButton fx:id="radioEndedAuctions" layoutX="142.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioEndedAuctions_Click" text="Beendete Auktionen" />
                               <RadioButton fx:id="radioFutureAuctions" layoutX="279.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioFutureAuctions_Click" text="Zukünftige Auktionen" />

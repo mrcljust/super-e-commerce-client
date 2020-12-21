@@ -40,7 +40,6 @@
             <TableColumn fx:id="TableRatings_ColumnText" prefWidth="340.0" text="Erfahrungsbericht" />
         </columns>
       </TableView>
-      <Button fx:id="ShowRatings_CreateRatingForBuyer" disable="true" layoutX="14.0" layoutY="342.0" mnemonicParsing="false" onAction="#ShowRatings_CreateRatingForBuyer_Click" text="Bewertung für selektierten Käufer abgeben..." />
       <Button fx:id="ShowRatings_ReturnButton" layoutX="530.0" layoutY="342.0" mnemonicParsing="false" onAction="#ShowRatings_ReturnButton_Click" text="Zurück" />
       <Label fx:id="ShowRatings_txtAverageRating" layoutX="186.0" layoutY="60.0" text="X.XX" />
       <Label fx:id="ShowRatings_txtRatingCount" layoutX="230.0" layoutY="84.0" text="XX" />

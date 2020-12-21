@@ -389,6 +389,14 @@ public class ServerThread implements Runnable {
 						{
 							auctions = sql.fetchSavedAuctions(argUser);
 						}
+						else if(argAuctionType==AuctionType.PurchasedAuctions)
+						{
+							auctions = sql.fetchPurchasedAuctions(argUser);
+						}
+						else if(argAuctionType==AuctionType.SoldAuctions)
+						{
+							auctions = sql.fetchSoldAuctions(argUser);
+						}
 					}
 					else if(requestMap.containsKey("SearchString"))
 					{
@@ -549,6 +557,35 @@ public class ServerThread implements Runnable {
 					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);
 				}
+				
+				//Request FetchSales
+				//HASHMAP: "User" - User-Objekt
+				else if(requestType == Request.FetchSales)
+				{
+					User argUser = (User)requestMap.get("User");
+					Order[] sales = sql.fetchSales(argUser);
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(sales==null)
+					{
+						//keine DB Verbindung oder sonstiger Fehler
+						responseType = Response.Failure;
+					}
+					else
+					{
+						responseType = Response.Success;
+						responseMap.put("Sales", sales);
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request GetServerDateTime
 				else if(requestType == Request.GetServerDateTime)
 				{
 					HashMap<String, Object> responseMap = new HashMap<String, Object>();
