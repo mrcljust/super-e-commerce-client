@@ -2336,7 +2336,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							{
 								customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
 										fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
-										fetchUserDataResult.getBytes("picture"), fetchUserDataResult.getDouble("wallet"), address);
+										fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
 							}
 							
 							Auction auction = new Auction(viewedId, fetchAuctionsInfoResult.getString("auctions.title"), fetchAuctionsInfoResult.getString("auctions.description"),
@@ -2873,12 +2873,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
                  Month.JULY, 29, 19, 30, 00);
 		 LocalDateTime aDateTime2 = LocalDateTime.of(2021, 
                  Month.JULY, 30, 19, 30, 00);
-		testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
+		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
 	
 		//	testSQLObject.fetchAuctions(AuctionType.Ended);
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
-		 User denis= new Customer(100, null, null, null, null, 0, null);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
-		testSQLObject.fetchOrders(denis);
+		//testSQLObject.fetchOrders(denis)
+		
 	}
 }
