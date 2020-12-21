@@ -1696,8 +1696,8 @@ public class SQL {
 
 				Auction[] allActiveAuctionsArray = null;
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.enddate) >='" + timestamp
-								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'",
+						"Select * FROM auctions WHERE DATE(auctions.enddate) >='" + timestamp
+								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'" ,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -1705,16 +1705,20 @@ public class SQL {
 				while (activeAuctions.next()) {
 					sumAuctions++;
 				}
-				System.out.println(sumAuctions);
 				activeAuctions.beforeFirst();
 
+				if(sumAuctions<=0)
+				{
+					return null;
+				}
+				
 				allActiveAuctionsArray = new Auction[sumAuctions];
 
 				while (activeAuctions.next()) {
 					int activeAuctionId = activeAuctions.getInt("auctions.auction_id");
 					PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id='"
-									+ activeAuctionId + "'",
+							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
+									+ activeAuctionId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet allSellerInformation = pstmtAllActiveAuctions.executeQuery();
 					allSellerInformation.first();
@@ -1735,8 +1739,8 @@ public class SQL {
 					int currentBidderId = activeAuctions.getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id='"
-									+ activeAuctionId + "' AND auctions.currentbidder_id='" + currentBidderId + "'",
+							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id="
+									+ activeAuctionId + " AND auctions.currentbidder_id=" + currentBidderId ,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
 					currentBidderInformation.first();
@@ -1786,7 +1790,7 @@ public class SQL {
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.enddate) < '" + timestamp + "'",
+						"Select * FROM auctions WHERE DATE(auctions.enddate) <'" + timestamp + "'",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet endedAuctions = allEndedAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -1794,17 +1798,19 @@ public class SQL {
 				while (endedAuctions.next()) {
 					sumAuctions++;
 				}
-				System.out.println(sumAuctions);
 				endedAuctions.beforeFirst();
-				// endedAuctions.next();
 
+				if(sumAuctions<=0)
+				{
+					return null;
+				}
+				
 				allEndedAuctionsArray = new Auction[sumAuctions];
 
 				while (endedAuctions.next()) {
 					int endedAuctionId = endedAuctions.getInt("auctions.auction_id");
 					PreparedStatement pstmtAllEndedAuctions = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id='"
-									+ endedAuctionId + "'",
+							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="+ endedAuctionId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet allSellerInformation = pstmtAllEndedAuctions.executeQuery();
 					allSellerInformation.first();
@@ -1825,8 +1831,8 @@ public class SQL {
 					int currentBidderId = pstmtAllEndedAuctions.getResultSet().getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id= '"
-									+ endedAuctionId + "' AND auctions.currentbidder_id='" + currentBidderId + "'",
+							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id="
+									+ endedAuctionId + " AND auctions.currentbidder_id=" + currentBidderId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
 					currentBidderInformation.first();
@@ -1852,12 +1858,12 @@ public class SQL {
 					Rating newBuyerRating = null;
 					if (currentBidder != null) {
 						PreparedStatement pstmtSellerRatingsEndedAuction = connection.prepareStatement(
-								"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id='"
-										+ newSeller.getId() + "' AND auctions.auction_id='" + endedAuctionId + "'");
+								"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id="
+										+ newSeller.getId() + " AND auctions.auction_id=" + endedAuctionId );
 
 						PreparedStatement pstmtBuyerEndedAuction = connection.prepareStatement(
-								"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id='"
-										+ currentBidder.getId() + "' AND auctions.auction_id='" + endedAuctionId + "'");
+								"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id="
+										+ currentBidder.getId() + " AND auctions.auction_id=" + endedAuctionId);
 
 						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
 						allSellerRatings.beforeFirst();
@@ -1927,18 +1933,22 @@ public class SQL {
 				while (futureAuctions.next()) {
 					sumAuctions++;
 				}
-				System.out.println(sumAuctions);
-
-				System.out.println(sumAuctions);
+				
 				futureAuctions.beforeFirst();
 				Auction[] allFutureAuctionsArray = null;
+				
+				if(sumAuctions<=0)
+				{
+					return null;
+				}
+				
 				allFutureAuctionsArray = new Auction[sumAuctions];
 				while (futureAuctions.next()) {
 
 					int futureAuctionId = futureAuctions.getInt("auctions.auction_id");
 					PreparedStatement pstmtAllfutureAuctions = connection.prepareStatement(
-							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id='"
-									+ futureAuctionId + "'",
+							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
+									+ futureAuctionId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet allSellerInformation = pstmtAllfutureAuctions.executeQuery();
 					allSellerInformation.first();
@@ -2490,9 +2500,9 @@ public class SQL {
 
 	public static void main(String[]args) {
 		SQL testSQLObject= new SQL();
-		 LocalDateTime aDateTime = LocalDateTime.of(2015, 
+		 LocalDateTime aDateTime = LocalDateTime.of(2022, 
                  Month.JULY, 29, 19, 30, 40);
-		 LocalDateTime aDateTime2 = LocalDateTime.of(2015, 
+		 LocalDateTime aDateTime2 = LocalDateTime.of(2022, 
                  Month.JULY, 30, 19, 30, 40);
 		testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), new Customer(100, "name", "", "", null, 20, null), 20.55,aDateTime,aDateTime2));
 	//	testSQLObject.fetchAuctions(AuctionType.Ended);
