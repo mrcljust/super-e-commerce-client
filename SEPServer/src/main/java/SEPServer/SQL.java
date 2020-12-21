@@ -2578,7 +2578,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						int viewedId = Integer.parseInt(viewedIdStr);
 						
 						//Fr jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
-						//anschlieend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
+						//anschließend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
 						//und in das Array savedAuctions, welches am Ende zurckgegeben wird schreiben
 						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.auction_id='" + viewedId + "'");
 						ResultSet fetchAuctionsInfoResult = fetchAuctionInfo.executeQuery();
@@ -3135,13 +3135,84 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
+		
+		try {
+		LocalDateTime now = LocalDateTime.now();
+		Timestamp timestamp = Timestamp.valueOf(now);
 
-		EmailHandler.sendAuctionEndedEmail(null);
+		PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
+				"Select * FROM auctions WHERE DATE(auctions.enddate) <'" + timestamp + "'"
+				+ " AND auctions.emailsent = 0");
+		ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
 		
-		//bei o.g. Spezialfall:
-		EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(null);
-		
-		//nach dem Senden der Email emailsent bei der jeweiligen Aktion auf 1 setzen
+		while(endedAuctionsNoEmail.next()) {
+			
+			Address address = new Address(endedAuctionsNoEmail.getString("users.fullname"),
+					endedAuctionsNoEmail.getString("users.country"), endedAuctionsNoEmail.getInt("users.postalcode"),
+					endedAuctionsNoEmail.getString("users.city"), endedAuctionsNoEmail.getString("users.street"),
+					endedAuctionsNoEmail.getString("users.number"));
+			Customer seller = new Customer(endedAuctionsNoEmail.getInt("users.id"), endedAuctionsNoEmail.getString("users.username"),
+					endedAuctionsNoEmail.getString("users.email"), endedAuctionsNoEmail.getString("users.password"), 
+					endedAuctionsNoEmail.getBytes("users.image"), endedAuctionsNoEmail.getDouble("users.wallet"), address);
+			
+			
+			int shippingtypeId = endedAuctionsNoEmail.getInt("auctions.shippingtype_id");
+			ShippingType shippingtype = null;
+
+			if(shippingtypeId==1)
+			{
+			    shippingtype = ShippingType.Shipping;
+			}
+			else if(shippingtypeId==2)
+			{
+			    shippingtype = ShippingType.PickUp;
+			}
+			
+			int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
+			PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
+			ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+			Customer customer = null;
+			if(fetchUserDataResult.next())
+			{
+				customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
+						fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
+						fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
+			}
+			
+			Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
+					endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
+					seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+				
+			
+			Double price = auction.getCurrentBid();
+			
+			if(customer.getWallet() > price) 
+			{
+				
+				PreparedStatement stmt;
+				stmt = connection.prepareStatement("UPDATE auctions "
+						+ "SET emailsent = ?");
+				// Neue Angaben bekommen
+				stmt.setInt(1, 1);
+				stmt.execute();	
+				
+			EmailHandler.sendAuctionEndedEmail(auction);
+			increaseWallet(seller, price);
+			decreaseWallet(customer, price);
+			return Response.Success;
+			}
+			
+			else {
+				EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
+				return Response.Failure;
+			}
+		}
+		} catch (SQLException e) {
+			// Fehler zurückgeben
+			e.printStackTrace();
+			return Response.Failure;
+		}
+	
 		return null;
 	}
 
