@@ -1527,10 +1527,10 @@ public class SQL {
 				
 				if (allBuyerRatings.next()) {
 					String buyerText = null;
-					if (allSellerRatings.getString("ratings.text") != null) {
-
+					if (allBuyerRatings.getString("ratings.text") != null) {
+buyerText=allBuyerRatings.getString("ratings.text");
 					}
-					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
 							allBuyerRatings.getInt("ratings.sender_id"),
 							allBuyerRatings.getInt("ratings.receiver_id"),
