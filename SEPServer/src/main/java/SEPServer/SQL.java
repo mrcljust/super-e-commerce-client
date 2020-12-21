@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import SEPCommon.Response;
@@ -1587,14 +1586,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			while (allOrdersResultSet.next()) {
 
-				Address newAddress = new Address(allOrdersResultSet.getString("users.fullname"),
-						allOrdersResultSet.getString("users.country"), allOrdersResultSet.getInt("users.postalcode"),
-						allOrdersResultSet.getString("users.city"), allOrdersResultSet.getString("users.street"),
-						allOrdersResultSet.getString("users.number"));
-				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"),
-						allOrdersResultSet.getString("users.username"), allOrdersResultSet.getString("users.email"),
-						allOrdersResultSet.getString("users.password"), allOrdersResultSet.getBytes("users.image"),
-						allOrdersResultSet.getDouble("users.wallet"), newAddress, allOrdersResultSet.getString("users.companyname"));
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
 						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
 						(Seller)seller, allOrdersResultSet.getString("categories.title"),
@@ -3155,18 +3146,18 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	}
 
 	public static void main(String[]args) {
-		SQL testSQLObject= new SQL();
-		 LocalDateTime aDateTime = LocalDateTime.of(2018, 
-                 Month.JULY, 29, 19, 30, 00);
-		 LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
-                 Month.JULY, 30, 19, 30, 00);
-		 Customer denis= new Customer(77, null, null, null, null, 0, null);
+		//SQL testSQLObject= new SQL();
+		 //LocalDateTime aDateTime = LocalDateTime.of(2018, 
+         //        Month.JULY, 29, 19, 30, 00);
+		 //LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
+         //        Month.JULY, 30, 19, 30, 00);
+		 //ustomer denis= new Customer(77, null, null, null, null, 0, null);
 		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), denis, 20.55,aDateTime,aDateTime2));
 	//Customer denis= new Customer(77, null, null, null, null, 0, null);
 		//	testSQLObject.fetchAuctions(AuctionType.Ended);
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
-		testSQLObject.fetchPurchasedAuctions(denis);
+		//testSQLObject.fetchPurchasedAuctions(denis);
 		
 	}
 }
