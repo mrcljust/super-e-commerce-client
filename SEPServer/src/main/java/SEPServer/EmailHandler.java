@@ -11,6 +11,8 @@ import javax.mail.*;
 import javax.mail.internet.*;
 import com.sun.mail.smtp.*;
 
+
+// source: https://stackoverflow.com/questions/73580/how-do-i-send-an-smtp-message-from-java
 public class EmailHandler {
 
 	
