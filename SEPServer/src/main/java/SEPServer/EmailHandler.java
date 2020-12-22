@@ -6,9 +6,9 @@ import java.io.*;
 import java.net.InetAddress;
 import java.util.Properties;
 import java.util.Date;
-import javax.mail.*;
-import javax.mail.internet.*;
-import com.sun.mail.smtp.*;
+//import javax.mail.*;		
+//import javax.mail.internet.*;
+//import com.sun.mail.smtp.*;
 
 public class EmailHandler {
 
