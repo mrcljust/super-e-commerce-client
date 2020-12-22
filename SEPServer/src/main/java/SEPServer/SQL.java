@@ -3147,89 +3147,108 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		}
 		
 		try {
-		LocalDateTime now = LocalDateTime.now();
-		Timestamp timestamp = Timestamp.valueOf(now);
+			LocalDateTime now = LocalDateTime.now();
+			Timestamp timestamp = Timestamp.valueOf(now);
+	
+			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
+					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) <'" + timestamp + "'"
+					+ " AND auctions.emailsent = 0 AND auctions.currentbidder_id != 0");
+			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
-		PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
-				"Select * FROM auctions WHERE DATE(auctions.enddate) <'" + timestamp + "'"
-				+ " AND auctions.emailsent = 0");
-		ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
-		
-		while(endedAuctionsNoEmail.next()) {
+			ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
 			
-			Address address = new Address(endedAuctionsNoEmail.getString("users.fullname"),
-					endedAuctionsNoEmail.getString("users.country"), endedAuctionsNoEmail.getInt("users.postalcode"),
-					endedAuctionsNoEmail.getString("users.city"), endedAuctionsNoEmail.getString("users.street"),
-					endedAuctionsNoEmail.getString("users.number"));
-			Customer seller = new Customer(endedAuctionsNoEmail.getInt("users.id"), endedAuctionsNoEmail.getString("users.username"),
-					endedAuctionsNoEmail.getString("users.email"), endedAuctionsNoEmail.getString("users.password"), 
-					endedAuctionsNoEmail.getBytes("users.image"), endedAuctionsNoEmail.getDouble("users.wallet"), address);
+			int sumAuctionsEnded = 0;
+			int sumEmailError = 0;
+			int sumInsuffiecientBalance = 0;
 			
-			
-			int shippingtypeId = endedAuctionsNoEmail.getInt("auctions.shippingtype_id");
-			ShippingType shippingtype = null;
-
-			if(shippingtypeId==1)
-			{
-			    shippingtype = ShippingType.Shipping;
-			}
-			else if(shippingtypeId==2)
-			{
-			    shippingtype = ShippingType.PickUp;
-			}
-			
-			int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
-			PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
-			ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
-			Customer customer = null;
-			if(fetchUserDataResult.next())
-			{
-				customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
-						fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
-						fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
-			}
-			
-			Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
-					endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
-					seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+			while(endedAuctionsNoEmail.next()) {
 				
-			
-			Double price = auction.getCurrentBid();
-			
-			if(customer.getWallet() >= price) 
-			{
-
-				if(decreaseWallet(customer, price)==Response.Success)
+				Address address = new Address(endedAuctionsNoEmail.getString("users.fullname"),
+						endedAuctionsNoEmail.getString("users.country"), endedAuctionsNoEmail.getInt("users.postalcode"),
+						endedAuctionsNoEmail.getString("users.city"), endedAuctionsNoEmail.getString("users.street"),
+						endedAuctionsNoEmail.getString("users.number"));
+				Customer seller = new Customer(endedAuctionsNoEmail.getInt("users.id"), endedAuctionsNoEmail.getString("users.username"),
+						endedAuctionsNoEmail.getString("users.email"), endedAuctionsNoEmail.getString("users.password"), 
+						endedAuctionsNoEmail.getBytes("users.image"), endedAuctionsNoEmail.getDouble("users.wallet"), address);
+				
+				
+				int shippingtypeId = endedAuctionsNoEmail.getInt("auctions.shippingtype_id");
+				ShippingType shippingtype = null;
+	
+				if(shippingtypeId==1)
 				{
-					if(increaseWallet(seller, price)==Response.Success)
-					{
-						EmailHandler.sendAuctionEndedEmail(auction);
-						Statement stmt = connection.createStatement();
-						stmt.execute("UPDATE auctions "
-								+ "SET emailsent = 1");
-					
-						return Response.Success;
-					}
+				    shippingtype = ShippingType.Shipping;
+				}
+				else if(shippingtypeId==2)
+				{
+				    shippingtype = ShippingType.PickUp;
 				}
 				
-			}
-			
-			else {
-				EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
+				int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
+				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
+				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+				Customer customer = null;
+				if(fetchUserDataResult.next())
+				{
+					customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
+							fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
+							fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
+				}
 				
-				Statement statement = connection.createStatement();
-				statement.execute("DELETE FROM auctions WHERE id ='" + auction.getId() + "'");
+				Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
+						endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
+						seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+					
 				
-				return Response.Failure;
+				Double price = auction.getCurrentBid();
+				
+				if(customer.getWallet() >= price) 
+				{
+					if(decreaseWallet(customer, price)==Response.Success)
+					{
+						if(increaseWallet(seller, price)==Response.Success)
+						{								Statement stmt = connection.createStatement();
+							stmt.execute("UPDATE auctions "
+								+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
+							sumAuctionsEnded++;
+							if(EmailHandler.sendAuctionEndedEmail(auction)==Response.Success)
+							{
+							}
+							else
+							{
+								sumEmailError++;
+							}	
+						}
+					}
+					else {
+						//Nicht genuegend Guthaben
+						EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
+						
+						Statement statement = connection.createStatement();
+						statement.execute("DELETE FROM auctions WHERE auction_id ='" + auction.getId() + "'");
+						sumInsuffiecientBalance++;
+					}
+				}
 			}
-		}
+			if(sumEmailError>0)
+			{
+				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumAuctionsEnded + " neue Auktion(en) geendet, " + (sumAuctionsEnded-sumEmailError) + " E-Mail(s) versendet (Fehler beim Senden von " + sumEmailError + " E-Mails).");
+			}
+			else
+			{
+				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Success + " - " + sumAuctionsEnded + " neue Auktion(en) geendet, " + sumAuctionsEnded + " E-Mail(s) versendet.");
+			}
+			if(sumInsuffiecientBalance>0)
+			{
+				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumInsuffiecientBalance + " neue Auktion(en) geendet, bei der/denen der Käufer zu wenig Guthaben hat, E-Mail(s) versendet und betroffene Auktion(en) geloescht.");
+			}
+			return Response.Success;
 		} catch (SQLException e) {
 			// Fehler zurückgeben
 			e.printStackTrace();
+			System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - Fehler aufgetreten.");
 			return Response.Failure;
 		}
-	
-		return Response.Failure;
 	}
 
 	public static void main(String[]args) {
