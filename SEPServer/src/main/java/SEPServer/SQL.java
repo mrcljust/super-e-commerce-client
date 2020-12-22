@@ -743,10 +743,17 @@ public class SQL {
 			
 			double newBalance = wallettemp - lessMoney;
 			
-			String increaseWalletQuery = "UPDATE users SET wallet='" + SEPCommon.Methods.round(newBalance, 2) + "' WHERE id=" + userId;
-			statement.execute(increaseWalletQuery);
+			if(newBalance>=0)
+			{
+				String increaseWalletQuery = "UPDATE users SET wallet='" + SEPCommon.Methods.round(newBalance, 2) + "' WHERE id=" + userId;
+				statement.execute(increaseWalletQuery);
 
-			return Response.Success;
+				return Response.Success;
+			}
+			else {
+				return Response.InsufficientBalance;
+			}
+			
 		} catch (SQLException e) {
 
 			return Response.NoDBConnection;
@@ -2995,11 +3002,11 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		insertRating.execute();
 		return Response.Success;		
 		
-	} catch (SQLException e) {
-		//es ist ein Fehler aufgetreten:
-		e.printStackTrace();
-		return Response.Failure;
-	}
+		} catch (SQLException e) {
+			//es ist ein Fehler aufgetreten:
+			e.printStackTrace();
+			return Response.Failure;
+		}
 	}
 
 	protected Rating[] fetchRatings(User user) {
@@ -3099,16 +3106,19 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		// Order kann am gleichen Tag der Bestellung noch storniert werden
 		if(orderGetDate.equals(ServerDate)) {
 			try
-			{
-				// Order aus Datenbank löschen anahnd der ID
-				Statement statement = connection.createStatement();
-				statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
-							
+			{	
 				Seller seller = order.getProduct().getSeller();
-				increaseWallet(buyer, price);
-				decreaseWallet(seller, price);
-				
-				return Response.Success; 
+				if(decreaseWallet(seller, price)==Response.Success)
+				{
+					if(increaseWallet(buyer, price)==Response.Success)
+					{
+						// Order aus Datenbank löschen anahnd der ID
+						Statement statement = connection.createStatement();
+						statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
+						return Response.Success; 
+					}
+				}
+				return Response.Failure;
 				
 			} catch (SQLException e) {
 				// Fehler zurückgeben
@@ -3186,22 +3196,25 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			
 			Double price = auction.getCurrentBid();
 			
-			if(customer.getWallet() > price) 
+			if(customer.getWallet() >= price) 
 			{
+
+				if(decreaseWallet(customer, price)==Response.Success)
+				{
+					if(increaseWallet(seller, price)==Response.Success)
+					{
+						EmailHandler.sendAuctionEndedEmail(auction);
+						Statement stmt = connection.createStatement();
+						stmt.execute("UPDATE auctions "
+								+ "SET emailsent = 1");
+					
+						return Response.Success;
+					}
+				}
 				
-				Statement stmt = connection.createStatement();
-				stmt.execute("UPDATE auctions "
-						+ "SET emailsent = 1");
-			
-			EmailHandler.sendAuctionEndedEmail(auction);
-			increaseWallet(seller, price);
-			decreaseWallet(customer, price);
-			
-			return Response.Success;
 			}
 			
 			else {
-				
 				EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
 				
 				Statement statement = connection.createStatement();
@@ -3216,7 +3229,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return Response.Failure;
 		}
 	
-		return null;
+		return Response.Failure;
 	}
 
 	public static void main(String[]args) {
