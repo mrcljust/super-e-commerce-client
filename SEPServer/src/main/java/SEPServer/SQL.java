@@ -3264,6 +3264,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	//	testSQLObject.fetchAuctions(AuctionType.Active);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
 		//testSQLObject.fetchPurchasedAuctions(denis);
-		
+		EmailHandler.sendAuctionEndedEmail(null);
 	}
 }
