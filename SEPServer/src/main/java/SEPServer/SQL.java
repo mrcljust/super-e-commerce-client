@@ -1342,9 +1342,9 @@ public class SQL {
 			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
 				if (auction.getCurrentBid() >= bid || auction.getMinBid() > bid || auction.getStartPrice() > bid) {
 					return Response.BidTooLow;
-				} else if (bidder.getWallet()-bid <0) {
+				} else if (bidder.getWallet()-bid<0) {
 					return Response.InsufficientBalance;
-				} else if (bid > auction.getCurrentBid() && bidder.getWallet()-bid >=0) {
+				} else if (bid > auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice() && bidder.getWallet()-bid >=0) {
 					try {
 						PreparedStatement pstmt = connection
 								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id=" + auction.getId());
