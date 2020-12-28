@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import SEPCommon.Auction;
@@ -22,6 +23,7 @@ import SEPCommon.Customer;
 import SEPCommon.Order;
 import SEPCommon.Rating;
 import SEPCommon.Request;
+import SEPCommon.Response;
 import SEPCommon.ServerResponse;
 import SEPCommon.ShippingType;
 import SEPCommon.User;
@@ -289,19 +291,20 @@ public class MySalesController {
         		//Bewertung noch nicht abgegeben
         		MySales_CreateRating_Order.setDisable(false);
     		}
-        	
-    		String dateToday = SEPCommon.Constants.DATEFORMATDAYONLY.format(LocalDateTime.now());
-    		
+
+        	LocalDateTime dateNow = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now()).toLocalDateTime();
     		
         	if(MySales_ListOrders.getSelectionModel().getSelectedItem().getDate()!=null)
         	{
-        		String dateAuctionEnd = SEPCommon.Constants.DATEFORMATDAYONLY.format(MySales_ListOrders.getSelectionModel().getSelectedItem().getDate());
-        		if(dateToday==dateAuctionEnd)
+        		LocalDateTime dateAuctionEnd = MySales_ListOrders.getSelectionModel().getSelectedItem().getDate();
+        		LocalDateTime dateAuctionEndMax = dateAuctionEnd.plusHours(8);
+        		if(dateNow.isBefore(dateAuctionEndMax))
         		{
         			MySales_DeleteOrderButton.setDisable(false);
         			isDeleteable=true;
         		}
         		else {
+        			//Button trotzdem enablen aber bei Klick ggf. Fehlermeldung ausgeben
         			MySales_DeleteOrderButton.setDisable(false);
     				isDeleteable=false;
     			}
@@ -330,15 +333,57 @@ public class MySalesController {
 	}
     
     @FXML
-    void MySales_DeleteOrderButton_Click(ActionEvent event) {
+    void MySales_DeleteOrderButton_Click(ActionEvent event) throws IOException {
     	if(isDeleteable)
     	{
+    		//DeleteOrder Request senden
+
+        	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+        	requestMap.put("Order", MySales_ListOrders.getSelectionModel().getSelectedItem());
+            ClientRequest req = new ClientRequest(Request.DeleteOrder, requestMap);
+        	Client client = Client.getClient();
+    		ServerResponse queryResponse = client.sendClientRequest(req);
     		
+    		
+    		//Antwort auslesen
+    		if(queryResponse.getResponseType() == Response.NoDBConnection)
+    		{
+    			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, der Kauf wurde nicht gelöscht.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.OrderTooOld)
+    		{
+    			FXMLHandler.ShowMessageBox("Der Verkauf ist nicht mehr stornierbar, da er länger als 8 Stunden her ist.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.Failure)
+    		{
+    			FXMLHandler.ShowMessageBox("Beim Stornieren des Kaufes ist ein unbekannter Fehler aufgetreten.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.Success)
+    		{
+    			FXMLHandler.ShowMessageBox("Der Verkauf wurde erfolgreich storniert. Der Kaufbetrag wurde dem Käufer wieder gutgeschrieben.",
+    					"Fehler", "Fehler", AlertType.CONFIRMATION, true,
+    					false);
+    			//Betrag wurde vom Verkaeuferguthaben abgezogen
+    			user.setWallet(user.getWallet() -  MySales_ListOrders.getSelectionModel().getSelectedItem().getProductPrice());
+    			initialize();
+    			return;
+    		}
     	}
     	else
     	{
 			//Datum zu alt
-    		
+			FXMLHandler.ShowMessageBox("Der Verkauf ist nicht mehr stornierbar, da er länger als 8 Stunden her ist.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
 		}
     }
     
@@ -399,6 +444,7 @@ public class MySalesController {
 
     @FXML
     void MySales_Return_Click(ActionEvent event) {
+    	MainScreenController.setUser(user);
     	FXMLHandler.OpenSceneInStage((Stage) MySales_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 }

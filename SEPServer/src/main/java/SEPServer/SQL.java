@@ -3082,7 +3082,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	}
 	
 
-	protected Response deleteOrder(Order order, Customer buyer) {
+	protected Response deleteOrder(Order order) {
 		// Order anhand von ID aus der Datenbank löschen
 	
 		// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
@@ -3093,28 +3093,27 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		int orderID = order.getId();
 		// Order Date speichern
 		LocalDateTime date = order.getDate();
-		Double price = order.getProduct().getPrice();
+		LocalDateTime maxDeletionDate = date.plusHours(8);
 		
-		// Datum auf dd/MM/YYYY begrenzen (Stornierung nur am gleichen Tag möglich)
-		String orderGetDate = date.format(SEPCommon.Constants.DATEFORMATDAYONLY);
-		String ServerDate = serverDate.format(SEPCommon.Constants.DATEFORMATDAYONLY);
+		Double price = order.getProduct().getPrice();
 		
 		if (!checkConnection()) {
 		return Response.NoDBConnection;
 		}
 		
-		// Order kann am gleichen Tag der Bestellung noch storniert werden
-		if(orderGetDate.equals(ServerDate)) {
+		// Order kann innerhalb 8 Std nach Bestellung noch storniert werden
+		if(serverDate.isBefore(maxDeletionDate)) {
 			try
 			{	
 				Seller seller = order.getProduct().getSeller();
+				Customer buyer = order.getBuyer();
 				if(decreaseWallet(seller, price)==Response.Success)
 				{
 					if(increaseWallet(buyer, price)==Response.Success)
 					{
 						// Order aus Datenbank löschen anahnd der ID
 						Statement statement = connection.createStatement();
-						statement.execute("DELETE FROM orders WHERE id ='" + orderID + "'");
+						statement.execute("DELETE FROM orders WHERE order_id='" + orderID + "'");
 						return Response.Success; 
 					}
 				}

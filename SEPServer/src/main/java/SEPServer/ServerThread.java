@@ -449,14 +449,13 @@ public class ServerThread implements Runnable {
 				}
 				
 				//Request DeleteOrder
-				//HASHMAP: "Order" - Order-Objekt, "Customer" - Customer-Objekt des Kaeufers
+				//HASHMAP: "Order" - Order-Objekt, "Buyer" - Customer-Objekt des Kaeufers
 				else if(requestType == Request.DeleteOrder)
 				{
 					Order argOrder = (Order)requestMap.get("Order");
-					Customer argCustomer = (Customer)requestMap.get("Buyer");
 					
 					//SQL-Abfrage ausführen
-					Response responseType = sql.deleteOrder(argOrder, argCustomer);
+					Response responseType = sql.deleteOrder(argOrder);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
 					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());

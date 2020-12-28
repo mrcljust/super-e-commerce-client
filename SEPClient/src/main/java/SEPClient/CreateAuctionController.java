@@ -119,23 +119,23 @@ public class CreateAuctionController {
      	//DATUM IN CET KONVERTIEREN UND PRUEFEN
     	
     	
-    	ZonedDateTime startDateAndTime;
-    	ZonedDateTime endDateAndTime;
+    	LocalDateTime startDateAndTime;
+    	LocalDateTime endDateAndTime;
 
     	if(Auction_radioStartNow.isSelected())
     	{
         	//Startzeitpunkt jetzt
-    		startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now());
+    		startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now()).toLocalDateTime();
     	}
     	else
     	{
         	//Anderer Startzeitpunkt
-        	//Startdatum und Startzeit in Date umwandeln.
+        	//Startdatum und Startzeit in Date umwandeln. vorher noch prüfen ob die Startzeit im Format XX:XX ist
     		try {
     			String[] startTimeSplit = Auction_StartTime.getText().split(":");
             	int starthour = Integer.parseInt(startTimeSplit[0]);
             	int startminute = Integer.parseInt(startTimeSplit[1]);
-            	startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_StartDatePicker.getValue().atTime(starthour, startminute));
+            	startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_StartDatePicker.getValue().atTime(starthour, startminute)).toLocalDateTime();
     		
 			} catch (Exception e) {
 				FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige Start-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
@@ -148,7 +148,7 @@ public class CreateAuctionController {
     		String[] endTimeSplit = Auction_EndTime.getText().split(":");
         	int endhour  = Integer.parseInt(endTimeSplit[0]);
         	int endminute  = Integer.parseInt(endTimeSplit[1]);
-        	endDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_EndDatePicker.getValue().atTime(endhour, endminute));
+        	endDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_EndDatePicker.getValue().atTime(endhour, endminute)).toLocalDateTime();
 		} catch (Exception e) {
 			FXMLHandler.ShowMessageBox("Bitte geben Sie eine gültige End-Uhrzeit im folgenden Format ein: XX:XX", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
@@ -165,7 +165,7 @@ public class CreateAuctionController {
 		{
 			Date serverDate = (Date)queryResponse.getResponseMap().get("ServerDateTime");
 			
-			//HIER PRUEFEN
+			//HIER PRUEFEN (.isBefore() / .isAfter())
 			
 	    	//TESTAUSGABE
 	    	System.out.println(startDateAndTime);

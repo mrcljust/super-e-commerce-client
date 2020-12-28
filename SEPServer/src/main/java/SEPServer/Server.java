@@ -10,8 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import SEPCommon.Response;
-
 public class Server {
 	private ServerSocket listener;
 	private static ArrayList<ServerThread> clients = new ArrayList<>();
@@ -40,7 +38,7 @@ public class Server {
 			timer.scheduleAtFixedRate(new TimerTask() {
 
 		        public void run() {
-		        	Response response = sql.checkForNewFinishedAuctions();
+		        	sql.checkForNewFinishedAuctions();
 		        }
 		    }, 0, 60000);
 			

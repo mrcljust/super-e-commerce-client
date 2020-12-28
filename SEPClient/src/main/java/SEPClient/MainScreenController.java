@@ -827,6 +827,11 @@ public class MainScreenController {
         	MainScreen_TextboxBidAmount.setVisible(true);
         	MainScreen_txtDollarBidAmount.setVisible(true);
         	MainScreen_ButtonBidAuction.setVisible(true);
+        	
+        	MainScreen_TextboxBidAmount.setDisable(true);
+        	MainScreen_ButtonBidAuction.setDisable(true);
+        	MainScreen_ButtonSaveAuction.setDisable(false);
+        	
         	if(user.getId() == MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getId())
         	{
         		//Verkaeufer = aktueller Nutzer, nicht bieten lassen und Auktion merken deaktivieren
@@ -836,9 +841,13 @@ public class MainScreenController {
         	}
         	else
         	{
-            	MainScreen_TextboxBidAmount.setDisable(false);
-            	MainScreen_ButtonBidAuction.setDisable(false);
-        		MainScreen_ButtonSaveAuction.setDisable(false);
+        		if(radioCurrentAuctions.isSelected() || radioMyBids.isSelected() || radioSavedAuctions.isSelected())
+        		{
+        			//auf beendete, zukuenftige, eigene Auktionen kann nicht geboten werden.
+        			MainScreen_TextboxBidAmount.setDisable(false);
+                	MainScreen_ButtonBidAuction.setDisable(false);
+            		MainScreen_ButtonSaveAuction.setDisable(false);
+        		}
         		
             	if(radioSavedAuctions.isSelected())
             	{
@@ -846,22 +855,13 @@ public class MainScreenController {
             		//selektierte Auktion bereits gemerkt ist
                 	MainScreen_ButtonSaveAuction.setDisable(true);
             	}
-            	else
+            	
+            	if(user instanceof Seller)
             	{
-            		MainScreen_ButtonSaveAuction.setDisable(false);
+    				//Aktueller Nutzer ist Gewerbekunde, deaktiviere das Bieten
+                	MainScreen_TextboxBidAmount.setDisable(true);
+                	MainScreen_ButtonBidAuction.setDisable(true);
     			}
-			}
-        	
-        	if(user instanceof Customer)
-        	{
-        		//Aktueller Nutzer ist Privatkunde, erlaube das Bieten
-            	MainScreen_TextboxBidAmount.setDisable(false);
-            	MainScreen_ButtonBidAuction.setDisable(false);
-        	}
-        	else {
-				//Aktueller Nutzer ist Gewerbekunde, deaktiviere das Bieten
-            	MainScreen_TextboxBidAmount.setDisable(true);
-            	MainScreen_ButtonBidAuction.setDisable(true);
 			}
         	
         	MainScreen_ButtonShowRatingsAuction.setVisible(true);
@@ -1602,6 +1602,7 @@ public class MainScreenController {
 			//MainScreen oeffnen
 			user.setWallet(user.getWallet() - productToBuy.getPrice());
 			MainScreenController.setUser(user);
+			refreshUserDetails();
 			refreshViewArticles();
 		}
     }
@@ -1609,7 +1610,111 @@ public class MainScreenController {
     @FXML
     void MainScreen_BidAuctionClick (ActionEvent event)
     {
-    	
+    	//Zugriff nur fuer Privatkunden und ob der aktuelle User der Seller ist wird vorher beim Selektieren eprueft.
+    	if(MainScreen_ListAuctions.getSelectionModel().getSelectedItem() != null)
+    	{
+        	Auction selectedAuction = MainScreen_ListAuctions.getSelectionModel().getSelectedItem();
+        	String bidAmountString = MainScreen_TextboxBidAmount.getText().trim();
+        	double bidAmount;
+        	
+        	//Prüfen ob Gebotsbetrag eingegeben ist
+        	if (bidAmountString=="" || bidAmountString==null) {
+    			FXMLHandler.ShowMessageBox("Bitte geben Sie einen Gebotsbetrag ein.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+    			return;
+    		}
+        	
+        	//Prüfen ob Preis double ist und in Variable speichern (vorher ggf. , durch . ersetzen)
+        	try
+        	{
+        		bidAmount = Double.parseDouble(bidAmountString.replace(",", "."));
+        	}
+        	catch (NumberFormatException e)
+    		{
+    			FXMLHandler.ShowMessageBox("Bitte geben Sie Ihr Gebot im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+        	
+        	//clienseitig prüfen, ob genug Guthaben vorhanden ist
+        	if(user.getWallet()<bidAmount)
+        	{
+    			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+        	}
+
+        	//SendBid Request senden
+
+        	HashMap<String, Object> requestMap = new HashMap<String, Object>();
+        	requestMap.put("Auction", selectedAuction);
+        	requestMap.put("Bidder", user);
+        	requestMap.put("Bid", bidAmount);
+            ClientRequest req = new ClientRequest(Request.SendBid, requestMap);
+        	Client client = Client.getClient();
+    		ServerResponse queryResponse = client.sendClientRequest(req);
+    		
+    		
+    		//Antwort auslesen
+    		if(queryResponse.getResponseType() == Response.NoDBConnection)
+    		{
+    			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher kein Gebot abgegeben.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.InsufficientBalance)
+    		{
+    			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.BidTooLow)
+    		{
+    			FXMLHandler.ShowMessageBox("Ihr eingegebenes Gebot ist niedriger/gleich wie das aktuelle Höchstgebot.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.AuctionNotStartedYet)
+    		{
+    			FXMLHandler.ShowMessageBox("Die Auktion, auf die Sie bieten wollen, ist noch nicht gestartet. Bitte bieten Sie zu einem späteren Zeitpunkt.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.AuctionAlreadyEnded)
+    		{
+    			FXMLHandler.ShowMessageBox("Die Auktion, auf die Sie bieten wollen, wurde bereits beendet.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.Failure)
+    		{
+    			FXMLHandler.ShowMessageBox("Beim Abgeben des Gebots ist ein unbekannter Fehler aufgetreten.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			MainScreen_TextboxBidAmount.setText("");
+    			return;
+    		}
+    		else if(queryResponse.getResponseType() == Response.Success)
+    		{
+    			FXMLHandler.ShowMessageBox("Ihr Gebot wurde erfolgreich abgegeben. Sie sind aktuell der Höchstbieter. Zum Zeitpunkt des Auktionsendes muss Ihr Konto genügend Guthaben aufweisen, wenn Sie Höchstbieter sind, ansonsten wird die Auktion abgebrochen.",
+    					"Gebot erfolgreich", "Gebot erfolgreich", AlertType.CONFIRMATION, true, false);
+    			
+    			
+    			//Guthaben wird clientseitig nicht reduziert, da es erst nach einer Auktion abgezogen wird.
+    			//user.setWallet(user.getWallet() - bidAmount);
+    			//MainScreenController.setUser(user);
+    			MainScreen_TextboxBidAmount.setText("");
+    			refreshViewAuctions(AuctionType.Active);
+    			updateAuctionInfo();
+    		}
+    	}
     }
     
     void tabArticles_Select() {
