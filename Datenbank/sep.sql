@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 18. Dez 2020 um 14:31
+-- Erstellungszeit: 28. Dez 2020 um 20:10
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -42,6 +42,20 @@ CREATE TABLE `auctions` (
   `enddate` timestamp NULL DEFAULT NULL,
   `emailsent` tinyint(1) NOT NULL,
   `insertion_date` datetime DEFAULT current_timestamp() COMMENT 'wird autom. befuellt'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Tabellenstruktur für Tabelle `bids`
+--
+
+CREATE TABLE `bids` (
+  `bid_id` int(11) NOT NULL,
+  `auction_id` int(11) NOT NULL,
+  `bidder_id` int(11) NOT NULL,
+  `amount` double NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -159,6 +173,12 @@ ALTER TABLE `auctions`
   ADD PRIMARY KEY (`auction_id`);
 
 --
+-- Indizes für die Tabelle `bids`
+--
+ALTER TABLE `bids`
+  ADD PRIMARY KEY (`bid_id`);
+
+--
 -- Indizes für die Tabelle `categories`
 --
 ALTER TABLE `categories`
@@ -183,12 +203,6 @@ ALTER TABLE `ratings`
   ADD PRIMARY KEY (`rating_id`);
 
 --
--- Indizes für die Tabelle `shippingtype`
---
-ALTER TABLE `shippingtype`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indizes für die Tabelle `users`
 --
 ALTER TABLE `users`
@@ -203,6 +217,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `auctions`
   MODIFY `auction_id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `bids`
+--
+ALTER TABLE `bids`
+  MODIFY `bid_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `categories`
@@ -227,12 +247,6 @@ ALTER TABLE `products`
 --
 ALTER TABLE `ratings`
   MODIFY `rating_id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT für Tabelle `shippingtype`
---
-ALTER TABLE `shippingtype`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT für Tabelle `users`
