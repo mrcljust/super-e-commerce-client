@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import SEPCommon.Auction;
@@ -31,6 +32,7 @@ import SEPCommon.ShippingType;
 public class MyPurchasesController {
 
 	private static Customer customer = null;
+	private boolean isDeletable = false;
 
 	public static void setCustomer(Customer _customer) {
 		customer = _customer;
@@ -142,7 +144,7 @@ public class MyPurchasesController {
         
         
         rateSellerListener();
-        
+        cancelOrderListener();
         
 	}
 
@@ -211,9 +213,61 @@ public class MyPurchasesController {
     
     
     @FXML
-    void MyPurchases_DeleteOrderButton_Click(ActionEvent event) {
+    void MyPurchases_DeleteOrderButton_Click(ActionEvent event) throws IOException { //irgendwo kleiner fehler, aber läuft
+    	if (isDeletable == true) {
+    		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+    		requestMap.put("Order", MyPurchases_ListOrders.getSelectionModel().getSelectedItem());
+    		ClientRequest req = new ClientRequest(Request.DeleteOrder, requestMap);
+    		Client client = Client.getClient();
+    		ServerResponse queryResponse = client.sendClientRequest(req);
+    		
+    		if (queryResponse.getResponseType() == Response.NoDBConnection) {
+    			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, der Kauf wurde nicht gelöscht.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		
+    		else if(queryResponse.getResponseType() == Response.Failure)
+    		{
+    			FXMLHandler.ShowMessageBox("Beim Stornieren des Kaufes ist ein unbekannter Fehler aufgetreten.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		
+    		else if(queryResponse.getResponseType() == Response.OrderTooOld)
+    		{
+    			FXMLHandler.ShowMessageBox("Ihre Bestellung ist nicht mehr stornierbar, da er länger als 8 Stunden her ist.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		
+    		else if(queryResponse.getResponseType() == Response.Success)
+    		{
+    			FXMLHandler.ShowMessageBox("Der Verkauf wurde erfolgreich storniert. Der Kaufbetrag wurde dem Käufer wieder gutgeschrieben.",
+    					"Fehler", "Fehler", AlertType.CONFIRMATION, true,
+    					false);
+    			//Betrag wurde vom Verkaeuferguthaben abgezogen
+    			customer.setWallet(customer.getWallet() +  MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getProductPrice());
+    			initialize();
+    			return;
+    		}
 
+    	}
+    	
+    	else 
+    	{
+    		//Datum zu alt
+			FXMLHandler.ShowMessageBox("Ihre Bestellung ist nicht mehr stornierbar, da sie länger als 8 Stunden her ist.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+    	}
+
+    	
     }
+
     
     private ObservableList<Order> loadAllOrders() { 
     	
@@ -246,24 +300,52 @@ public class MyPurchasesController {
     	//TODO: es muss noch geprüft werden, ob Bewertung schon angegeben wurde
     	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		if(newSelection != null) {
-    			MyPurchases_CreateRating_Order.setDisable(false);
+    			if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getBuyerRating() != null) {
+    				MyPurchases_CreateRating_Order.setDisable(true);
+    			} else {
+    				MyPurchases_CreateRating_Order.setDisable(false);
+    			}
+    		} else {
+    			MyPurchases_CreateRating_Order.setDisable(true);
     		}
     	});
     	
     	MyPurchases_ListAuctions.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		if(newSelection != null) {
-    			MyPurchases_CreateRating_Auction.setDisable(false);
+    			if (MyPurchases_ListAuctions.getSelectionModel().getSelectedItem().getBuyerRating() != null) {
+    				MyPurchases_CreateRating_Auction.setDisable(true);
+    			} else {
+    				MyPurchases_CreateRating_Auction.setDisable(false);
+    			}
+    		} else {
+    			MyPurchases_CreateRating_Auction.setDisable(true);
     		}
     	});
     	
     }
     
     private void cancelOrderListener() {
-    	  MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-    		  if((newSelection != null) && (ordersDateColumn.getCellData(newSelection) == LocalDateTime.now())) { //das prüft auch die Uhrzeit.., neues Format?
-    			  MyPurchases_CreateRating_Order.setDisable(false);
-    		  }
-    	  });
+  
+    	LocalDateTime now = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now()).toLocalDateTime();
+    	
+    	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate() != null) {
+    			
+    			LocalDateTime orderDate = MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate();
+    			LocalDateTime maxCancelDate = orderDate.plusHours(8);
+    			
+    			if (now.isBefore(maxCancelDate)) {
+    				MyPurchases_DeleteOrderButton.setDisable(false); //liegt noch im zeitlichen Rahmen innerhalb dessen eine Stornierung möglich ist
+    				isDeletable = true;
+
+    			} else {
+    				MyPurchases_DeleteOrderButton.setDisable(false);
+    				isDeletable = false;
+    			}
+    		}
+    		
+    		
+    	});
     	
     }
    
