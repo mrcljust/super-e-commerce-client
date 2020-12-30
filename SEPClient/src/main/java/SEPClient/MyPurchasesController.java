@@ -202,12 +202,27 @@ public class MyPurchasesController {
 
     @FXML
     void MyPurchases_CreateRating_Auction_Click(ActionEvent event) {
-    	
+    	if (MyPurchases_ListAuctions.getSelectionModel().getSelectedItem() != null) {
+    		CreateRatingController.setOrder(null);
+    		CreateRatingController.setAuction(MyPurchases_ListAuctions.getSelectionModel().getSelectedItem());
+    		CreateRatingController.setSender(customer);
+    		CreateRatingController.setRecipient(MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getSeller());
+    		CreateRatingController.setRatingIsBySeller(false);
+    		FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
+    	} 
     }
 
     @FXML
     void MyPurchases_CreateRating_Order_Click(ActionEvent event) {
-    	//FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewerten", true, true);
+    	
+    	if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem() != null) {
+    		CreateRatingController.setAuction(null);
+    		CreateRatingController.setOrder(MyPurchases_ListOrders.getSelectionModel().getSelectedItem());
+    		CreateRatingController.setSender(customer);
+    		CreateRatingController.setRecipient(MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getSeller()); //zeigt Bewertung für sich selbst an..?
+    		CreateRatingController.setRatingIsBySeller(false);
+    		FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
+    	}  	
     }
     	
     
