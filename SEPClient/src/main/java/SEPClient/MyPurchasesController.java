@@ -1,6 +1,7 @@
 package SEPClient;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -138,8 +139,14 @@ public class MyPurchasesController {
     	        }
     	    }
     	});
+        
+        
+        rateSellerListener();
+        
+        
 	}
 
+	
     @FXML
     private TableView<Order> MyPurchases_ListOrders;
 
@@ -198,10 +205,7 @@ public class MyPurchasesController {
 
     @FXML
     void MyPurchases_CreateRating_Order_Click(ActionEvent event) {
-    	if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem() != null) {
-    		MyPurchases_CreateRating_Order.setDisable(false);
-    	}
-    	// ? FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewerten", true, true);
+    	//FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewerten", true, true);
     }
     	
     
@@ -211,7 +215,7 @@ public class MyPurchasesController {
 
     }
     
-    private ObservableList<Order> loadAllOrders() { //funktioniert noch nicht 
+    private ObservableList<Order> loadAllOrders() { 
     	
     	if(MyPurchases_ListOrders.getItems()!=null)
     	{
@@ -236,6 +240,33 @@ public class MyPurchasesController {
     	}
     	return null;
     }
+    
+    private void rateSellerListener() { 
+    	
+    	//TODO: es muss noch geprüft werden, ob Bewertung schon angegeben wurde
+    	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		if(newSelection != null) {
+    			MyPurchases_CreateRating_Order.setDisable(false);
+    		}
+    	});
+    	
+    	MyPurchases_ListAuctions.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		if(newSelection != null) {
+    			MyPurchases_CreateRating_Auction.setDisable(false);
+    		}
+    	});
+    	
+    }
+    
+    private void cancelOrderListener() {
+    	  MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
+    		  if((newSelection != null) && (ordersDateColumn.getCellData(newSelection) == LocalDateTime.now())) { //das prüft auch die Uhrzeit.., neues Format?
+    			  MyPurchases_CreateRating_Order.setDisable(false);
+    		  }
+    	  });
+    	
+    }
+   
     
     private ObservableList<Auction> loadAllAuctions() {
     	if(MyPurchases_ListAuctions.getItems()!=null)

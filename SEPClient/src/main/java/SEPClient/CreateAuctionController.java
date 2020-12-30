@@ -116,6 +116,7 @@ public class CreateAuctionController {
 
     @FXML
     void Auction_InsertClick(ActionEvent event) {
+    
      	//DATUM IN CET KONVERTIEREN UND PRUEFEN
     	
     	
