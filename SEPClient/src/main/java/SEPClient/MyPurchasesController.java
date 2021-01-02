@@ -219,7 +219,7 @@ public class MyPurchasesController {
     		CreateRatingController.setAuction(null);
     		CreateRatingController.setOrder(MyPurchases_ListOrders.getSelectionModel().getSelectedItem());
     		CreateRatingController.setSender(customer);
-    		CreateRatingController.setRecipient(MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getSeller()); //zeigt Bewertung für sich selbst an..?
+    		CreateRatingController.setRecipient(MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getSeller()); 
     		CreateRatingController.setRatingIsBySeller(false);
     		FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
     	}  	
@@ -243,14 +243,6 @@ public class MyPurchasesController {
     			return;
     		}
     		
-    		else if(queryResponse.getResponseType() == Response.Failure)
-    		{
-    			FXMLHandler.ShowMessageBox("Beim Stornieren des Kaufes ist ein unbekannter Fehler aufgetreten.",
-    					"Fehler", "Fehler", AlertType.ERROR, true,
-    					false);
-    			return;
-    		}
-    		
     		else if(queryResponse.getResponseType() == Response.OrderTooOld)
     		{
     			FXMLHandler.ShowMessageBox("Ihre Bestellung ist nicht mehr stornierbar, da er länger als 8 Stunden her ist.",
@@ -259,10 +251,20 @@ public class MyPurchasesController {
     			return;
     		}
     		
+    		
+    		else if(queryResponse.getResponseType() == Response.Failure)
+    		{
+    			FXMLHandler.ShowMessageBox("Beim Stornieren des Kaufes ist ein unbekannter Fehler aufgetreten.",
+    					"Fehler", "Fehler", AlertType.ERROR, true,
+    					false);
+    			return;
+    		}
+    		
+
     		else if(queryResponse.getResponseType() == Response.Success)
     		{
     			FXMLHandler.ShowMessageBox("Der Verkauf wurde erfolgreich storniert. Der Kaufbetrag wurde dem Käufer wieder gutgeschrieben.",
-    					"Fehler", "Fehler", AlertType.CONFIRMATION, true,
+    					"Stornierung erfolgreich", "Stornierung erfolgreich", AlertType.CONFIRMATION, true,
     					false);
     			//Betrag wurde vom Verkaeuferguthaben abgezogen
     			customer.setWallet(customer.getWallet() +  MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getProductPrice());
