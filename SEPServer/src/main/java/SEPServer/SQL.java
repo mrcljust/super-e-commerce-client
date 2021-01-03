@@ -1329,11 +1329,13 @@ public class SQL {
 		// Edited: Jan 8'14 at 18:47
 		LocalDateTime serverDate = LocalDateTime.now();
 		// String currentServerDate= SEPCommon.Constants.DATEFORMAT.format(serverDate);
+		Timestamp timestamp = Timestamp.valueOf(serverDate);
 
 		LocalDateTime endDate = auction.getEnddate();
 		LocalDateTime startDate = auction.getStarttime();
 		// String endDate = SEPCommon.Constants.DATEFORMAT.format(date);
 
+		//am Anfang currentBidder ist der seller. also wenn die currentbidder id noch vom seller ist, ist auch currentbid>=bid erlaubt
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
@@ -1342,21 +1344,57 @@ public class SQL {
 			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
 				if (auction.getCurrentBid() >= bid || auction.getMinBid() > bid || auction.getStartPrice() > bid) {
 					return Response.BidTooLow;
-				} else if (bidder.getWallet()-bid<0) {
+				} else if (bidder.getWallet() - bid < 0) {
 					return Response.InsufficientBalance;
-				} else if (bid > auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice() && bidder.getWallet()-bid >=0) {
-					try {
-						PreparedStatement pstmt = connection
-								.prepareStatement("UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id=" + auction.getId());
-						pstmt.setDouble(1, bid);
-						pstmt.setInt(2, bidder.getId());
-						pstmt.execute();
-						return Response.Success;
-					} catch (SQLException e) {
-						e.printStackTrace();
-						return Response.Failure;
+				} else if (auction.getCurrentBidder().getId() ==0) {
+					if (bid >= auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
+							&& bidder.getWallet() - bid >= 0) {
+						try {
+							PreparedStatement pstmt = connection.prepareStatement(
+									"UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id="
+											+ auction.getId());
+							pstmt.setDouble(1, bid);
+							pstmt.setInt(2, bidder.getId());
+							pstmt.execute();
+							
+							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id, date) VALUES(?,?,?,?");
+							pstmtBids.setDouble(1, bid);
+							pstmtBids.setInt(2, auction.getId());
+							pstmtBids.setInt(3, bidder.getId());
+							pstmtBids.setTimestamp(4,timestamp);
+							pstmtBids.execute();
+							return Response.Success;
+						} catch (SQLException e) {
+							e.printStackTrace();
+							return Response.Failure;
+						}
 					}
-				} else {
+				} else if (auction.getCurrentBidder().getId() != auction.getSeller().getId()) {
+					if (bid > auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
+							&& bidder.getWallet() - bid >= 0) {
+						try {
+							PreparedStatement pstmt = connection.prepareStatement(
+									"UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id="
+											+ auction.getId());
+							pstmt.setDouble(1, bid);
+							pstmt.setInt(2, bidder.getId());
+							pstmt.execute();
+							
+							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id, date) VALUES(?,?,?,?");
+							pstmtBids.setDouble(1, bid);
+							pstmtBids.setInt(2, auction.getId());
+							pstmtBids.setInt(3, bidder.getId());
+							pstmtBids.setTimestamp(4,timestamp);
+							pstmtBids.execute();
+							return Response.Success;
+						} catch (SQLException e) {
+							e.printStackTrace();
+							return Response.Failure;
+						}
+					}
+				}
+
+				else {
 					return Response.Failure;
 				}
 
@@ -1367,7 +1405,7 @@ public class SQL {
 		} else {
 			return Response.AuctionNotStartedYet;
 		}
-
+		return null;
 	}
 
 	protected Response saveAuction(User buyer, Auction auction) {		
@@ -2463,9 +2501,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		try {
 			PreparedStatement pstmtAllBiddedAuctions = connection
 					.prepareStatement(
-							"Select * FROM auctions " + "WHERE DATE(auctions.enddate) >= '" + timestamp
+							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + "WHERE DATE(auctions.enddate) >= '" + timestamp
 									+ "' AND DATE(auctions.starttime) <= '" + timestamp
-									+ "' AND auctions.currentbidder_id=" + buyer.getId(),
+									+ "' AND bids.bidder_id=" + buyer.getId(),
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet allBiddedAuctions = pstmtAllBiddedAuctions.executeQuery();
 
@@ -2483,7 +2521,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			while (allBiddedAuctions.next()) {
 
-				int currentAuctionId = allBiddedAuctions.getInt("auctions.auction_id");
+				int currentAuctionId = allBiddedAuctions.getInt("bids.auction_id");
 				PreparedStatement pstmtAllSellerInformation = connection.prepareStatement(
 						"SELECT * FROM auctions JOIN users ON auctions.seller_id= users.id WHERE auctions.auction_id="
 								+ currentAuctionId,
