@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.imageio.ImageIO;
 
@@ -26,11 +27,13 @@ import javafx.scene.web.HTMLEditor;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.coobird.thumbnailator.Thumbnails;
+import SEPCommon.Auction;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
 import SEPCommon.Request;
 import SEPCommon.Response;
 import SEPCommon.ServerResponse;
+import SEPCommon.ShippingType;
 
 public class CreateAuctionController {
 
@@ -115,8 +118,30 @@ public class CreateAuctionController {
     }
 
     @FXML
-    void Auction_InsertClick(ActionEvent event) {
-    
+    void Auction_InsertClick(ActionEvent event) throws IOException { //irgendwo fehler    	
+    	String name = Auction_txtName.getText().trim();
+    	String startingpriceString = Auction_txtStartPrice.getText().trim();
+    	String minBidString = Auction_txtMinBid.getText().trim();
+    	String description = Auction_txtDescription.getHtmlText().trim();
+    	double startingPrice;
+    	double minBid;
+    	ShippingType shippingType;
+    	
+    	
+    	
+    	    	
+    	
+    	Image image = Auction_imgPicture.getImage();
+    	BufferedImage imageBuffered = SwingFXUtils.fromFXImage(image, null);
+    	
+    	BufferedImage imageResized = Thumbnails.of(imageBuffered).size(512, 512).asBufferedImage();
+    	ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+    	ImageIO.write(imageResized, "png", byteOutput);
+    	byte[] imageByteArray = byteOutput.toByteArray();
+    	byteOutput.close();
+    	
+    	 
+    	
      	//DATUM IN CET KONVERTIEREN UND PRUEFEN
     	
     	
@@ -179,7 +204,80 @@ public class CreateAuctionController {
 			return;
 		}
 		
-		FXMLHandler.OpenSceneInStage((Stage) Auction_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+		
+		if (name == "" || name == null || startingpriceString == "" || startingpriceString == null || minBidString == "" || minBidString == null) {
+			
+			FXMLHandler.ShowMessageBox("Bitte geben Sie Name, Startpreis und Mindestgebot an. ", "Fehler", "Fehler", AlertType.ERROR, true, false);
+			return;
+		}
+		
+		if (Auction_radioShipping.isSelected()) {
+			shippingType = ShippingType.Shipping;
+		} else {
+			shippingType = ShippingType.PickUp;
+		}
+		
+		
+
+		try {
+    		startingPrice = Double.parseDouble(startingpriceString.replace(",", "."));
+    	} 
+		
+		catch (NumberFormatException e)	{
+			FXMLHandler.ShowMessageBox("Bitte geben Sie den Startpreis im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			Auction_txtStartPrice.setText("");
+			return; 
+		}
+		
+		try {
+    		minBid = Double.parseDouble(minBidString.replace(",", "."));
+    	} 
+		
+		catch (NumberFormatException e)	{
+			FXMLHandler.ShowMessageBox("Bitte geben Sie das Mindestgebot im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			Auction_txtMinBid.setText("");
+			return; 
+		}
+		
+		
+		
+		Auction newAuction = new Auction(name, description, imageByteArray, minBid, startingPrice, shippingType, customer, startDateAndTime, endDateAndTime);
+		
+		HashMap<String, Object> requestMap = new HashMap<String, Object>();
+		requestMap.put("Auction", newAuction);
+		
+		req = new ClientRequest(Request.CreateAuction, requestMap);
+		client = Client.getClient();
+		queryResponse = client.sendClientRequest(req); 
+		
+		// Wenn Produkt erfolgreich angelegt, Response.Success returnen
+				// wenn keine Verbindung zu DB: Response.NoDBConnection returnen
+				// wenn sonstiger Fehler auftritt ggf. Response.Failure returnen
+					
+		if(queryResponse.getResponseType() == Response.NoDBConnection)
+		{
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, es wurde daher keine Auktion inseriert.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.Failure)
+		{
+			FXMLHandler.ShowMessageBox("Beim Inserieren der Auktion ist ein unbekannter Fehler aufgetreten.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		else if(queryResponse.getResponseType() == Response.Success)
+		{
+			FXMLHandler.ShowMessageBox("Der Artikel '" + name + "' wurde erfolgreich inseriert.",
+					"Artikel inseriert", "Artikel inseriert", AlertType.CONFIRMATION, true,
+					false);
+			//MainScreen oeffnen
+			MainScreenController.setUser(customer);
+			FXMLHandler.OpenSceneInStage((Stage) Auction_Insert.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+			return;
+		}
 		
     }
 
