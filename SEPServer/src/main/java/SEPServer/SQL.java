@@ -3192,7 +3192,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			// Auktionen filtern, die zu Ende sind und bei denen noch keine Email Bestätigung verschickt wurde und wo es einen Höchstbietenden gibt
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
 					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) <'" + timestamp + "'"
-					+ " AND auctions.emailsent = 0 AND auctions.currentbidder_id != 0");
+					+ " AND auctions.emailsent = 0");
 			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
 			ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
@@ -3203,6 +3203,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			int sumEmailError = 0;
 			// Auktionen, bei denen der Käufer zu wenig Guthaben für die Ausführung der Transaktion hatte
 			int sumInsuffiecientBalance = 0;
+			// Auktionen bei denen es keinen Bieter gibt
+			int sumAuctionNoBuyer = 0;
+			
 			
 			// Wenn es Ergebnisse im Resultset gibt Schleife ausführen
 			while(endedAuctionsNoEmail.next()) {
@@ -3234,6 +3237,18 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				
 				// Current Bidder der Auktion bestimmen
 				int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
+				
+				if (currentBidderId == 0) {
+					
+					Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
+							endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
+							seller, null, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+					
+					EmailHandler.sendAuctionEndedBuyerNoBidderEmail(auction);
+					sumAuctionNoBuyer++;
+				}
+				
+				else {
 				// User der die gleiche Id hat, wie der aktuelle Bieter
 				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
 				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
@@ -3291,6 +3306,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						sumInsuffiecientBalance++;
 					}
 				}
+				}
 			}
 			if(sumEmailError>0)
 			{
@@ -3306,6 +3322,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			{
 				// Rückgabe Anzahl der geendeten Auktionen mit zu wenig Guthaben seitens des Käufers
 				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumInsuffiecientBalance + " neue Auktion(en) geendet, bei der/denen der Käufer zu wenig Guthaben hat, E-Mail(s) versendet und betroffene Auktion(en) geloescht.");
+			}
+			if(sumAuctionNoBuyer>0) {
+				// Rückgabe der Auktionen, bei denen es keinen Bieter gab
+				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumAuctionNoBuyer + " neue Auktion(en) geendet, bei der/denen es keinen Bieter gibt, E-Mail(s) mit Benachrichtigung versendet.");
 			}
 			return Response.Success;
 		} catch (SQLException e) {
