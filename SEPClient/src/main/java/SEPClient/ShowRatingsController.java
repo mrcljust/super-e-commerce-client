@@ -3,18 +3,27 @@ package SEPClient;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.HashMap;
 
+import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
+import SEPCommon.Order;
 import SEPCommon.Rating;
+import SEPCommon.Request;
 import SEPCommon.Seller;
+import SEPCommon.ServerResponse;
 import SEPCommon.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
@@ -33,7 +42,16 @@ public class ShowRatingsController {
 	}
 
 	public void initialize() throws IOException {
-		if(viewOwnRatings )
+		ShowRatings_ListRatings.setItems(loadAllRatings());
+		
+		TableRatings_ColumnDate.setCellValueFactory(new PropertyValueFactory<Rating, Date>("date"));
+		TableRatings_ColumnBy.setCellValueFactory(new PropertyValueFactory<Rating, String>("ratingBy"));
+		TableRatings_ColumnStars.setCellValueFactory(new PropertyValueFactory<Rating, Integer>("stars"));
+		TableRatings_ColumnText.setCellValueFactory(new PropertyValueFactory<Rating, String>("report"));
+		
+		
+				
+		if(viewOwnRatings)
 		{
 			//eigene Bewertungen
 			if(user instanceof Seller)
@@ -96,6 +114,43 @@ public class ShowRatingsController {
 
     @FXML
     private Label ShowRatings_txtRatingCount;
+    
+    
+    private ObservableList<Rating> loadAllRatings() {
+    	
+    	if (ShowRatings_ListRatings.getItems() != null) {
+    		ShowRatings_ListRatings.getItems().clear();
+    	}
+    	
+    	HashMap <String,Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("User", user);
+    	requestMap.put("FetchAvg", true); //?
+    	
+    	ClientRequest req = new ClientRequest (Request.FetchRatings, requestMap);
+    	Client client = Client.getClient();
+    	ServerResponse queryResponse = client.sendClientRequest(req);
+    	
+    	if (queryResponse != null && queryResponse.getResponseMap() != null && queryResponse.getResponseMap().get("Ratings") != null) {
+    		
+    		Rating [] ratings = (Rating[])queryResponse.getResponseMap().get("Ratings");
+    		ObservableList<Rating> ObservableRatings = FXCollections.observableArrayList(ratings);
+    		ObservableRatings.removeIf(n -> (n == null));
+    		
+    		return ObservableRatings;
+    		
+    	}
+    	
+    	return null;
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
     @FXML
     void ShowRatings_ReturnButton_Click(ActionEvent event) {
     	FXMLHandler.OpenSceneInStage((Stage) ShowRatings_ReturnButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);

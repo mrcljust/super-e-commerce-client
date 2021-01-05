@@ -314,7 +314,6 @@ public class MyPurchasesController {
     
     private void rateSellerListener() { 
     	
-    	//TODO: es muss noch geprüft werden, ob Bewertung schon angegeben wurde
     	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		if(newSelection != null) {
     			if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getBuyerRating() != null) {
@@ -352,8 +351,8 @@ public class MyPurchasesController {
     			LocalDateTime maxCancelDate = orderDate.plusHours(8);
     			
     			if (now.isBefore(maxCancelDate)) {
-    				MyPurchases_DeleteOrderButton.setDisable(false); //liegt noch im zeitlichen Rahmen innerhalb dessen eine Stornierung möglich ist
-    				isDeletable = true;
+    				MyPurchases_DeleteOrderButton.setDisable(false); 
+    				isDeletable = true; //liegt noch im zeitlichen Rahmen innerhalb dessen eine Stornierung möglich ist
 
     			} else {
     				MyPurchases_DeleteOrderButton.setDisable(false);
