@@ -2599,9 +2599,11 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return null;
 		}
 		
+		// Array das später zurückgegeben wird
 		Auction[] savedAuctions;
 		
 		try {
+			// Die Auktionen auswählen, bei denen die id gleich der übergebenden id des buyers ist
 			PreparedStatement fetchSavedAuctionsIds = connection.prepareStatement("SELECT savedauctions FROM users WHERE id='" + buyer.getId() + "'");
 			ResultSet fetchSavedAuctionsIdsResult = fetchSavedAuctionsIds.executeQuery();
 			
@@ -2614,7 +2616,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					return null; //keine Auktionen bisher gespeichert
 				
 				String[] savedAuctionsIds = saved.split(","); //in der DB sind die IDs durch "," seppariert, daher splitten und Array der IDs erstellen
-				savedAuctions = new Auction[savedAuctionsIds.length]; //Rckgabearray mit Gre der Anzahl der IDs im Array
+				savedAuctions = new Auction[savedAuctionsIds.length]; //Rckgabearray mit der Anzahl der IDs im Array
 				
 				int newArrayCounter = 0;
 				for(String viewedIdStr : savedAuctionsIds) 
@@ -2622,14 +2624,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					try {
 						int viewedId = Integer.parseInt(viewedIdStr);
 						
-						//Fr jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
+						//Für jede ID im Array saveAuctionsId, die Auktionsdaten aus der DB holen
 						//anschließend jeweils ein Auction-Object anhand der gefetchten Daten aus der DB erstellen
 						//und in das Array savedAuctions, welches am Ende zurckgegeben wird schreiben
 						PreparedStatement fetchAuctionInfo = connection.prepareStatement("SELECT * FROM auctions JOIN users ON (auctions.seller_Id = users.id) WHERE auctions.auction_id='" + viewedId + "'");
 						ResultSet fetchAuctionsInfoResult = fetchAuctionInfo.executeQuery();
 						if(fetchAuctionsInfoResult.next())
 						{
-							
+				
 							Address address = new Address(fetchAuctionsInfoResult.getString("users.fullname"),
 									fetchAuctionsInfoResult.getString("users.country"), fetchAuctionsInfoResult.getInt("users.postalcode"),
 									fetchAuctionsInfoResult.getString("users.city"), fetchAuctionsInfoResult.getString("users.street"),
@@ -2642,6 +2644,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							int shippingtypeId = fetchAuctionsInfoResult.getInt("auctions.shippingtype_id");
 							ShippingType shippingtype = null;
 
+							// Ware abholen oder versenden
 							if(shippingtypeId==1)
 							{
 							    shippingtype = ShippingType.Shipping;
@@ -2666,6 +2669,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									fetchAuctionsInfoResult.getBytes("auctions.image"), fetchAuctionsInfoResult.getDouble("auctions.minbid"), fetchAuctionsInfoResult.getDouble("auctions.startprice"), shippingtype,
 									seller, customer, fetchAuctionsInfoResult.getDouble("auctions.currentbid"), fetchAuctionsInfoResult.getTimestamp("auctions.starttime").toLocalDateTime(), fetchAuctionsInfoResult.getTimestamp("auctions.enddate").toLocalDateTime());
 							
+							// Auktion im Array an der Stelle newArrayCounter speichern
 							savedAuctions[newArrayCounter] = auction;
 						}
 						newArrayCounter++;
@@ -2675,11 +2679,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							savedAuctions[newArrayCounter] = null;
 						}
 					}
+				// Array mit den gespeicherten Auktionen zurückgeben
 					return savedAuctions;
 				}
 				else
 				{
-					//kein Entry mit der BuyerId - eigentlich nicht mglich.
+					//kein Entry mit der BuyerId - eigentlich nicht möglich.
 					return null;
 				}
 			} catch (SQLException e) {
@@ -2703,26 +2708,34 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return null;
 		}
 		try {
+			// 1. Aktive Auktionen
 			if (auctionType == AuctionType.Active) {
 
+				// Zeit übergeben
 				LocalDateTime now = LocalDateTime.now();
 				Timestamp timestamp = Timestamp.valueOf(now);
 
 				Auction[] allActiveAuctionsArray = null;
+				// Auktionen übergeben, die aktiv sind und den gesuchten Titel entsprechen
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
 						"Select * FROM auctions WHERE DATE(auctions.enddate) >='" + timestamp
 								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'"
 								+ " AND auctions.title LIKE ?",				//? Wildcard
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				
+				// Searchstring einsetzten
 				allActiveAuctions.setString(1,"%"+ searchstring+"%");
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
 				int arraycounter = 0;
+				
+				// Auktionen zählen
 				while (activeAuctions.next()) {
 					sumAuctions++;
 				}
 				activeAuctions.beforeFirst();
 
+				// es gibt keine aktiven Auktionen
 				if(sumAuctions<=0)
 				{
 					return null;
@@ -2732,6 +2745,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				while (activeAuctions.next()) {
 					int activeAuctionId = activeAuctions.getInt("auctions.auction_id");
+					
+					// User auswählen, die = auction.seller sind
 					PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
 									+ activeAuctionId,
@@ -2739,6 +2754,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					ResultSet allSellerInformation = pstmtAllActiveAuctions.executeQuery();
 					allSellerInformation.first();
 
+					// Adress und Customer Objekt übergeben
 					Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
 							allSellerInformation.getString("users.country"),
 							allSellerInformation.getInt("users.postalcode"),
@@ -2752,6 +2768,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allSellerInformation.getBytes("users.image"),
 							allSellerInformation.getDouble("users.wallet"), newAddress);
 
+					
+					// Das gleiche für den Käufer machen
 					int currentBidderId = activeAuctions.getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
@@ -2778,6 +2796,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								currentBidderInformation.getBytes("users.image"),
 								currentBidderInformation.getDouble("users.wallet"), newAddressCurrentbidder);
 					}
+					// Versand oder Abholung der Ware
 					ShippingType shippingtype = null;
 					if (activeAuctions.getInt("auctions.shippingtype_id") == 1) {
 						shippingtype = ShippingType.Shipping;
@@ -2785,6 +2804,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						shippingtype = ShippingType.PickUp;
 					}
 					
+					// Auktionen die zutreffen zurückgeben als Array
 					allActiveAuctionsArray[arraycounter] = new Auction(activeAuctions.getInt("auctions.auction_id"),
 							activeAuctions.getString("auctions.title"),
 							activeAuctions.getString("auctions.description"), activeAuctions.getBytes("auctions.image"),
@@ -2800,6 +2820,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			}
 
+			// 2. Beendete Auktionen
+			// ähnlich zu aktuelle Auktionen, es werden aber noch Ratings mit übergeben
 			else if (auctionType == AuctionType.Ended) {
 
 				LocalDateTime now = LocalDateTime.now();
@@ -2873,6 +2895,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								currentBidderInformation.getBytes("users.image"),
 								currentBidderInformation.getDouble("users.wallet"), newAddressCurrentbidder);
 					}
+					
+					// alle Seller und Buyer Ratings fetchen
 					Rating newSellerRating = null;
 					Rating newBuyerRating = null;
 					if (currentBidder != null) {
@@ -2938,11 +2962,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			}
 
+			// 3. zukünftige Auktionen (noch nicht gestartete)
+			// ähnlich zu aktuelle Auktionen, nur gibt es keinen Buyer der übergeben werden muss
 			else if (auctionType == AuctionType.Future) {
 
 				LocalDateTime now = LocalDateTime.now();
 				Timestamp timestamp = Timestamp.valueOf(now);
 
+				// Auktionen, die noch nicht gestartet sind mit searchstring zurückgeben
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
 						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > '" + timestamp + "'"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
@@ -3028,6 +3055,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		}
 		
 		try {
+			// Rating mit Sternen und Bewertung in die Datenbank eintragen
 		PreparedStatement insertRating = connection.prepareStatement("INSERT INTO ratings(order_id, auction_id, sender_id, receiver_id, stars, text) "
 				+ "VALUES (?, ?, ?, ?, ?, ?)");
 		
