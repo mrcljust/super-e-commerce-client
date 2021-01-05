@@ -1,12 +1,10 @@
 package SEPServer;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -1740,14 +1738,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		if (!checkConnection()) {
 			return null;
 		}
-		LocalDateTime now = LocalDateTime.now();
-		Timestamp timestamp = Timestamp.valueOf(now);
 
 		Auction[] allPurchasedAuctionsArray = null;
 		try {
 			PreparedStatement allPurchasedAuctions = connection.prepareStatement(
-					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=users.id WHERE DATE(auctions.enddate) < DATE(NOW()) "
-							+ " AND users.id=" + buyer.getId(),
+					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=users.id WHERE auctions.enddate < CURRENT_TIMESTAMP "
+							+ "AND users.id=" + buyer.getId(),
 					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 			ResultSet purchasedAuctions = allPurchasedAuctions.executeQuery();
@@ -1889,13 +1885,11 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		if (!checkConnection()) {
 			return null;
 		}
-		LocalDateTime now = LocalDateTime.now();
-		Timestamp timestamp = Timestamp.valueOf(now);
 
 		Auction[] allSoldAuctionsArray = null;
 		try {
 			PreparedStatement allSoldAuctions = connection.prepareStatement(
-					"SELECT * FROM auctions JOIN users on auctions.seller_id=users.id WHERE DATE(auctions.enddate) < DATE(NOW())"
+					"SELECT * FROM auctions JOIN users on auctions.seller_id=users.id WHERE auctions.enddate < CURRENT_TIMESTAMP"
 							+" AND users.id=" + seller.getId(),
 					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
@@ -2048,8 +2042,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allActiveAuctionsArray = null;
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
-								+ " AND DATE(auctions.starttime) <= Date(NOW())" ,
+						"Select * FROM auctions WHERE auctions.enddate >= CURRENT_TIMESTAMP"
+								+ " AND auctions.starttime <= CURRENT_TIMESTAMP" ,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2142,7 +2136,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())",
+						"Select * FROM auctions WHERE auctions.enddate < CURRENT_TIMESTAMP",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet endedAuctions = allEndedAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2275,7 +2269,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW()) ",
+						"Select * FROM auctions " + "WHERE auctions.starttime > CURRENT_TIMESTAMP",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet futureAuctions = allFutureAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2498,94 +2492,96 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		if (!checkConnection()) {
 			return null;
 		}
-
-		int sqlcounter = 0;
-		int arraycounter = 0;
-		Auction[] allActiveAuctionsArray = null;
+		
 		try {
 			PreparedStatement pstmtAllBiddedAuctions = connection
 					.prepareStatement(
-							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= Date(NOW())"
-									+ " AND DATE(auctions.starttime) <= Date(NOW())"
+							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE auctions.enddate >= CURRENT_TIMESTAMP"
+									+ " AND auctions.starttime <= CURRENT_TIMESTAMP"
 									+ " AND bids.bidder_id=" + buyer.getId(),
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet allBiddedAuctions = pstmtAllBiddedAuctions.executeQuery();
-
-			while (allBiddedAuctions.next()) {
-				sqlcounter++;
-			}
-			allBiddedAuctions.beforeFirst();
-
-			if(sqlcounter<=0)
-			{
-				return null;
-			}
 			
-			allActiveAuctionsArray = new Auction[sqlcounter];
+			//Mit Liste arbeiten, da Arraygröße unbekannt
+			List<Auction> auctionList = new ArrayList<Auction>();
 
 			while (allBiddedAuctions.next()) {
 
 				int currentAuctionId = allBiddedAuctions.getInt("bids.auction_id");
-				PreparedStatement pstmtAllSellerInformation = connection.prepareStatement(
-						"SELECT * FROM auctions JOIN users ON auctions.seller_id= users.id WHERE auctions.auction_id="
-								+ currentAuctionId,
-						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-
-				ResultSet allSellerInformation = pstmtAllSellerInformation.executeQuery();
-				allSellerInformation.first();
-
-				Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
-						allSellerInformation.getString("users.country"),
-						allSellerInformation.getInt("users.postalcode"), allSellerInformation.getString("users.city"),
-						allSellerInformation.getString("users.street"), allSellerInformation.getString("users.number"));
-				Customer newSeller = new Customer(allSellerInformation.getInt("users.id"),
-						allSellerInformation.getString("users.username"), allSellerInformation.getString("users.email"),
-						allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
-						allSellerInformation.getDouble("users.wallet"), newAddress);
-
-				int currentbidderId = buyer.getId();
-
-				PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
-						"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id="
-								+ currentAuctionId + " AND auctions.currentbidder_id=" + currentbidderId,
-						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
-				ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-				currentBidderInformation.beforeFirst();
-				Address newAddressCurrentBidder = null;
-				Customer currentBidder = null;
-
-				if (currentBidderInformation.next() != false) {
-					newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
-							currentBidderInformation.getString("users.country"),
-							currentBidderInformation.getInt("users.postalcode"),
-							currentBidderInformation.getString("users.city"),
-							currentBidderInformation.getString("users.street"),
-							currentBidderInformation.getString("users.number"));
-					currentBidder = new Customer(currentBidderInformation.getInt("users.id"),
-							currentBidderInformation.getString("users.username"),
-							currentBidderInformation.getString("users.email"),
-							currentBidderInformation.getString("users.password"),
-							currentBidderInformation.getBytes("users.image"),
-							currentBidderInformation.getDouble("users.wallet"), newAddressCurrentBidder);
+				boolean alreadyInList=false;
+				for(Auction auct : auctionList)
+				{
+					if(auct.getId()==currentAuctionId)
+					{
+						//bereits in Liste (mehrere Gebote vom selben User)
+						alreadyInList=true;
+					}
 				}
-				ShippingType shippingtype = null;
-				if (allBiddedAuctions.getInt("auctions.shippingtype_id") == 1) {
-					shippingtype = ShippingType.Shipping;
-				} else if (allBiddedAuctions.getInt("auctions.shippingtype_id") == 2) {
-					shippingtype = ShippingType.PickUp;
+				
+				if(!alreadyInList)
+				{
+					PreparedStatement pstmtAllSellerInformation = connection.prepareStatement(
+							"SELECT * FROM auctions JOIN users ON auctions.seller_id= users.id WHERE auctions.auction_id="
+									+ currentAuctionId,
+							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+
+					ResultSet allSellerInformation = pstmtAllSellerInformation.executeQuery();
+					allSellerInformation.first();
+
+					Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
+							allSellerInformation.getString("users.country"),
+							allSellerInformation.getInt("users.postalcode"), allSellerInformation.getString("users.city"),
+							allSellerInformation.getString("users.street"), allSellerInformation.getString("users.number"));
+					Customer newSeller = new Customer(allSellerInformation.getInt("users.id"),
+							allSellerInformation.getString("users.username"), allSellerInformation.getString("users.email"),
+							allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
+							allSellerInformation.getDouble("users.wallet"), newAddress);
+
+					int currentbidderId = buyer.getId();
+
+					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
+							"Select * FROM auctions JOIN users ON auctions.currentbidder_id=users.id WHERE auctions.auction_id="
+									+ currentAuctionId + " AND auctions.currentbidder_id=" + currentbidderId,
+							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
+					currentBidderInformation.beforeFirst();
+					Address newAddressCurrentBidder = null;
+					Customer currentBidder = null;
+
+					if (currentBidderInformation.next() != false) {
+						newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
+								currentBidderInformation.getString("users.country"),
+								currentBidderInformation.getInt("users.postalcode"),
+								currentBidderInformation.getString("users.city"),
+								currentBidderInformation.getString("users.street"),
+								currentBidderInformation.getString("users.number"));
+						currentBidder = new Customer(currentBidderInformation.getInt("users.id"),
+								currentBidderInformation.getString("users.username"),
+								currentBidderInformation.getString("users.email"),
+								currentBidderInformation.getString("users.password"),
+								currentBidderInformation.getBytes("users.image"),
+								currentBidderInformation.getDouble("users.wallet"), newAddressCurrentBidder);
+					}
+					ShippingType shippingtype = null;
+					if (allBiddedAuctions.getInt("auctions.shippingtype_id") == 1) {
+						shippingtype = ShippingType.Shipping;
+					} else if (allBiddedAuctions.getInt("auctions.shippingtype_id") == 2) {
+						shippingtype = ShippingType.PickUp;
+					}
+					auctionList.add(new Auction(allBiddedAuctions.getInt("auctions.auction_id"),
+							allBiddedAuctions.getString("auctions.title"),
+							allBiddedAuctions.getString("auctions.description"),
+							allBiddedAuctions.getBytes("auctions.image"), allBiddedAuctions.getDouble("auctions.minbid"),
+							allBiddedAuctions.getDouble("auctions.startprice"), shippingtype, newSeller, currentBidder,
+							allBiddedAuctions.getDouble("auctions.currentbid"),
+							allBiddedAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
+							allBiddedAuctions.getTimestamp("auctions.enddate").toLocalDateTime()));
 				}
-				allActiveAuctionsArray[arraycounter] = new Auction(allBiddedAuctions.getInt("auctions.auction_id"),
-						allBiddedAuctions.getString("auctions.title"),
-						allBiddedAuctions.getString("auctions.description"),
-						allBiddedAuctions.getBytes("auctions.image"), allBiddedAuctions.getDouble("auctions.minbid"),
-						allBiddedAuctions.getDouble("auctions.startprice"), shippingtype, newSeller, currentBidder,
-						allBiddedAuctions.getDouble("auctions.currentbid"),
-						allBiddedAuctions.getTimestamp("auctions.starttime").toLocalDateTime(),
-						allBiddedAuctions.getTimestamp("auctions.enddate").toLocalDateTime());
-				arraycounter++;
 
 			}
-			return allActiveAuctionsArray;
+			Auction[] activeAuctionsUserBiddedOn = new Auction[auctionList.size()];
+			auctionList.toArray(activeAuctionsUserBiddedOn);
+			return activeAuctionsUserBiddedOn;
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -2721,8 +2717,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Auction[] allActiveAuctionsArray = null;
 				// Auktionen übergeben, die aktiv sind und den gesuchten Titel entsprechen
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
-								+ " AND DATE(auctions.starttime) <= Date(NOW())"
+						"Select * FROM auctions WHERE auctions.enddate >= CURRENT_TIMESTAMP"
+								+ " AND auctions.starttime <= CURRENT_TIMESTAMP"
 								+ " AND auctions.title LIKE ?",				//? Wildcard
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				
@@ -2830,7 +2826,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())"
+						"Select * FROM auctions WHERE auctions.enddate < CURRENT_TIMESTAMP"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allEndedAuctions.setString(1,"%"+ searchstring+"%");
@@ -2970,7 +2966,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				// Auktionen, die noch nicht gestartet sind mit searchstring zurückgeben
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW())"
+						"Select * FROM auctions " + "WHERE auctions.starttime > CURRENT_TIMESTAMP"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allFutureAuctions.setString(1,"%"+ searchstring+"%");
@@ -3233,13 +3229,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		}
 		
 		try {
-			// Zeit übergeben
-			LocalDateTime now = LocalDateTime.now();
-			Timestamp timestamp = Timestamp.valueOf(now);
 	
 			// Auktionen filtern, die zu Ende sind und bei denen noch keine Email Bestätigung verschickt wurde und wo es einen Höchstbietenden gibt
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
-					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) < Date(NOW())"
+					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE auctions.enddate < CURRENT_TIMESTAMP"
 					+ " AND auctions.emailsent = 0");
 			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
