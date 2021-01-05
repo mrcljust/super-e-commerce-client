@@ -100,6 +100,7 @@ public class Auction implements Serializable {
 		this.description = _description;
 		this.image = _image;
 		this.minBid = _minBid;
+		this.startPrice = _startprice;
 		this.currentBid = _currentBid;
 		shippingType = _shippingType;
 		this.seller = _seller;
@@ -118,6 +119,7 @@ public class Auction implements Serializable {
 		this.description = _description;
 		this.image = _image;
 		this.minBid = _minBid;
+		this.startPrice = _startprice;
 		shippingType = _shippingType;
 		this.seller = _seller;
 		this.starttime = _starttime;

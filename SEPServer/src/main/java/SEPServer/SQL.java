@@ -1346,7 +1346,7 @@ public class SQL {
 					return Response.BidTooLow;
 				} else if (bidder.getWallet() - bid < 0) {
 					return Response.InsufficientBalance;
-				} else if (auction.getCurrentBidder().getId() ==0) {
+				} else if (auction.getCurrentBidder()==null || auction.getCurrentBidder().getId() ==0) {
 					if (bid >= auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
 							&& bidder.getWallet() - bid >= 0) {
 						try {
@@ -1357,11 +1357,10 @@ public class SQL {
 							pstmt.setInt(2, bidder.getId());
 							pstmt.execute();
 							
-							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id, date) VALUES(?,?,?,?");
+							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id) VALUES(?,?,?)");
 							pstmtBids.setDouble(1, bid);
 							pstmtBids.setInt(2, auction.getId());
 							pstmtBids.setInt(3, bidder.getId());
-							pstmtBids.setTimestamp(4,timestamp);
 							pstmtBids.execute();
 							return Response.Success;
 						} catch (SQLException e) {
@@ -1380,11 +1379,10 @@ public class SQL {
 							pstmt.setInt(2, bidder.getId());
 							pstmt.execute();
 							
-							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id, date) VALUES(?,?,?,?");
+							PreparedStatement pstmtBids= connection.prepareStatement("INSERT INTO bids(amount, auction_id, bidder_id) VALUES(?,?,?)");
 							pstmtBids.setDouble(1, bid);
 							pstmtBids.setInt(2, auction.getId());
 							pstmtBids.setInt(3, bidder.getId());
-							pstmtBids.setTimestamp(4,timestamp);
 							pstmtBids.execute();
 							return Response.Success;
 						} catch (SQLException e) {
@@ -2501,7 +2499,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		try {
 			PreparedStatement pstmtAllBiddedAuctions = connection
 					.prepareStatement(
-							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + "WHERE DATE(auctions.enddate) >= '" + timestamp
+							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= '" + timestamp
 									+ "' AND DATE(auctions.starttime) <= '" + timestamp
 									+ "' AND bids.bidder_id=" + buyer.getId(),
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);

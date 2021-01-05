@@ -1671,7 +1671,7 @@ public class MainScreenController {
     		}
     		else if(queryResponse.getResponseType() == Response.BidTooLow)
     		{
-    			FXMLHandler.ShowMessageBox("Ihr eingegebenes Gebot ist niedriger/gleich wie das aktuelle Höchstgebot.",
+    			FXMLHandler.ShowMessageBox("Ihr eingegebenes Gebot ist niedriger/gleich wie das aktuelle Höchstgebot, oder geringer als das Mindestgebot.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
     			MainScreen_TextboxBidAmount.setText("");

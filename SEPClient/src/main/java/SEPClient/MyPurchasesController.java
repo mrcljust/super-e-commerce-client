@@ -266,9 +266,10 @@ public class MyPurchasesController {
     			FXMLHandler.ShowMessageBox("Der Verkauf wurde erfolgreich storniert. Der Kaufbetrag wurde dem Käufer wieder gutgeschrieben.",
     					"Stornierung erfolgreich", "Stornierung erfolgreich", AlertType.CONFIRMATION, true,
     					false);
-    			//Betrag wurde vom Verkaeuferguthaben abgezogen
+    			//Betrag wurde zum Kaeuferkonto addiert
     			customer.setWallet(customer.getWallet() +  MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getProductPrice());
     			initialize();
+        		MyPurchases_DeleteOrderButton.setDisable(true);
     			return;
     		}
 
@@ -345,22 +346,23 @@ public class MyPurchasesController {
     	LocalDateTime now = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now()).toLocalDateTime();
     	
     	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-    		if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate() != null) {
-    			
-    			LocalDateTime orderDate = MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate();
-    			LocalDateTime maxCancelDate = orderDate.plusHours(8);
-    			
-    			if (now.isBefore(maxCancelDate)) {
-    				MyPurchases_DeleteOrderButton.setDisable(false); 
-    				isDeletable = true; //liegt noch im zeitlichen Rahmen innerhalb dessen eine Stornierung möglich ist
+    		if(newSelection!=null)
+    		{
+    			if (MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate() != null) {
+        			
+        			LocalDateTime orderDate = MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getDate();
+        			LocalDateTime maxCancelDate = orderDate.plusHours(8);
+        			
+        			if (now.isBefore(maxCancelDate)) {
+        				MyPurchases_DeleteOrderButton.setDisable(false); 
+        				isDeletable = true; //liegt noch im zeitlichen Rahmen innerhalb dessen eine Stornierung möglich ist
 
-    			} else {
-    				MyPurchases_DeleteOrderButton.setDisable(false);
-    				isDeletable = false;
-    			}
+        			} else {
+        				MyPurchases_DeleteOrderButton.setDisable(false);
+        				isDeletable = false;
+        			}
+        		}
     		}
-    		
-    		
     	});
     	
     }
@@ -395,6 +397,7 @@ public class MyPurchasesController {
 
     @FXML
     void MyPurchases_Return_Click(ActionEvent event) {
+    	MainScreenController.setUser(customer);
     	FXMLHandler.OpenSceneInStage((Stage) MyPurchases_Return.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
     }
 }
