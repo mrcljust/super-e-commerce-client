@@ -3175,18 +3175,21 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		// falls ja, das Guthaben des Käufers reduzieren, und das Guthaben des Verkäufers erhöhen (wie bei BuyItem)
 		// und anschließend EmailHandler.sendAuctionEndedEmail versenden
 		
-		// Spezialfall: User hat inzwischen kein Guthaben mehr (wird beim Zeitpunkt des Gebots geprüft, aber er kann es zwischenzeitlich
+		// 1. Spezialfall: User hat inzwischen kein Guthaben mehr (wird beim Zeitpunkt des Gebots geprüft, aber er kann es zwischenzeitlich
 		// ausgegeben haben) - in diesem Fall die Zeile currentbidder_id auf "0" und currentbid auf startprice - also keinen Käufer
 		// in der DB speichern
+		// 2. Spezialfall: Kein Bieter - Email schicken mit Nachricht, dass es keinen Käufer gibt
 		
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
 		
 		try {
+			// Zeit übergeben
 			LocalDateTime now = LocalDateTime.now();
 			Timestamp timestamp = Timestamp.valueOf(now);
 	
+			// Auktionen filtern, die zu Ende sind und bei denen noch keine Email Bestätigung verschickt wurde und wo es einen Höchstbietenden gibt
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
 					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) <'" + timestamp + "'"
 					+ " AND auctions.emailsent = 0 AND auctions.currentbidder_id != 0");
@@ -3194,12 +3197,17 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
 			
+			// geendete Auktionen
 			int sumAuctionsEnded = 0;
+			// Fehler beim Email senden
 			int sumEmailError = 0;
+			// Auktionen, bei denen der Käufer zu wenig Guthaben für die Ausführung der Transaktion hatte
 			int sumInsuffiecientBalance = 0;
 			
+			// Wenn es Ergebnisse im Resultset gibt Schleife ausführen
 			while(endedAuctionsNoEmail.next()) {
 				
+				// Verkäuferdaten bestimmen
 				Address address = new Address(endedAuctionsNoEmail.getString("users.fullname"),
 						endedAuctionsNoEmail.getString("users.country"), endedAuctionsNoEmail.getInt("users.postalcode"),
 						endedAuctionsNoEmail.getString("users.city"), endedAuctionsNoEmail.getString("users.street"),
@@ -3209,21 +3217,28 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						endedAuctionsNoEmail.getBytes("users.image"), endedAuctionsNoEmail.getDouble("users.wallet"), address);
 				
 				
+				// Versandmethode bestimmen
 				int shippingtypeId = endedAuctionsNoEmail.getInt("auctions.shippingtype_id");
 				ShippingType shippingtype = null;
 	
+				// 1 = Versand
 				if(shippingtypeId==1)
 				{
 				    shippingtype = ShippingType.Shipping;
 				}
+				// 2 = abholen
 				else if(shippingtypeId==2)
 				{
 				    shippingtype = ShippingType.PickUp;
 				}
 				
+				// Current Bidder der Auktion bestimmen
 				int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
+				// User der die gleiche Id hat, wie der aktuelle Bieter
 				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
 				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+				
+				// Neues customer Objekt übergeben
 				Customer customer = null;
 				if(fetchUserDataResult.next())
 				{
@@ -3232,51 +3247,64 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
 				}
 				
+				// Auction Object übergeben, zudem noch keine Email versendet wurde
 				Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
 						endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
 						seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
 					
-				
+				// der Preis für die Auktion ist der currentBid (gleichzeitig der höchstbietende, da Auktion ja zu Ende ist)
 				Double price = auction.getCurrentBid();
 				
+				// Wenn der Kunde noch genug Geld hat um die Transaktion auszuführen:
 				if(customer.getWallet() >= price) 
 				{
+					// Geldbörse um currentbid beim Kunden reduzieren, hierfür aufrufen von anderen SQL Methoden
 					if(decreaseWallet(customer, price)==Response.Success)
 					{
+						// Geldbörse beim Verkäufer erhöhen
 						if(increaseWallet(seller, price)==Response.Success)
-						{								Statement stmt = connection.createStatement();
+						{	
+							// Bei Erfolg vermerken, dass nun Email versendet wird
+							Statement stmt = connection.createStatement();
 							stmt.execute("UPDATE auctions "
 								+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
+							// eine geendete Auktion vermerken
 							sumAuctionsEnded++;
 							if(EmailHandler.sendAuctionEndedEmail(auction)==Response.Success)
 							{
 							}
 							else
 							{
+								// Ansonsten bei Email Sendungsfehler vermerken
 								sumEmailError++;
 							}	
 						}
 					}
 					else {
-						//Nicht genuegend Guthaben
+						// Nicht genuegend Guthaben - Email versenden mit dieser Information
 						EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
 						
 						Statement statement = connection.createStatement();
+						// Die Auktion wird daraufhin gelöscht
 						statement.execute("DELETE FROM auctions WHERE auction_id ='" + auction.getId() + "'");
+						// Diesen Fehler vermerken
 						sumInsuffiecientBalance++;
 					}
 				}
 			}
 			if(sumEmailError>0)
 			{
+				// Rückgeben des Fehler / Anzahl
 				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumAuctionsEnded + " neue Auktion(en) geendet, " + (sumAuctionsEnded-sumEmailError) + " E-Mail(s) versendet (Fehler beim Senden von " + sumEmailError + " E-Mails).");
 			}
 			else
 			{
+				// ... Auktionen geendet und ... Emails versendet
 				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Success + " - " + sumAuctionsEnded + " neue Auktion(en) geendet, " + sumAuctionsEnded + " E-Mail(s) versendet.");
 			}
 			if(sumInsuffiecientBalance>0)
 			{
+				// Rückgabe Anzahl der geendeten Auktionen mit zu wenig Guthaben seitens des Käufers
 				System.out.println("Pruefe auf neue geendete Auktionen - " + Response.Failure + " - " + sumInsuffiecientBalance + " neue Auktion(en) geendet, bei der/denen der Käufer zu wenig Guthaben hat, E-Mail(s) versendet und betroffene Auktion(en) geloescht.");
 			}
 			return Response.Success;
