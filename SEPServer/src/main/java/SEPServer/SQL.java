@@ -3048,13 +3048,16 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	}
 
 	protected Rating[] fetchRatings(User user) {
-		// Text und Punkte
+		// Text und Punkte der Ratings fetchen
+		
 		if (!checkConnection()) {
 			return null;
 		}
-   int i = 0;
+		
+		int i = 0;
+		
 		try {
-			
+			// Alle Ratings übergeben, bei denen die Empfänger Id = dem übergeben user.id ist
 			PreparedStatement fetchRatingsInfo = connection.prepareStatement("SELECT * FROM ratings WHERE receiver_id=" + user.getId());
 
 			ResultSet fetchRatingsInfoResult = fetchRatingsInfo.executeQuery();
@@ -3066,26 +3069,32 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				int orderId = fetchRatingsInfoResult.getInt("order_id");
 				int auctionId = fetchRatingsInfoResult.getInt("auction_id");
 				boolean isAuction;
+				// Bewertung eines Festpreisangebots
 				if(orderId>=0)
 				{
 					isAuction=false;
 					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), orderId, isAuction));
 					i = i + fetchRatingsInfoResult.getInt("stars");
 				}
+				// Bewertung einer Auktion
 				else if(auctionId>=0)
 				{
 					isAuction=true;
 					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), auctionId, isAuction));
 				}
 			}
-			
+		
+			// Liste hat keine Inhalte
 			if(ratingList.size()<=0)
 			{
 				return null;
 			}
 			//Liste in Array umwandeln test
+			// Arraygröße = Listengröße
 			Rating[] ratings = new Rating[ratingList.size()];
 			ratingList.toArray(ratings);
+			
+			// Array mit Bewertungen zurückgeben
 			return ratings;
 		} catch (SQLException e) {
 			//es ist ein Fehler aufgetreten:
@@ -3103,16 +3112,21 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		}
 	
 		double result = 0;
+		
+		// fetchRatings aufrufen um alle Bewertungen zu bekommen
 		Rating[] allRatings = fetchRatings(user);	
 		if(allRatings!=null)
 		{
 			int numberOfRatings = allRatings.length;
+			// Sterne aller Ratings addieren
 			for (Rating rating : allRatings) {
 				result += rating.getStars();
 			}	
 		
 			double [] avgRatings = new double [2];
+			// Durchschnittliche Sterne berechnen (Platz 1 im Array)
 			avgRatings[0] = result / allRatings.length;
+			// Platz 2 im Array = Anzahl
 			avgRatings[1] = numberOfRatings;
 			return avgRatings;
 		}
@@ -3126,11 +3140,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		// Wenn Order erfolgreich gelöscht Response.Success zurückgeben
 		// Wenn keine Verbindung zu DB: Response.NoDBConnection zurückgeben
 		// Verbindung herstellen, wenn keine Verbindung besteht
+		
+		// Zeit übergeben
 		LocalDateTime serverDate = LocalDateTime.now();
 		// OrderID speichern
 		int orderID = order.getId();
 		// Order Date speichern
 		LocalDateTime date = order.getDate();
+		// Order ist bis 8 Stunden nach dem Kauf stornierbar
 		LocalDateTime maxDeletionDate = date.plusHours(8);
 		
 		Double price = order.getProduct().getPrice();
@@ -3143,13 +3160,17 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		if(serverDate.isBefore(maxDeletionDate)) {
 			try
 			{	
+				// Seller und Buyer von Order
 				Seller seller = order.getProduct().getSeller();
 				Customer buyer = order.getBuyer();
+				
+				// Wallet von Verkäufer wieder vermindern
 				if(decreaseWallet(seller, price)==Response.Success)
 				{
+					// Wallet von Käufer wieder erhöhen
 					if(increaseWallet(buyer, price)==Response.Success)
 					{
-						// Order aus Datenbank löschen anahnd der ID
+						// Order aus Datenbank löschen anhand der ID
 						Statement statement = connection.createStatement();
 						statement.execute("DELETE FROM orders WHERE order_id='" + orderID + "'");
 						return Response.Success; 
