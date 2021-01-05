@@ -1746,8 +1746,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		Auction[] allPurchasedAuctionsArray = null;
 		try {
 			PreparedStatement allPurchasedAuctions = connection.prepareStatement(
-					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=users.id WHERE DATE(auctions.enddate) < '"
-							+ timestamp + "' AND users.id=" + buyer.getId(),
+					"SELECT * FROM auctions JOIN users on auctions.currentbidder_id=users.id WHERE DATE(auctions.enddate) < DATE(NOW()) "
+							+ " AND users.id=" + buyer.getId(),
 					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 			ResultSet purchasedAuctions = allPurchasedAuctions.executeQuery();
@@ -1895,8 +1895,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		Auction[] allSoldAuctionsArray = null;
 		try {
 			PreparedStatement allSoldAuctions = connection.prepareStatement(
-					"SELECT * FROM auctions JOIN users on auctions.seller_id=users.id WHERE DATE(auctions.enddate) < '"
-							+ timestamp + "' AND users.id=" + seller.getId(),
+					"SELECT * FROM auctions JOIN users on auctions.seller_id=users.id WHERE DATE(auctions.enddate) < DATE(NOW())"
+							+" AND users.id=" + seller.getId(),
 					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 			ResultSet soldAuctions = allSoldAuctions.executeQuery();
@@ -2046,13 +2046,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		try {
 			if (auctionType == AuctionType.Active) {
 
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
-
 				Auction[] allActiveAuctionsArray = null;
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >='" + timestamp
-								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'" ,
+						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
+								+ " AND DATE(auctions.starttime) <= Date(NOW())" ,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2143,12 +2140,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			else if (auctionType == AuctionType.Ended) {
 
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
-
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) <'" + timestamp + "'",
+						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet endedAuctions = allEndedAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2279,11 +2273,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 			else if (auctionType == AuctionType.Future) {
 
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
 
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > '" + timestamp + "'",
+						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW()) ",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet futureAuctions = allFutureAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2507,17 +2499,15 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return null;
 		}
 
-		LocalDateTime now = LocalDateTime.now();
-		Timestamp timestamp = Timestamp.valueOf(now);
 		int sqlcounter = 0;
 		int arraycounter = 0;
 		Auction[] allActiveAuctionsArray = null;
 		try {
 			PreparedStatement pstmtAllBiddedAuctions = connection
 					.prepareStatement(
-							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= '" + timestamp
-									+ "' AND DATE(auctions.starttime) <= '" + timestamp
-									+ "' AND bids.bidder_id=" + buyer.getId(),
+							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= Date(NOW())"
+									+ " AND DATE(auctions.starttime) <= Date(NOW())"
+									+ " AND bids.bidder_id=" + buyer.getId(),
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet allBiddedAuctions = pstmtAllBiddedAuctions.executeQuery();
 
@@ -2725,15 +2715,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			// 1. Aktive Auktionen
 			if (auctionType == AuctionType.Active) {
 
-				// Zeit übergeben
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
+			
+	
 
 				Auction[] allActiveAuctionsArray = null;
 				// Auktionen übergeben, die aktiv sind und den gesuchten Titel entsprechen
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >='" + timestamp
-								+ "' AND DATE(auctions.starttime) <='" + timestamp + "'"
+						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
+								+ " AND DATE(auctions.starttime) <= Date(NOW())"
 								+ " AND auctions.title LIKE ?",				//? Wildcard
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				
@@ -2838,12 +2827,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			// ähnlich zu aktuelle Auktionen, es werden aber noch Ratings mit übergeben
 			else if (auctionType == AuctionType.Ended) {
 
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) <'" + timestamp + "'"
+						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allEndedAuctions.setString(1,"%"+ searchstring+"%");
@@ -2980,12 +2967,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			// ähnlich zu aktuelle Auktionen, nur gibt es keinen Buyer der übergeben werden muss
 			else if (auctionType == AuctionType.Future) {
 
-				LocalDateTime now = LocalDateTime.now();
-				Timestamp timestamp = Timestamp.valueOf(now);
 
 				// Auktionen, die noch nicht gestartet sind mit searchstring zurückgeben
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > '" + timestamp + "'"
+						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW())"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allFutureAuctions.setString(1,"%"+ searchstring+"%");
@@ -3254,7 +3239,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	
 			// Auktionen filtern, die zu Ende sind und bei denen noch keine Email Bestätigung verschickt wurde und wo es einen Höchstbietenden gibt
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
-					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) <'" + timestamp + "'"
+					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) < Date(NOW())"
 					+ " AND auctions.emailsent = 0");
 			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
