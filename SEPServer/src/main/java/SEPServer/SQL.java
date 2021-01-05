@@ -3234,7 +3234,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
 					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE auctions.enddate < CURRENT_TIMESTAMP"
 					+ " AND auctions.emailsent = 0");
-			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
 			ResultSet endedAuctionsNoEmail = allEndedAuctionsNoEmail.executeQuery();
 			
@@ -3280,10 +3279,15 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				int currentBidderId = endedAuctionsNoEmail.getInt("auctions.currentbidder_id");
 				
 				if (currentBidderId == 0) {
-					
+					// es gibt keinen Bieter / User der die gleiche Id hat, wie der aktuelle Bieter
 					Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
 							endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
 							seller, null, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+					
+					// vermerken, dass Email versendet wurde
+					Statement stmt = connection.createStatement();
+					stmt.execute("UPDATE auctions "
+						+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
 					
 					EmailHandler.sendAuctionEndedBuyerNoBidderEmail(auction);
 					
@@ -3296,50 +3300,72 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				}
 				
 				else {
-				// User der die gleiche Id hat, wie der aktuelle Bieter
-				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
-				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
-				
-				// Neues customer Objekt übergeben
-				Customer customer = null;
-				if(fetchUserDataResult.next())
-				{
-					customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
-							fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
-							fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), address);
-				}
-				
-				// Auction Object übergeben, zudem noch keine Email versendet wurde
-				Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
-						endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
-						seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+					PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users WHERE id='" + currentBidderId + "'");
+					ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
 					
-				// der Preis für die Auktion ist der currentBid (gleichzeitig der höchstbietende, da Auktion ja zu Ende ist)
-				Double price = auction.getCurrentBid();
-				
-				// Wenn der Kunde noch genug Geld hat um die Transaktion auszuführen:
-				if(customer.getWallet() >= price) 
-				{
-					// Geldbörse um currentbid beim Kunden reduzieren, hierfür aufrufen von anderen SQL Methoden
-					if(decreaseWallet(customer, price)==Response.Success)
+					// Neues customer Objekt übergeben
+					Customer customer = null;
+					if(fetchUserDataResult.next())
 					{
-						// Geldbörse beim Verkäufer erhöhen
-						if(increaseWallet(seller, price)==Response.Success)
-						{	
-							// Bei Erfolg vermerken, dass nun Email versendet wird
-							Statement stmt = connection.createStatement();
-							stmt.execute("UPDATE auctions "
-								+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
-							// eine geendete Auktion vermerken
-							sumAuctionsEnded++;
-							if(EmailHandler.sendAuctionEndedEmail(auction)==Response.Success)
-							{
+						Address customerAddress = new Address(fetchUserDataResult.getString("users.fullname"),
+								fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
+								fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
+								fetchUserDataResult.getString("users.number"));
+						customer = new Customer(fetchUserDataResult.getInt("id"), fetchUserDataResult.getString("username"),
+								fetchUserDataResult.getString("email"), fetchUserDataResult.getString("password"), 
+								fetchUserDataResult.getBytes("image"), fetchUserDataResult.getDouble("wallet"), customerAddress);
+					}
+					
+					// Auction Object übergeben, zudem noch keine Email versendet wurde
+					
+					Auction auction = new Auction(endedAuctionsNoEmail.getInt("auctions.auction_id"), endedAuctionsNoEmail.getString("auctions.title"), endedAuctionsNoEmail.getString("auctions.description"),
+							endedAuctionsNoEmail.getBytes("auctions.image"), endedAuctionsNoEmail.getDouble("auctions.minbid"), endedAuctionsNoEmail.getDouble("auctions.startprice"), shippingtype,
+							seller, customer, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
+						
+					// der Preis für die Auktion ist der currentBid (gleichzeitig der höchstbietende, da Auktion ja zu Ende ist)
+					Double price = auction.getCurrentBid();
+					
+					// Wenn der Kunde noch genug Geld hat um die Transaktion auszuführen:
+					if(customer.getWallet() >= price) 
+					{
+						// Geldbörse um currentbid beim Kunden reduzieren, hierfür aufrufen von anderen SQL Methoden
+						if(decreaseWallet(customer, price)==Response.Success)
+						{
+							// Geldbörse beim Verkäufer erhöhen
+							if(increaseWallet(seller, price)==Response.Success)
+							{	
+								// Bei Erfolg vermerken, dass nun Email versendet wird
+								Statement stmt = connection.createStatement();
+								stmt.execute("UPDATE auctions "
+									+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
+								// eine geendete Auktion vermerken
+								sumAuctionsEnded++;
+								if(EmailHandler.sendAuctionEndedEmail(auction)==Response.Success)
+								{
+								}
+								else
+								{
+									// Ansonsten bei Email Sendungsfehler vermerken
+									sumEmailError++;
+								}	
 							}
-							else
-							{
-								// Ansonsten bei Email Sendungsfehler vermerken
-								sumEmailError++;
-							}	
+						}
+						else {
+							// Nicht genuegend Guthaben - Email versenden mit dieser Information
+							
+							// Die Auktion wird daraufhin bearbeitet, das aktuelle Gebot und der Hoechstbieter werden zurueckgersetzt
+							PreparedStatement stmt;
+							stmt = connection.prepareStatement("UPDATE auctions "
+									+ "SET currentbidder_id = ?, currentbid = ?, emailsent = 1"
+									+ "WHERE auction_id=" + auction.getId());
+							stmt.setInt(1, 0);
+							stmt.setDouble(2, auction.getStartPrice());
+							stmt.execute();
+							
+							EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
+							
+							// Diesen Fehler vermerken
+							sumInsuffiecientBalance++;
 						}
 					}
 					else {
@@ -3358,7 +3384,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						// Diesen Fehler vermerken
 						sumInsuffiecientBalance++;
 					}
-				}
 				}
 			}
 			if(sumEmailError>0)
@@ -3391,17 +3416,17 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 	public static void main(String[]args) {
 		//SQL testSQLObject= new SQL();
-		 //LocalDateTime aDateTime = LocalDateTime.of(2018, 
-         //        Month.JULY, 29, 19, 30, 00);
-		 //LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
-         //        Month.JULY, 30, 19, 30, 00);
-		 //ustomer denis= new Customer(77, null, null, null, null, 0, null);
+		//LocalDateTime aDateTime = LocalDateTime.of(2018, 
+		//        Month.JULY, 29, 19, 30, 00);
+		//LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
+		//        Month.JULY, 30, 19, 30, 00);
+		//ustomer denis= new Customer(77, null, null, null, null, 0, null);
 		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), denis, 20.55,aDateTime,aDateTime2));
-	//Customer denis= new Customer(77, null, null, null, null, 0, null);
+		//Customer denis= new Customer(77, null, null, null, null, 0, null);
 		//	testSQLObject.fetchAuctions(AuctionType.Ended);
-	//	testSQLObject.fetchAuctions(AuctionType.Active);
+		//	testSQLObject.fetchAuctions(AuctionType.Active);
 		//testSQLObject.fetchAuctions(AuctionType.Future);
 		//testSQLObject.fetchPurchasedAuctions(denis);
-		EmailHandler.sendAuctionEndedEmail(null);
+		//EmailHandler.sendAuctionEndedEmail(null);
 	}
 }
