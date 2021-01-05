@@ -1508,32 +1508,45 @@ public class SQL {
 			Order[] allOrdersArray = new Order[sqlcounterAllOrders];
 
 			while (allOrdersResultSet.next()) {
-
-				Address newAddress = new Address(allOrdersResultSet.getString("users.fullname"),
-						allOrdersResultSet.getString("users.country"), allOrdersResultSet.getInt("users.postalcode"),
-						allOrdersResultSet.getString("users.city"), allOrdersResultSet.getString("users.street"),
-						allOrdersResultSet.getString("users.number"));
-				Seller newSeller = new Seller(allOrdersResultSet.getInt("users.id"),
-						allOrdersResultSet.getString("users.username"), allOrdersResultSet.getString("users.email"),
-						allOrdersResultSet.getString("users.password"), allOrdersResultSet.getBytes("users.image"),
-						allOrdersResultSet.getDouble("users.wallet"), newAddress,
-						allOrdersResultSet.getString("users.companyname"));
-				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
-						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
-						newSeller, allOrdersResultSet.getString("categories.title"),
-						allOrdersResultSet.getString("products.description"));
-
+				
 				int orderId = allOrdersResultSet.getInt("orders.order_id");
+				int sellerId= allOrdersResultSet.getInt("orders.seller_id");
+				
+				PreparedStatement pstmtSellerInfo = connection.prepareStatement("SELECT * FROM users "
+						+ "JOIN orders ON users.id=orders.buyer_id JOIN products "
+						+ "ON products.id=orders.product_id JOIN categories ON categories.id=products.category_id WHERE users.id=" + sellerId +" AND orders.order_id="+ orderId, ResultSet.TYPE_SCROLL_SENSITIVE, 
+	                    ResultSet.CONCUR_UPDATABLE);
+				ResultSet sellerInfo=pstmtSellerInfo.executeQuery();
+				sellerInfo.beforeFirst();
+				
+				Address newAddress=null;
+				Seller newSeller=null;
+				Product newProduct=null;
+				
+				if (sellerInfo.next() != false) {
+
+					newAddress = new Address(sellerInfo.getString("users.fullname"),
+							sellerInfo.getString("users.country"), sellerInfo.getInt("users.postalcode"),
+							sellerInfo.getString("users.city"), sellerInfo.getString("users.street"),
+							sellerInfo.getString("users.number"));
+					newSeller = new Seller(sellerInfo.getInt("users.id"), sellerInfo.getString("users.username"),
+							sellerInfo.getString("users.email"), sellerInfo.getString("users.password"),
+							sellerInfo.getBytes("users.image"), sellerInfo.getDouble("users.wallet"), newAddress,
+							sellerInfo.getString("users.companyname"));
+					newProduct = new Product(sellerInfo.getInt("products.id"), sellerInfo.getString("products.title"),
+							sellerInfo.getDouble("products.price"), newSeller, sellerInfo.getString("categories.title"),
+							sellerInfo.getString("products.description"));
+				}
 				
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.sender_id=users.id JOIN orders ON ratings.order_id="
 								+ orderId + " WHERE users.id=" + buyer.getId(),
-								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
-				PreparedStatement pstmtSellerRatings = connection.prepareStatement(		
+				PreparedStatement pstmtSellerRatings = connection.prepareStatement(
 						"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN orders ON ratings.order_id="
 								+ orderId + " WHERE users.id=" + newSeller.getId(),
-								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
 				allBuyerRatings.beforeFirst();
@@ -1761,6 +1774,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
 								+ wonAuctionId,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+				
 				ResultSet allSellerInformation = pstmtAllPurchasedAuctions.executeQuery();
 				allSellerInformation.first();
 
@@ -1773,6 +1787,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
 						allSellerInformation.getDouble("users.wallet"), newAddress);
 
+				
+				
 				int winnerId = buyer.getId();
 				PreparedStatement pstmtCurrentBidder = connection
 						.prepareStatement(
@@ -2056,6 +2072,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				allActiveAuctionsArray = new Auction[sumAuctions];
 
 				while (activeAuctions.next()) {
+					
 					int activeAuctionId = activeAuctions.getInt("auctions.auction_id");
 					PreparedStatement pstmtAllActiveAuctions = connection.prepareStatement(
 							"Select * FROM auctions JOIN users ON (auctions.seller_id=users.id) WHERE auctions.auction_id="
@@ -2077,6 +2094,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allSellerInformation.getBytes("users.image"),
 							allSellerInformation.getDouble("users.wallet"), newAddress);
 
+					
 					int currentBidderId = activeAuctions.getInt("auctions.currentbidder_id");
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
