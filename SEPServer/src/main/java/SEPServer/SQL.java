@@ -2048,8 +2048,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allActiveAuctionsArray = null;
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
-								+ " AND DATE(auctions.starttime) <= Date(NOW())" ,
+						"Select * FROM auctions WHERE DATE(auctions.enddate) >= DATE(NOW())"
+								+ " AND DATE(auctions.starttime) <= DATE(NOW())" ,
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet activeAuctions = allActiveAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2142,7 +2142,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())",
+						"Select * FROM auctions WHERE DATE(auctions.enddate) < DATE(NOW())",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet endedAuctions = allEndedAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2275,7 +2275,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW()) ",
+						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > DATE(NOW()) ",
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				ResultSet futureAuctions = allFutureAuctions.executeQuery();
 				int sumAuctions = 0;
@@ -2505,8 +2505,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		try {
 			PreparedStatement pstmtAllBiddedAuctions = connection
 					.prepareStatement(
-							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= Date(NOW())"
-									+ " AND DATE(auctions.starttime) <= Date(NOW())"
+							"Select * FROM auctions JOIN bids ON auctions.auction_id=bids.auction_id" + " WHERE DATE(auctions.enddate) >= DATE(NOW())"
+									+ " AND DATE(auctions.starttime) <= DATE(NOW())"
 									+ " AND bids.bidder_id=" + buyer.getId(),
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet allBiddedAuctions = pstmtAllBiddedAuctions.executeQuery();
@@ -2721,8 +2721,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Auction[] allActiveAuctionsArray = null;
 				// Auktionen übergeben, die aktiv sind und den gesuchten Titel entsprechen
 				PreparedStatement allActiveAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) >= Date(NOW())"
-								+ " AND DATE(auctions.starttime) <= Date(NOW())"
+						"Select * FROM auctions WHERE DATE(auctions.enddate) >= DATE(NOW())"
+								+ " AND DATE(auctions.starttime) <= DATE(NOW())"
 								+ " AND auctions.title LIKE ?",				//? Wildcard
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				
@@ -2830,7 +2830,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				Auction[] allEndedAuctionsArray = null;
 				PreparedStatement allEndedAuctions = connection.prepareStatement(
-						"Select * FROM auctions WHERE DATE(auctions.enddate) < Date(NOW())"
+						"Select * FROM auctions WHERE DATE(auctions.enddate) < DATE(NOW())"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allEndedAuctions.setString(1,"%"+ searchstring+"%");
@@ -2970,7 +2970,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 				// Auktionen, die noch nicht gestartet sind mit searchstring zurückgeben
 				PreparedStatement allFutureAuctions = connection.prepareStatement(
-						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > Date(NOW())"
+						"Select * FROM auctions " + "WHERE DATE(auctions.starttime) > DATE(NOW())"
 						+ " AND auctions.title LIKE ?",				//? Wildcard
 				ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 				allFutureAuctions.setString(1,"%"+ searchstring+"%");
@@ -3239,7 +3239,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	
 			// Auktionen filtern, die zu Ende sind und bei denen noch keine Email Bestätigung verschickt wurde und wo es einen Höchstbietenden gibt
 			PreparedStatement allEndedAuctionsNoEmail = connection.prepareStatement(
-					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) < Date(NOW())"
+					"Select * FROM auctions JOIN users ON (auctions.seller_id = users.id) WHERE DATE(auctions.enddate) < DATE(NOW())"
 					+ " AND auctions.emailsent = 0");
 			//currentbidder_id = 0 --> kein Bieter, nicht fetchen
 
