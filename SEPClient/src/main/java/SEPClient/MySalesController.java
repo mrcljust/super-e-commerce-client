@@ -436,6 +436,15 @@ public class MySalesController {
     		ObservableList<Auction> ObservableAuctions = FXCollections.observableArrayList(auctions);
     		ObservableAuctions.removeIf(n -> (n==null));
     		
+    		//Auktionen ohne Kaeufer bzw. Bieter entfernen
+    		for(Auction auct: ObservableAuctions)
+    		{
+    			if(auct.getCurrentBidder()==null)
+    			{
+    				ObservableAuctions.remove(auct);
+    			}
+    		}
+    		
     		return ObservableAuctions;
     	}
     	return null;

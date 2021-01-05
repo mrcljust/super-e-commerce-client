@@ -1,17 +1,14 @@
 package SEPClient;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
-
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
-import SEPCommon.Order;
 import SEPCommon.Rating;
 import SEPCommon.Request;
+import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
@@ -21,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -42,25 +40,38 @@ public class ShowRatingsController {
 	}
 
 	public void initialize() throws IOException {
-		ShowRatings_ListRatings.setItems(loadAllRatings());
-		
-		TableRatings_ColumnDate.setCellValueFactory(new PropertyValueFactory<Rating, Date>("date"));
-		TableRatings_ColumnBy.setCellValueFactory(new PropertyValueFactory<Rating, String>("ratingBy"));
+		ShowRatings_txtAverageRating.setText("");
+		ShowRatings_txtRatingCount.setText("");
+		TableRatings_ColumnDate.setCellValueFactory(new PropertyValueFactory<Rating, LocalDateTime>("date"));
+		//Datumsformat
+		TableRatings_ColumnDate.setCellFactory(tc -> new TableCell<Rating, LocalDateTime>() {
+    	    @Override
+    	    protected void updateItem(LocalDateTime date, boolean empty) {
+    	        super.updateItem(date, empty);
+    	        if (empty || date==null) {
+    	            setText(null);
+    	        } else {
+    	            setText(date.format(SEPCommon.Constants.DATEFORMAT));
+    	        }
+    	    }
+    	});
+		TableRatings_ColumnBy.setCellValueFactory(new PropertyValueFactory<Rating, String>("senderId"));
 		TableRatings_ColumnStars.setCellValueFactory(new PropertyValueFactory<Rating, Integer>("stars"));
-		TableRatings_ColumnText.setCellValueFactory(new PropertyValueFactory<Rating, String>("report"));
+		TableRatings_ColumnText.setCellValueFactory(new PropertyValueFactory<Rating, String>("text"));
 		
+		ShowRatings_ListRatings.setItems(loadAllRatings());
+		loadAvgRating();
 		
-				
 		if(viewOwnRatings)
 		{
 			//eigene Bewertungen
 			if(user instanceof Seller)
 			{
-		    	ShowRatings_txtSellerBuyerName.setText("Meine erhaltenen Bewertungen - " + ((Seller)user).getBusinessname() + " (Benutzer " + user.getUsername() + ") (ID " + user.getId() + ", Gewerbekunde)");
+		    	ShowRatings_txtSellerBuyerName.setText("Meine Bewertungen - " + ((Seller)user).getBusinessname() + " (Benutzer " + user.getUsername() + ") (ID " + user.getId() + ", Gewerbekunde)");
 			}
 			else if(user instanceof Customer)
 			{
-		    	ShowRatings_txtSellerBuyerName.setText("Meine erhaltenen Bewertungen - " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
+		    	ShowRatings_txtSellerBuyerName.setText("Meine Bewertungen - " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
 			}
 			}
 		else
@@ -95,7 +106,7 @@ public class ShowRatingsController {
     private TableView<Rating> ShowRatings_ListRatings;
     
     @FXML
-    private TableColumn<Rating, Date> TableRatings_ColumnDate;
+    private TableColumn<Rating, LocalDateTime> TableRatings_ColumnDate;
 
     @FXML
     private TableColumn<Rating, String> TableRatings_ColumnBy;
@@ -124,7 +135,7 @@ public class ShowRatingsController {
     	
     	HashMap <String,Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("User", user);
-    	requestMap.put("FetchAvg", true); //?
+    	requestMap.put("FetchAvg", false);
     	
     	ClientRequest req = new ClientRequest (Request.FetchRatings, requestMap);
     	Client client = Client.getClient();
@@ -143,13 +154,25 @@ public class ShowRatingsController {
     	return null;
     }
     
-    
-    
-    
-    
-    
-    
-    
+    private void loadAvgRating() {
+    	HashMap <String,Object> requestMap = new HashMap<String, Object>();
+    	requestMap.put("User", user);
+    	requestMap.put("FetchAvg", true);
+    	
+    	ClientRequest req = new ClientRequest (Request.FetchRatings, requestMap);
+    	Client client = Client.getClient();
+    	ServerResponse queryResponse = client.sendClientRequest(req);
+    	
+    	if (queryResponse != null && queryResponse.getResponseMap() != null && queryResponse.getResponseType() == Response.Success) {
+    		ShowRatings_txtAverageRating.setText(queryResponse.getResponseMap().get("Average").toString());
+    		ShowRatings_txtRatingCount.setText(queryResponse.getResponseMap().get("Amount").toString());
+    	}
+    	else {
+			//fehler oder keine bewertungen
+    		ShowRatings_txtAverageRating.setText("keine");
+    		ShowRatings_txtRatingCount.setText("keine");
+		}
+    }
     
     @FXML
     void ShowRatings_ReturnButton_Click(ActionEvent event) {

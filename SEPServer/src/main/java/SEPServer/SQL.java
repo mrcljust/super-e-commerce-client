@@ -1329,7 +1329,6 @@ public class SQL {
 		// Edited: Jan 8'14 at 18:47
 		LocalDateTime serverDate = LocalDateTime.now();
 		// String currentServerDate= SEPCommon.Constants.DATEFORMAT.format(serverDate);
-		Timestamp timestamp = Timestamp.valueOf(serverDate);
 
 		LocalDateTime endDate = auction.getEnddate();
 		LocalDateTime startDate = auction.getStarttime();
@@ -1513,8 +1512,7 @@ public class SQL {
 				int sellerId= allOrdersResultSet.getInt("orders.seller_id");
 				
 				PreparedStatement pstmtSellerInfo = connection.prepareStatement("SELECT * FROM users "
-						+ "JOIN orders ON users.id=orders.buyer_id JOIN products "
-						+ "ON products.id=orders.product_id JOIN categories ON categories.id=products.category_id WHERE users.id=" + sellerId +" AND orders.order_id="+ orderId, ResultSet.TYPE_SCROLL_SENSITIVE, 
+						+ "WHERE users.id=" + sellerId, ResultSet.TYPE_SCROLL_SENSITIVE, 
 	                    ResultSet.CONCUR_UPDATABLE);
 				ResultSet sellerInfo=pstmtSellerInfo.executeQuery();
 				sellerInfo.beforeFirst();
@@ -1533,9 +1531,9 @@ public class SQL {
 							sellerInfo.getString("users.email"), sellerInfo.getString("users.password"),
 							sellerInfo.getBytes("users.image"), sellerInfo.getDouble("users.wallet"), newAddress,
 							sellerInfo.getString("users.companyname"));
-					newProduct = new Product(sellerInfo.getInt("products.id"), sellerInfo.getString("products.title"),
-							sellerInfo.getDouble("products.price"), newSeller, sellerInfo.getString("categories.title"),
-							sellerInfo.getString("products.description"));
+					newProduct = new Product(allOrdersResultSet.getInt("products.id"), allOrdersResultSet.getString("products.title"),
+							allOrdersResultSet.getDouble("products.price"), newSeller, allOrdersResultSet.getString("categories.title"),
+							allOrdersResultSet.getString("products.description"));
 				}
 				
 				PreparedStatement pstmtBuyerRatings = connection.prepareStatement(
@@ -1563,7 +1561,7 @@ public class SQL {
 					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
 							allBuyerRatings.getInt("ratings.sender_id"), allBuyerRatings.getInt("ratings.receiver_id"),
-							orderId, false);
+							orderId, false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 				}
 
@@ -1576,7 +1574,7 @@ public class SQL {
 							allSellerRatings.getInt("ratings.stars"), sellerText,
 							allSellerRatings.getInt("ratings.sender_id"),
 							allSellerRatings.getInt("ratings.receiver_id"), orderId,
-							false);
+							false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 				}
 				
 				if (allBuyerRatings.next()) {
@@ -1588,7 +1586,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
 							allBuyerRatings.getInt("ratings.sender_id"),
 							allBuyerRatings.getInt("ratings.receiver_id"),
-							allBuyerRatings.getInt("ratings.order_id"), false);
+							allBuyerRatings.getInt("ratings.order_id"), false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 				}
 
@@ -1694,7 +1692,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
 							allBuyerRatings.getInt("ratings.sender_id"), allBuyerRatings.getInt("ratings.receiver_id"),
-							orderId, false);
+							orderId, false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 				}
 
@@ -1707,7 +1705,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allSellerRatings.getInt("ratings.stars"), sellerText,
 							allSellerRatings.getInt("ratings.sender_id"),
 							allSellerRatings.getInt("ratings.receiver_id"), orderId,
-							false);
+							false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 				}
 				
 				if (allBuyerRatings.next()) {
@@ -1719,7 +1717,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
 							allBuyerRatings.getInt("ratings.sender_id"),
 							allBuyerRatings.getInt("ratings.receiver_id"),
-							allBuyerRatings.getInt("ratings.order_id"), false);
+							allBuyerRatings.getInt("ratings.order_id"), false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 				}
 
@@ -1842,7 +1840,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true);
+								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
 					//t
 					if (allBuyerRatings.next() != false) {
@@ -1854,7 +1852,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.auction_id"), true);
+								allBuyerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 					}
 				}
@@ -1987,7 +1985,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true);
+								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
 					
 					if (allBuyerRatings.next() != false) {
@@ -1999,7 +1997,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.auction_id"), true);
+								allBuyerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 					}
 				}
@@ -2240,7 +2238,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
 									allSellerRatings.getInt("ratings.receiver_id"),
-									allSellerRatings.getInt("ratings.auction_id"), true);
+									allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 						}
 
 						if (allBuyerRatings.next() != false) {
@@ -2252,7 +2250,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									allBuyerRatings.getInt("ratings.stars"), buyerText,
 									allBuyerRatings.getInt("ratings.sender_id"),
 									allBuyerRatings.getInt("ratings.receiver_id"),
-									allBuyerRatings.getInt("ratings.auction_id"), true);
+									allBuyerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 						}
 					}
@@ -2455,7 +2453,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true);
+								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
 
 					if (allBuyerRatings.next() != false) {
@@ -2467,7 +2465,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allBuyerRatings.getInt("ratings.stars"), buyerText,
 								allBuyerRatings.getInt("ratings.sender_id"),
 								allBuyerRatings.getInt("ratings.receiver_id"),
-								allBuyerRatings.getInt("ratings.auction_id"), true);
+								allBuyerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 					}
 				}
@@ -2939,7 +2937,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
 									allSellerRatings.getInt("ratings.receiver_id"),
-									allSellerRatings.getInt("ratings.order_id"), true);
+									allSellerRatings.getInt("ratings.order_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 						}
 
 						if (allBuyerRatings.next() != false) {
@@ -2951,7 +2949,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									allBuyerRatings.getInt("ratings.stars"), buyerText,
 									allBuyerRatings.getInt("ratings.sender_id"),
 									allBuyerRatings.getInt("ratings.receiver_id"),
-									allBuyerRatings.getInt("ratings.order_id"), true);
+									allBuyerRatings.getInt("ratings.order_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 
 						}
 					}
@@ -3117,14 +3115,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				if(orderId>=0)
 				{
 					isAuction=false;
-					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), orderId, isAuction));
+					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), orderId, isAuction, fetchRatingsInfoResult.getTimestamp("ratings.rating_date").toLocalDateTime()));
 					i = i + fetchRatingsInfoResult.getInt("stars");
 				}
 				// Bewertung einer Auktion
 				else if(auctionId>=0)
 				{
 					isAuction=true;
-					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), auctionId, isAuction));
+					ratingList.add(new Rating(fetchRatingsInfoResult.getInt("rating_id"), fetchRatingsInfoResult.getInt("stars"), fetchRatingsInfoResult.getString("text"), fetchRatingsInfoResult.getInt("sender_id"), fetchRatingsInfoResult.getInt("receiver_id"), auctionId, isAuction, fetchRatingsInfoResult.getTimestamp("ratings.rating_date").toLocalDateTime()));
 				}
 			}
 		
@@ -3310,6 +3308,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							seller, null, endedAuctionsNoEmail.getDouble("auctions.currentbid"), endedAuctionsNoEmail.getTimestamp("auctions.starttime").toLocalDateTime(), endedAuctionsNoEmail.getTimestamp("auctions.enddate").toLocalDateTime());
 					
 					EmailHandler.sendAuctionEndedBuyerNoBidderEmail(auction);
+					
+					//Statement statement = connection.createStatement();
+					// Die Auktion wird daraufhin gelöscht
+					//statement.execute("DELETE FROM auctions WHERE auction_id ='" + auction.getId() + "'");
+					// Diesen Fehler vermerken
+					
 					sumAuctionNoBuyer++;
 				}
 				
@@ -3364,9 +3368,15 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						// Nicht genuegend Guthaben - Email versenden mit dieser Information
 						EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);
 						
-						Statement statement = connection.createStatement();
-						// Die Auktion wird daraufhin gelöscht
-						statement.execute("DELETE FROM auctions WHERE auction_id ='" + auction.getId() + "'");
+						// Die Auktion wird daraufhin bearbeitet, das aktuelle Gebot und der Hoechstbieter werden zurueckgersetzt
+						PreparedStatement stmt;
+						stmt = connection.prepareStatement("UPDATE auctions "
+								+ "SET currentbidder_id = ?, currentbid = ? "
+								+ "WHERE auction_id=" + auction.getId());
+						stmt.setInt(1, 0);
+						stmt.setDouble(2, auction.getStartPrice());
+						stmt.execute();
+						
 						// Diesen Fehler vermerken
 						sumInsuffiecientBalance++;
 					}

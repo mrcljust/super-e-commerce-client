@@ -31,17 +31,20 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label layoutX="16.0" layoutY="111.0" text="Erhaltene Bewertungen" />
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="16.0" layoutY="111.0" prefHeight="17.0" prefWidth="567.0" text="Erhaltene Bewertungen">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Label>
       <TableView fx:id="ShowRatings_ListRatings" layoutX="16.0" layoutY="135.0" prefHeight="200.0" prefWidth="567.0">
         <columns>
-          <TableColumn fx:id="TableRatings_ColumnDate" prefWidth="75.0" text="Datum" />
-          <TableColumn fx:id="TableRatings_ColumnBy" prefWidth="75.0" text="Von" />
+          <TableColumn fx:id="TableRatings_ColumnDate" prefWidth="107.0" text="Datum" />
+          <TableColumn fx:id="TableRatings_ColumnBy" prefWidth="43.0" text="Von" />
             <TableColumn fx:id="TableRatings_ColumnStars" prefWidth="75.0" text="Sterne" />
             <TableColumn fx:id="TableRatings_ColumnText" prefWidth="340.0" text="Erfahrungsbericht" />
         </columns>
       </TableView>
       <Button fx:id="ShowRatings_ReturnButton" layoutX="530.0" layoutY="342.0" mnemonicParsing="false" onAction="#ShowRatings_ReturnButton_Click" text="Zurück" />
-      <Label fx:id="ShowRatings_txtAverageRating" layoutX="186.0" layoutY="60.0" text="X.XX" />
-      <Label fx:id="ShowRatings_txtRatingCount" layoutX="230.0" layoutY="84.0" text="XX" />
+      <Label fx:id="ShowRatings_txtAverageRating" layoutX="186.0" layoutY="60.0" text="XX" />
+      <Label fx:id="ShowRatings_txtRatingCount" layoutX="227.0" layoutY="84.0" text="XX" />
    </children>
 </AnchorPane>

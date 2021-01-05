@@ -1,6 +1,7 @@
 package SEPCommon;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 public class Rating implements Serializable {
 
@@ -11,14 +12,17 @@ public class Rating implements Serializable {
 	private int receiverId;
 	private int orderId;
 	private int auctionId;
+	private LocalDateTime date;
 
-	public Rating(int _id, int _stars, String _text, int _senderId, int _receiverId, int _orderOrAuctionId, boolean isAuction) {
+	public Rating(int _id, int _stars, String _text, int _senderId, int _receiverId, int _orderOrAuctionId, boolean isAuction, LocalDateTime _date) {
 
+		//Konstruktor wenn Rating aus DB gelesen wird
 		this.id = _id;
 		this.stars = _stars;
 		this.text = _text;
 		this.senderId = _senderId;
 		this.receiverId = _receiverId;
+		this.date = _date;
 		
 		if(isAuction)
 		{
@@ -32,6 +36,7 @@ public class Rating implements Serializable {
 
 	public Rating(int _stars, String _text, int _senderId, int _receiverId, int _orderOrAuctionId, boolean isAuction) {
 
+		//Konstruktor wenn Rating erstellt wird clientseitig
 		this.stars = _stars;
 		this.text = _text;
 		this.senderId = _senderId;
@@ -44,6 +49,16 @@ public class Rating implements Serializable {
 		{
 			orderId=_orderOrAuctionId;
 		}
+	}
+	
+	public LocalDateTime getDate()
+	{
+		return date;
+	}
+	
+	public void setDate(LocalDateTime _date)
+	{
+		date=_date;
 	}
 	
 	public int getOrderId()

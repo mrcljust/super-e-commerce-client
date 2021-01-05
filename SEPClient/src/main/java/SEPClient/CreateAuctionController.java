@@ -6,12 +6,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.Date;
 import java.util.HashMap;
-
 import javax.imageio.ImageIO;
-
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -109,7 +106,9 @@ public class CreateAuctionController {
 
     @FXML
     void Auction_DeletePictureClick(ActionEvent event) {
-
+    	//Standardbild setzen
+    	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	Auction_imgPicture.setImage(defaultImage);
     }
 
     @FXML
