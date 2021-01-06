@@ -1364,7 +1364,7 @@ public class SQL {
 					return Response.InsufficientBalance;
 				} else if (auction.getCurrentBidder()==null || auction.getCurrentBidder().getId() ==0) {
 					if (bid >= auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
-							&& bidder.getWallet() - bid >= 0) {
+							&& wallettemp - bid >= 0) {
 						try {
 							PreparedStatement pstmt = connection.prepareStatement(
 									"UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id="
@@ -1386,7 +1386,7 @@ public class SQL {
 					}
 				} else if (auction.getCurrentBidder().getId() != auction.getSeller().getId()) {
 					if (bid > auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
-							&& bidder.getWallet() - bid >= 0) {
+							&& wallettemp - bid >= 0) {
 						try {
 							PreparedStatement pstmt = connection.prepareStatement(
 									"UPDATE auctions SET currentbid=?, currentbidder_id=? WHERE auction_id="
