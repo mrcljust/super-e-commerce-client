@@ -196,13 +196,25 @@ public class CreateAuctionController {
 	    	System.out.println(startDateAndTime);
 	    	System.out.println(endDateAndTime);
 			System.out.println(serverDate);
+			
+			if(startDateAndTime.isAfter(endDateAndTime))
+			{
+				//Startzeit nach Endzeit, Fehlermeldung ausgeben
+				FXMLHandler.ShowMessageBox("Der End-Zeitpunkt liegt vor dem Startzeitpunkt." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+				return;
+			}
+			else if(startDateAndTime.isBefore(serverDate) || endDateAndTime.isBefore(serverDate))
+			{
+				//Start/Endzeit vor Serverzeit, Fehlermeldung
+				FXMLHandler.ShowMessageBox("Ihr Start-/ End-Zeitpunkt liegt in der Vergangenheit." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+				return;
+			}
 		}
 		else
 		{
 			FXMLHandler.ShowMessageBox("Das Datum vom Server kann nicht geprüft werden, ggf. ist der Server nicht erreichbar.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
 		}
-		
 		
 		if (name == "" || name == null || startingpriceString == "" || startingpriceString == null || minBidString == "" || minBidString == null) {
 			
@@ -236,6 +248,11 @@ public class CreateAuctionController {
 			FXMLHandler.ShowMessageBox("Bitte geben Sie das Mindestgebot im folgenden Format ein: ##,##" + System.lineSeparator() + "(Ohne Währungszeichen und mit . oder ,)", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			Auction_txtMinBid.setText("");
 			return; 
+		}
+		
+		if(minBid < startingPrice) {
+			FXMLHandler.ShowMessageBox("Das Mindestgebot ist höher als Ihr Startpreis." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+			return;
 		}
 		
 		
