@@ -1684,13 +1684,14 @@ public class MainScreenController {
     			return;
     		}
         	
+        	//wird serverseitig geprueft
         	//clienseitig prüfen, ob genug Guthaben vorhanden ist
-        	if(user.getWallet()<bidAmount)
-        	{
-    			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
-    			MainScreen_TextboxBidAmount.setText("");
-    			return;
-        	}
+        	//if(user.getWallet()<bidAmount)
+        	//{
+    		//	FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+    		//	MainScreen_TextboxBidAmount.setText("");
+    		//	return;
+        	//}
 
         	//SendBid Request senden
 

@@ -1336,12 +1336,31 @@ public class SQL {
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
+		
+		String getCurrentWalletQuery = "SELECT wallet FROM users WHERE id='" + bidder.getId() + "'";
+		double wallettemp = 0;
+		
+		try {
+		Statement statement = connection.createStatement();
+		ResultSet walletSet = statement.executeQuery(getCurrentWalletQuery);
+		
+		
+		if(walletSet.next())
+		{
+			wallettemp = walletSet.getDouble("wallet");
+		}
+		
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return Response.Failure;
+		}
 
-		else if (serverDate.isAfter(startDate) == true) {
+		if (serverDate.isAfter(startDate) == true) {
 			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
 				if (auction.getCurrentBid() >= bid || auction.getMinBid() > bid || auction.getStartPrice() > bid) {
 					return Response.BidTooLow;
-				} else if (bidder.getWallet() - bid < 0) {
+				} else if (wallettemp - bid < 0) {
 					return Response.InsufficientBalance;
 				} else if (auction.getCurrentBidder()==null || auction.getCurrentBidder().getId() ==0) {
 					if (bid >= auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
