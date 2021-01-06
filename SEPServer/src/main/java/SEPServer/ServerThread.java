@@ -4,9 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -588,9 +586,7 @@ public class ServerThread implements Runnable {
 				else if(requestType == Request.GetServerDateTime)
 				{
 					HashMap<String, Object> responseMap = new HashMap<String, Object>();
-					LocalDate serverDate = SEPCommon.Methods.convertToLocalDate(new Date());
-					LocalTime serverTime = SEPCommon.Methods.convertToLocalTime(new Date());
-					Date serverDateTime = SEPCommon.Methods.convertToDate(serverDate.atTime(serverTime));
+					LocalDateTime serverDateTime = LocalDateTime.now();
 					responseMap.put("ServerDateTime", serverDateTime);
 					ServerResponse response = new ServerResponse(Response.Success, responseMap);
 					

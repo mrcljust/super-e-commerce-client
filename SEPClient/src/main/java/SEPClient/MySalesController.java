@@ -48,6 +48,10 @@ public class MySalesController {
         	MySales_LabelListOrders.setVisible(false);
         	MySales_CreateRating_Order.setVisible(false);
         	MySales_DeleteOrderButton.setVisible(false);
+        	
+        	MySales_LabelListAuctions.setVisible(true);
+        	MySales_ListAuctions.setVisible(true);
+        	MySales_CreateRating_Auction.setVisible(true);
         }
         else
         {
@@ -55,6 +59,11 @@ public class MySalesController {
         	MySales_LabelListOrders.setVisible(true);
         	MySales_CreateRating_Order.setVisible(true);
         	MySales_DeleteOrderButton.setVisible(true);
+        	
+
+        	MySales_LabelListAuctions.setVisible(false);
+        	MySales_ListAuctions.setVisible(false);
+        	MySales_CreateRating_Auction.setVisible(false);
 		}
 		selectionsChangedListener();
 	}
@@ -141,7 +150,13 @@ public class MySalesController {
     	        if (empty || price==null) {
     	            setText(null);
     	        } else {
-    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        	if(price==0)
+    	        	{
+    	        		setText("Kein Gebot");
+    	        	}
+    	        	else {
+        	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+					}
     	        }
     	    }
     	});
@@ -299,7 +314,7 @@ public class MySalesController {
         		LocalDateTime dateAuctionEnd = MySales_ListOrders.getSelectionModel().getSelectedItem().getDate();
         		LocalDateTime dateAuctionEndMax = dateAuctionEnd.plusHours(8);
         		if(dateNow.isBefore(dateAuctionEndMax))
-        		{
+        		{ //noch im zeitlichen Rahmen (8 Std), in denen eine Stornierung möglich ist
         			MySales_DeleteOrderButton.setDisable(false);
         			isDeleteable=true;
         		}
@@ -320,7 +335,8 @@ public class MySalesController {
     		MySales_CreateRating_Order.setDisable(true);
     		MySales_DeleteOrderButton.setDisable(true);
         	
-        	if(MySales_ListAuctions.getSelectionModel().getSelectedItem().getSellerRating()!=null)
+    		//kein Bieter oder Bewertung bereits abgegeben
+        	if(MySales_ListAuctions.getSelectionModel().getSelectedItem().getSellerRating()!=null || MySales_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBidder()==null)
         	{
         		MySales_CreateRating_Auction.setDisable(true);
         	}

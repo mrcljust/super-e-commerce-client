@@ -152,7 +152,13 @@ public class MainScreenController {
     	        if (empty || price==null) {
     	            setText(null);
     	        } else {
-    	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+    	        	if(price==0)
+    	        	{
+    	        		setText("Kein Gebot");
+    	        	}
+    	        	else {
+        	            setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+					}
     	        }
     	    }
     	});
@@ -336,6 +342,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setVisible(true);
         	MainScreen_btnAuctionsSearchOK.setVisible(true);
         	
+        	auctionsCatalogCurrentBidColumn.setText("Aktuelles Gebot");
+        	
     		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle aktuellen Auktionen geladen
         	auctionsSearchChangedEvent(AuctionType.Active);
     	}
@@ -351,6 +359,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setText("");
         	MainScreen_txtSearchAuctions.setVisible(true);
         	MainScreen_btnAuctionsSearchOK.setVisible(true);
+        	
+        	auctionsCatalogCurrentBidColumn.setText("Höchstgebot");
     		
     		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle geendeten Auktionen geladen
         	auctionsSearchChangedEvent(AuctionType.Ended);
@@ -367,6 +377,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setText("");
         	MainScreen_txtSearchAuctions.setVisible(true);
         	MainScreen_btnAuctionsSearchOK.setVisible(true);
+        	
+        	auctionsCatalogCurrentBidColumn.setText("Gebot");
     		
     		//Falls ein Suchbegriff eingegeben wurde, wird die Suche ausgeführt, ansonsten alle zukünftigen Auktionen geladen
         	auctionsSearchChangedEvent(AuctionType.Future);
@@ -387,6 +399,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setVisible(false);
         	MainScreen_btnAuctionsSearchOK.setVisible(false);
         	
+        	auctionsCatalogCurrentBidColumn.setText("Gebot");
+        	
     		//Alle vom User gespeicherten Auktionen werden geladen
         	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.SavedAuctions));
     	}
@@ -405,6 +419,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setText("");
         	MainScreen_txtSearchAuctions.setVisible(false);
         	MainScreen_btnAuctionsSearchOK.setVisible(false);
+        	
+        	auctionsCatalogCurrentBidColumn.setText("Aktuelles Gebot");
 
     		//Alle Auktionen mit Geboten vom User werden geladen
         	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyBids));
@@ -424,6 +440,8 @@ public class MainScreenController {
         	MainScreen_txtSearchAuctions.setText("");
         	MainScreen_txtSearchAuctions.setVisible(false);
         	MainScreen_btnAuctionsSearchOK.setVisible(false);
+        	
+        	auctionsCatalogCurrentBidColumn.setText("Gebot");
 
     		//Alle vom User eingestellten Auktionen werden geladen
         	MainScreen_ListAuctions.setItems(LoadAuctions(AuctionType.MyAuctions));
@@ -778,12 +796,43 @@ public class MainScreenController {
         	MainScreen_LabelMinBidAuction.setText("Mindestgebot: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getMinBid()) + "$");
         	MainScreen_LabelStartPriceAuction.setText("Startpreis: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getStartPrice()) + "$");
         	MainScreen_LabelAuctionSeller.setText("Verkäufer: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getAddress().getFullname() + " (Benutzer " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getSeller().getUsername() + ")");
-        	MainScreen_LabelCurrentBidAuction.setText("Aktuelles Gebot: " + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBid()) + "$");
         	MainScreen_LabelShippingAuction.setText("Versandart: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getShippingType().toString());
         	MainScreen_LabelTimeAuction.setText("Auktionszeitraum: " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getStarttime().format(SEPCommon.Constants.DATEFORMAT) + " - " + MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getEnddate().format(SEPCommon.Constants.DATEFORMAT));
         	MainScreen_txtAverageRatingAuction.setText("");
         	MainScreen_txtRatingCountAuction.setText("");
         	MainScreen_WebViewAuctionDescription.getEngine().loadContent(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+        	
+        	String currentBidTextString = "";
+        	if(radioCurrentAuctions.isSelected() || radioMyBids.isSelected())
+        	{
+        		currentBidTextString = "Aktuelles Gebot: ";
+        		MainScreen_LabelCurrentBidAuction.setVisible(true);
+        	}
+        	else if(radioSavedAuctions.isSelected() || radioMyAuctions.isSelected())
+        	{
+        		currentBidTextString = "Gebot: ";
+        		MainScreen_LabelCurrentBidAuction.setVisible(true);
+        	}
+        	else if(radioFutureAuctions.isSelected())
+        	{
+        		currentBidTextString = "Gebot: ";
+        		MainScreen_LabelCurrentBidAuction.setVisible(false);
+        	}
+        	else if(radioEndedAuctions.isSelected())
+        	{
+        		currentBidTextString = "Höchstgebot: ";
+        		MainScreen_LabelCurrentBidAuction.setVisible(true);
+        	}
+        	
+        	if(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBid() == 0)
+        	{
+        		//kein Gebot
+        		MainScreen_LabelCurrentBidAuction.setText(currentBidTextString + "Kein Gebot");
+        	}
+        	else {
+        		//Gebot vhd.
+            	MainScreen_LabelCurrentBidAuction.setText(currentBidTextString + SEPCommon.Constants.DOUBLEFORMAT.format(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getCurrentBid()) + "$");
+			}
         	
         	//Standardbild setzen
         	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
@@ -1635,13 +1684,14 @@ public class MainScreenController {
     			return;
     		}
         	
-        	//clienseitig prüfen, ob genug Guthaben vorhanden ist
-        	if(user.getWallet()<bidAmount)
-        	{
-    			FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
-    			MainScreen_TextboxBidAmount.setText("");
-    			return;
-        	}
+        	//wird serverseitig geprueft
+	        	//clienseitig prüfen, ob genug Guthaben vorhanden ist
+	        	//if(user.getWallet()<bidAmount)
+	        	//{
+	    		//	FXMLHandler.ShowMessageBox("Ihr Guthaben reicht nicht aus, um das Gebot abzugeben. Bitte laden Sie Ihr Guthaben auf.", "Fehler", "Fehler", AlertType.ERROR, true, false);
+	    		//	MainScreen_TextboxBidAmount.setText("");
+	    		//	return;
+	        	//}
 
         	//SendBid Request senden
 

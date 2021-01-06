@@ -188,7 +188,7 @@ public class CreateAuctionController {
 		//Antwort auslesen
 		if(queryResponse.getResponseType() == Response.Success)
 		{
-			Date serverDate = (Date)queryResponse.getResponseMap().get("ServerDateTime");
+			LocalDateTime serverDate = (LocalDateTime)queryResponse.getResponseMap().get("ServerDateTime");
 			
 			//HIER PRUEFEN (.isBefore() / .isAfter())
 			
@@ -196,13 +196,25 @@ public class CreateAuctionController {
 	    	System.out.println(startDateAndTime);
 	    	System.out.println(endDateAndTime);
 			System.out.println(serverDate);
+			
+			if(startDateAndTime.isAfter(endDateAndTime))
+			{
+				//Startzeit nach Endzeit, Fehlermeldung ausgeben
+				FXMLHandler.ShowMessageBox("Der End-Zeitpunkt liegt vor dem Startzeitpunkt." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+				return;
+			}
+			else if(startDateAndTime.isBefore(serverDate) || endDateAndTime.isBefore(serverDate))
+			{
+				//Start/Endzeit vor Serverzeit, Fehlermeldung
+				FXMLHandler.ShowMessageBox("Ihr Start-/ End-Zeitpunkt liegt in der Vergangenheit." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+				return;
+			}
 		}
 		else
 		{
 			FXMLHandler.ShowMessageBox("Das Datum vom Server kann nicht geprüft werden, ggf. ist der Server nicht erreichbar.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
 		}
-		
 		
 		if (name == "" || name == null || startingpriceString == "" || startingpriceString == null || minBidString == "" || minBidString == null) {
 			
@@ -238,6 +250,11 @@ public class CreateAuctionController {
 			return; 
 		}
 		
+		if(minBid < startingPrice) {
+			FXMLHandler.ShowMessageBox("Das Mindestgebot ist höher als Ihr Startpreis." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+			return;
+		}
+		
 		
 		
 		Auction newAuction = new Auction(name, description, imageByteArray, minBid, startingPrice, shippingType, customer, startDateAndTime, endDateAndTime);
@@ -269,8 +286,8 @@ public class CreateAuctionController {
 		}
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
-			FXMLHandler.ShowMessageBox("Der Artikel '" + name + "' wurde erfolgreich inseriert.",
-					"Artikel inseriert", "Artikel inseriert", AlertType.CONFIRMATION, true,
+			FXMLHandler.ShowMessageBox("Die Auktion '" + name + "' wurde erfolgreich inseriert.",
+					"Auktion inseriert", "Auktion inseriert", AlertType.CONFIRMATION, true,
 					false);
 			//MainScreen oeffnen
 			MainScreenController.setUser(customer);
