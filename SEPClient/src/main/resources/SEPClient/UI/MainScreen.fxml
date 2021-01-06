@@ -131,9 +131,9 @@
                                  </columns>
                               </TableView>
                               <RadioButton fx:id="radioAllAuctions" layoutX="14.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioAllAuctions_Click" selected="true" text="Alle Auktionen" />
-                              <RadioButton fx:id="radioMyBids" layoutX="117.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyBids_Click" text="Meine aktuellen Gebote" />
-                              <RadioButton fx:id="radioMyAuctions" layoutX="269.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyAuctions_Click" text="Meine Auktionen" />
-                              <RadioButton fx:id="radioSavedAuctions" layoutX="385.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioSavedAuctions_Click" text="Gemerkte Auktionen" />
+                              <RadioButton fx:id="radioMyBids" layoutX="117.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyBids_Click" text="Meine Gebote" />
+                              <RadioButton fx:id="radioMyAuctions" layoutX="219.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioMyAuctions_Click" text="Meine Auktionen" />
+                              <RadioButton fx:id="radioSavedAuctions" layoutX="335.0" layoutY="9.0" mnemonicParsing="false" onAction="#radioSavedAuctions_Click" text="Gemerkte Auktionen" />
                               <RadioButton fx:id="radioCurrentAuctions" layoutX="14.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioCurrentAuctions_Click" selected="true" text="Aktuelle Auktionen" />
                               <RadioButton fx:id="radioEndedAuctions" layoutX="142.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioEndedAuctions_Click" text="Beendete Auktionen" />
                               <RadioButton fx:id="radioFutureAuctions" layoutX="279.0" layoutY="30.0" mnemonicParsing="false" onAction="#radioFutureAuctions_Click" text="Zukünftige Auktionen" />

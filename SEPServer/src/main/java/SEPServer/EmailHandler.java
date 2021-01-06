@@ -10,22 +10,28 @@ import javax.mail.internet.*;
 // source: https://mkyong.com/java/javamail-api-sending-email-via-gmail-smtp-example/
 // By mkyong | Last updated: April 10, 2019
 public class EmailHandler {
-
+	static Session session;
+	static Properties properties;
 	
-	protected static Response sendAuctionEndedEmail(Auction auction)  {
-		//Verkaufsbestätigungsmail an den Verkäufer der Auktion schicken
-
-    	Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true");
-        Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
+	private static void setProperties()
+	{
+		properties = new Properties();
+		properties.put("mail.smtp.host", "smtp.gmail.com");
+		properties.put("mail.smtp.port", "587");
+		properties.put("mail.smtp.auth", "true");
+		properties.put("mail.smtp.starttls.enable", "true");
+        session = Session.getInstance(properties, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication("sepgruppeb@gmail.com", "wisem2020");
             }
         });
+	}
+	
+	protected static Response sendAuctionEndedEmail(Auction auction)  {
+		//Verkaufsbestätigungsmail an den Verkäufer der Auktion schicken
 	        
+		setProperties();
+		
         try {
 	        Message msg = new MimeMessage(session);
 	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
@@ -50,16 +56,7 @@ public class EmailHandler {
 		//Verkaufsbestätigungsmail an den Verkäufer der Auktion schicken
 		//folgender Spezialfall: User hat kein Guthaben mehr - entsprechende Mail verschicken
 		
-    	Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true");
-        Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("sepgruppeb@gmail.com", "wisem2020");
-            }
-        });
+		setProperties();
         
 		try {
 	        Message msg = new MimeMessage(session);
@@ -80,16 +77,7 @@ public class EmailHandler {
 	protected static Response sendAuctionEndedBuyerNoBidderEmail(Auction auction) {
 		//Kein Gebot auf die Auktion
 		
-    	Properties prop = new Properties();
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true");
-        Session session = Session.getInstance(prop, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("sepgruppeb@gmail.com", "wisem2020");
-            }
-        });
+		setProperties();
 	        
 		try {
 	        Message msg = new MimeMessage(session);

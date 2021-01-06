@@ -188,7 +188,7 @@ public class CreateAuctionController {
 		//Antwort auslesen
 		if(queryResponse.getResponseType() == Response.Success)
 		{
-			Date serverDate = (Date)queryResponse.getResponseMap().get("ServerDateTime");
+			LocalDateTime serverDate = (LocalDateTime)queryResponse.getResponseMap().get("ServerDateTime");
 			
 			//HIER PRUEFEN (.isBefore() / .isAfter())
 			
@@ -269,8 +269,8 @@ public class CreateAuctionController {
 		}
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
-			FXMLHandler.ShowMessageBox("Der Artikel '" + name + "' wurde erfolgreich inseriert.",
-					"Artikel inseriert", "Artikel inseriert", AlertType.CONFIRMATION, true,
+			FXMLHandler.ShowMessageBox("Die Auktion '" + name + "' wurde erfolgreich inseriert.",
+					"Auktion inseriert", "Auktion inseriert", AlertType.CONFIRMATION, true,
 					false);
 			//MainScreen oeffnen
 			MainScreenController.setUser(customer);

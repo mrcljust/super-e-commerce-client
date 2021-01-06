@@ -7,9 +7,9 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="588.0" prefWidth="776.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.MySalesController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="307.0" prefWidth="776.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.MySalesController">
    <children>
-      <TableView fx:id="MySales_ListOrders" layoutX="7.0" layoutY="322.0" prefHeight="221.0" prefWidth="759.0">
+      <TableView fx:id="MySales_ListOrders" layoutX="9.0" layoutY="39.0" prefHeight="221.0" prefWidth="759.0">
          <columns>
             <TableColumn fx:id="ordersIdColumn" editable="false" prefWidth="75.0" text="Kauf-ID" />
             <TableColumn fx:id="ordersDateColumn" editable="false" prefWidth="119.0" text="Verkaufsdatum" />
@@ -18,29 +18,29 @@
             <TableColumn fx:id="ordersRatingGivenColumn" editable="false" prefWidth="169.0" text="Bewertung abgegeben?" />
          </columns>
       </TableView>
-      <Label fx:id="MySales_LabelListOrders" alignment="CENTER" layoutX="11.0" layoutY="298.0" prefHeight="17.0" prefWidth="759.0" text="Von mir verkaufte Festpreisprodukte">
+      <Label fx:id="MySales_LabelListOrders" alignment="CENTER" layoutX="9.0" layoutY="14.0" prefHeight="17.0" prefWidth="759.0" text="Von mir verkaufte Festpreisprodukte">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Label fx:id="MySales_LabelListAuctions" alignment="CENTER" layoutX="11.0" layoutY="14.0" prefHeight="17.0" prefWidth="759.0" text="Von mir verkaufte Auktionen" textAlignment="CENTER">
+      <Label fx:id="MySales_LabelListAuctions" alignment="CENTER" layoutX="9.0" layoutY="14.0" prefHeight="17.0" prefWidth="759.0" text="Von mir verkaufte/beendete Auktionen" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <Button fx:id="MySales_CreateRating_Order" disable="true" layoutX="7.0" layoutY="551.0" mnemonicParsing="false" onAction="#MySales_CreateRating_Order_Click" text="Bewertung für Käufer abgeben..." />
-      <Button fx:id="MySales_DeleteOrderButton" disable="true" layoutX="199.0" layoutY="551.0" mnemonicParsing="false" onAction="#MySales_DeleteOrderButton_Click" text="Verkauf stornieren" />
-      <TableView fx:id="MySales_ListAuctions" layoutX="11.0" layoutY="39.0" prefHeight="221.0" prefWidth="759.0">
+      <Button fx:id="MySales_CreateRating_Order" disable="true" layoutX="9.0" layoutY="268.0" mnemonicParsing="false" onAction="#MySales_CreateRating_Order_Click" text="Bewertung für Käufer abgeben..." />
+      <Button fx:id="MySales_DeleteOrderButton" disable="true" layoutX="203.0" layoutY="268.0" mnemonicParsing="false" onAction="#MySales_DeleteOrderButton_Click" text="Verkauf stornieren" />
+      <TableView fx:id="MySales_ListAuctions" layoutX="9.0" layoutY="39.0" prefHeight="221.0" prefWidth="759.0">
          <columns>
             <TableColumn fx:id="auctionsIdColumn" editable="false" prefWidth="75.0" text="Auktions-ID" />
             <TableColumn fx:id="auctionsEndColumn" editable="false" prefWidth="119.0" text="Endzeitpunkt" />
             <TableColumn fx:id="auctionsNameColumn" editable="false" prefWidth="202.0" text="Auktionsname" />
             <TableColumn fx:id="auctionsShippingColumn" editable="false" prefWidth="134.0" text="Versand" />
-            <TableColumn fx:id="auctionsPriceColumn" editable="false" minWidth="0.0" prefWidth="82.0" text="Preis" />
+            <TableColumn fx:id="auctionsPriceColumn" editable="false" minWidth="0.0" prefWidth="82.0" text="Gebot" />
             <TableColumn fx:id="auctionsRatingGivenColumn" editable="false" prefWidth="145.0" text="Bewertung abgegeben?" />
          </columns>
       </TableView>
-      <Button fx:id="MySales_CreateRating_Auction" disable="true" layoutX="11.0" layoutY="268.0" mnemonicParsing="false" onAction="#MySales_CreateRating_Auction_Click" text="Bewertung für Käufer abgeben..." />
-      <Button fx:id="MySales_Return" layoutX="709.0" layoutY="552.0" mnemonicParsing="false" onAction="#MySales_Return_Click" text="Zurück" />
+      <Button fx:id="MySales_CreateRating_Auction" disable="true" layoutX="9.0" layoutY="268.0" mnemonicParsing="false" onAction="#MySales_CreateRating_Auction_Click" text="Bewertung für Käufer abgeben..." />
+      <Button fx:id="MySales_Return" layoutX="709.0" layoutY="268.0" mnemonicParsing="false" onAction="#MySales_Return_Click" text="Zurück" />
    </children>
 </AnchorPane>

@@ -1278,13 +1278,13 @@ public class SQL {
 
 	protected Response addAuction(Auction auction) {				//fertig
 		if (!checkConnection()) {
-			return null;
+			return Response.NoDBConnection;
 		}
 		try {
 			PreparedStatement pstmt=connection.prepareStatement("INSERT INTO auctions(currentbid, currentbidder_id, description, emailsent, enddate, image, minbid, seller_id, shippingtype_id, startprice, starttime, title)"
 					+ " VALUES(?,?,?,?,?,?,?,?,?,?,?,?)");
 
-			pstmt.setDouble(1, auction.getStartPrice());
+			pstmt.setDouble(1, 0);
 			pstmt.setInt(2, 0);
 			pstmt.setString(3, auction.getDescription());
 			pstmt.setBoolean(4, false);
@@ -1440,7 +1440,7 @@ public class SQL {
 			}
 			else
 			{
-				//Maximale Länge (10) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
+				//Maximale Länge (50) noch nicht erreicht, setze viewedProductId an den Anfang und schiebe ggf. die anderen ein Feld nach hinten
 				newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
 				
 				for(int i=0;i<currentSavedAuctions.length;i++)
@@ -3196,6 +3196,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 						// Order aus Datenbank löschen anhand der ID
 						Statement statement = connection.createStatement();
 						statement.execute("DELETE FROM orders WHERE order_id='" + orderID + "'");
+						statement.execute("DELETE FROM ratings WHERE order_id='" + orderID + "'");
 						return Response.Success; 
 					}
 				}
@@ -3287,7 +3288,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					// vermerken, dass Email versendet wurde
 					Statement stmt = connection.createStatement();
 					stmt.execute("UPDATE auctions "
-						+ "SET emailsent = 1 WHERE auction_id=" + auction.getId());
+						+ "SET emailsent = 1, currentbid = 0 WHERE auction_id=" + auction.getId());
 					
 					EmailHandler.sendAuctionEndedBuyerNoBidderEmail(auction);
 					
@@ -3359,7 +3360,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+ "SET currentbidder_id = ?, currentbid = ?, emailsent = 1"
 									+ "WHERE auction_id=" + auction.getId());
 							stmt.setInt(1, 0);
-							stmt.setDouble(2, auction.getStartPrice());
+							stmt.setDouble(2, 0); // 0$ als Gebot setzen
 							stmt.execute();
 							
 							EmailHandler.sendAuctionEndedBuyerNoBalanceEmail(auction);

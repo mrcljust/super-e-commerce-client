@@ -242,7 +242,7 @@ public class MyPurchasesController {
     		
     		else if(queryResponse.getResponseType() == Response.OrderTooOld)
     		{
-    			FXMLHandler.ShowMessageBox("Ihre Bestellung ist nicht mehr stornierbar, da er länger als 8 Stunden her ist.",
+    			FXMLHandler.ShowMessageBox("Ihre Bestellung ist nicht mehr stornierbar, da sie länger als 8 Stunden her ist.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
     			return;
@@ -260,7 +260,7 @@ public class MyPurchasesController {
 
     		else if(queryResponse.getResponseType() == Response.Success)
     		{
-    			FXMLHandler.ShowMessageBox("Der Verkauf wurde erfolgreich storniert. Der Kaufbetrag wurde dem Käufer wieder gutgeschrieben.",
+    			FXMLHandler.ShowMessageBox("Die Bestellung wurde erfolgreich storniert. Der Kaufbetrag wurde Ihnen wieder gutgeschrieben.",
     					"Stornierung erfolgreich", "Stornierung erfolgreich", AlertType.CONFIRMATION, true,
     					false);
     			//Betrag wurde zum Kaeuferkonto addiert
