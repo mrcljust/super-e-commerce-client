@@ -167,6 +167,9 @@ public class MySalesController {
     	        super.updateItem(buyerRating, empty);
     	        if(empty) {
     	        	setText(null);
+    	        } else if(((Auction)getTableRow().getItem()).getCurrentBidder()==null) {
+        	        	//kein Bieter
+        	        	setText("Nicht möglich");
     	        } else if (buyerRating==null) {
     	            setText("Noch nicht abgegeben");
     	        } else {
@@ -453,13 +456,13 @@ public class MySalesController {
     		ObservableAuctions.removeIf(n -> (n==null));
     		
     		//Auktionen ohne Kaeufer bzw. Bieter entfernen
-    		for(Auction auct: ObservableAuctions)
+    		/*for(Auction auct: ObservableAuctions)
     		{
     			if(auct.getCurrentBidder()==null)
     			{
     				ObservableAuctions.remove(auct);
     			}
-    		}
+    		}*/
     		
     		return ObservableAuctions;
     	}
