@@ -203,7 +203,7 @@ public class MyPurchasesController {
     		CreateRatingController.setOrder(null);
     		CreateRatingController.setAuction(MyPurchases_ListAuctions.getSelectionModel().getSelectedItem());
     		CreateRatingController.setSender(customer);
-    		CreateRatingController.setRecipient(MyPurchases_ListOrders.getSelectionModel().getSelectedItem().getSeller());
+    		CreateRatingController.setRecipient(MyPurchases_ListAuctions.getSelectionModel().getSelectedItem().getSeller());
     		CreateRatingController.setRatingIsBySeller(false);
     		FXMLHandler.OpenSceneInStage((Stage) MyPurchases_CreateRating_Order.getScene().getWindow(), "CreateRating", "Bewertung abgeben", true, true);
     	} 

@@ -1538,7 +1538,7 @@ public class SQL {
 				Seller newSeller=null;
 				Product newProduct=null;
 				
-				if (sellerInfo.next() != false) {
+				if (sellerInfo.next()) {
 
 					newAddress = new Address(sellerInfo.getString("users.fullname"),
 							sellerInfo.getString("users.country"), sellerInfo.getInt("users.postalcode"),
@@ -1564,23 +1564,10 @@ public class SQL {
 						ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
-				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
-				allSellerRatings.beforeFirst();
 				
 				Rating newSellerRating=null;
 				Rating newBuyerRating=null;
-				if (allBuyerRatings.next() != false) {
-					String buyerText = null;
-					if (allBuyerRatings.getString("ratings.text") != null) {
-						buyerText=allBuyerRatings.getString("ratings.text");
-					}
-					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
-							allBuyerRatings.getInt("ratings.stars"), buyerText,
-							allBuyerRatings.getInt("ratings.sender_id"), allBuyerRatings.getInt("ratings.receiver_id"),
-							orderId, false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
-
-				}
 
 				if (allSellerRatings.next()) {
 					String sellerText = null;
@@ -1591,13 +1578,13 @@ public class SQL {
 							allSellerRatings.getInt("ratings.stars"), sellerText,
 							allSellerRatings.getInt("ratings.sender_id"),
 							allSellerRatings.getInt("ratings.receiver_id"), orderId,
-							false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+							false, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 				}
 				
 				if (allBuyerRatings.next()) {
 					String buyerText = null;
 					if (allBuyerRatings.getString("ratings.text") != null) {
-buyerText=allBuyerRatings.getString("ratings.text");
+						buyerText=allBuyerRatings.getString("ratings.text");
 					}
 					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 							allBuyerRatings.getInt("ratings.stars"), buyerText,
@@ -1673,7 +1660,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				buyerDetails.beforeFirst();
 				
 				Customer newBuyer = null;
-				if (buyerDetails.next() != false) {
+				if (buyerDetails.next()) {
 					Address newAddressBuyer = new Address(buyerDetails.getString("users.fullname"),
 							buyerDetails.getString("users.country"), buyerDetails.getInt("users.postalcode"),
 							buyerDetails.getString("users.city"), buyerDetails.getString("users.street"),
@@ -1695,23 +1682,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 				ResultSet allBuyerRatings = pstmtBuyerRatings.executeQuery();
-				allBuyerRatings.beforeFirst();
 				ResultSet allSellerRatings = pstmtSellerRatings.executeQuery();
-				allSellerRatings.beforeFirst();
 				
 				Rating newSellerRating=null;
 				Rating newBuyerRating=null;
-				if (allBuyerRatings.next() != false) {
-					String buyerText = null;
-					if (allBuyerRatings.getString("ratings.text") != null) {
-						buyerText=allBuyerRatings.getString("ratings.text");
-					}
-					newBuyerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
-							allBuyerRatings.getInt("ratings.stars"), buyerText,
-							allBuyerRatings.getInt("ratings.sender_id"), allBuyerRatings.getInt("ratings.receiver_id"),
-							orderId, false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
-
-				}
 
 				if (allSellerRatings.next()) {
 					String sellerText = null;
@@ -1722,7 +1696,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							allSellerRatings.getInt("ratings.stars"), sellerText,
 							allSellerRatings.getInt("ratings.sender_id"),
 							allSellerRatings.getInt("ratings.receiver_id"), orderId,
-							false, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+							false, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 				}
 				
 				if (allBuyerRatings.next()) {
@@ -1814,7 +1788,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Address newAddressCurrentbidder = null;
 				Customer currentBidder = null;
 
-				if (currentBidderInformation.next() != false) {
+				if (currentBidderInformation.next()) {
 					newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 							currentBidderInformation.getString("users.country"),
 							currentBidderInformation.getInt("users.postalcode"),
@@ -1841,12 +1815,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+  " WHERE users.id=" + newSeller.getId()+" AND auctions.auction_id="+ wonAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-					allBuyerRatings.beforeFirst();
 					
 
-					if (allSellerRatings.next() != false) {
+					if (allSellerRatings.next()) {
 						String sellerText = null;
 						if (allSellerRatings.getString("ratings.text") != null) {
 							sellerText = allSellerRatings.getString("ratings.text");
@@ -1855,10 +1827,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+								allSellerRatings.getInt("ratings.auction_id"), true, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
-					//t
-					if (allBuyerRatings.next() != false) {
+					
+					if (allBuyerRatings.next()) {
 						String buyerText = null;
 						if (allBuyerRatings.getString("ratings.text") != null) {
 							buyerText=allBuyerRatings.getString("ratings.text");
@@ -1958,7 +1930,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Address newAddressCurrentbidder = null;
 				Customer currentBidder = null;
 
-				if (currentBidderInformation.next() != false) {
+				if (currentBidderInformation.next()) {
 					newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 							currentBidderInformation.getString("users.country"),
 							currentBidderInformation.getInt("users.postalcode"),
@@ -1984,12 +1956,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+  " WHERE users.id=" + currentBidder.getId()+" AND auctions.auction_id="+ wonAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-					allBuyerRatings.beforeFirst();
 					
 
-					if (allSellerRatings.next() != false) {
+					if (allSellerRatings.next()) {
 						String sellerText = null;
 						if (allSellerRatings.getString("ratings.text") != null) {
 							sellerText = allSellerRatings.getString("ratings.text");
@@ -1998,10 +1968,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+								allSellerRatings.getInt("ratings.auction_id"), true, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
 					
-					if (allBuyerRatings.next() != false) {
+					if (allBuyerRatings.next()) {
 						String buyerText = null;
 						if (allBuyerRatings.getString("ratings.text") != null) {
 							buyerText=allBuyerRatings.getString("ratings.text");
@@ -2116,7 +2086,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
 
-					if (currentBidderInformation.next() != false) {
+					if (currentBidderInformation.next()) {
 						newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 								currentBidderInformation.getString("users.country"),
 								currentBidderInformation.getInt("users.postalcode"),
@@ -2207,7 +2177,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
 
-					if (currentBidderInformation.next() != false) {
+					if (currentBidderInformation.next()) {
 						newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 								currentBidderInformation.getString("users.country"),
 								currentBidderInformation.getInt("users.postalcode"),
@@ -2232,12 +2202,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								"Select * FROM Ratings JOIN Users ON ratings.receiver_id=users.id JOIN auctions ON ratings.auction_id=auctions.auction_id WHERE users.id="
 										+ currentBidder.getId() + " AND auctions.auction_id=" + endedAuctionId);
 
-						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-						allSellerRatings.beforeFirst();		
+						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();	
 						ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-						allBuyerRatings.beforeFirst();
 
-						if (allSellerRatings.next() != false) {
+						if (allSellerRatings.next()) {
 							String sellerText= null;
 							if(allSellerRatings.getString("ratings.text")!=null) {
 								sellerText=allSellerRatings.getString("ratings.text");
@@ -2247,10 +2215,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
 									allSellerRatings.getInt("ratings.receiver_id"),
-									allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+									allSellerRatings.getInt("ratings.auction_id"), true, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 						}
 
-						if (allBuyerRatings.next() != false) {
+						if (allBuyerRatings.next()) {
 							String buyerText=null;
 							if(allBuyerRatings.getString("ratings.text")!=null) {
 								buyerText=allBuyerRatings.getString("ratings.text");
@@ -2448,11 +2416,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 											+ currentBidder.getId() + " AND auctions.auction_id=" + currentAuctionId,ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-					allSellerRatings.beforeFirst();
 					ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-					allBuyerRatings.beforeFirst();
 
-					if (allSellerRatings.next() != false) {
+					if (allSellerRatings.next()) {
 						String sellerText = null;
 						if (allSellerRatings.getString("ratings.text") != null) {
 							sellerText = allSellerRatings.getString("ratings.text");
@@ -2461,10 +2427,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 								allSellerRatings.getInt("ratings.stars"), sellerText,
 								allSellerRatings.getInt("ratings.sender_id"),
 								allSellerRatings.getInt("ratings.receiver_id"),
-								allSellerRatings.getInt("ratings.auction_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+								allSellerRatings.getInt("ratings.auction_id"), true, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 					}
 
-					if (allBuyerRatings.next() != false) {
+					if (allBuyerRatings.next()) {
 						String buyerText = null;
 						if (allBuyerRatings.getString("ratings.text") != null) {
 							buyerText = allBuyerRatings.getString("ratings.text");
@@ -2572,7 +2538,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					Address newAddressCurrentBidder = null;
 					Customer currentBidder = null;
 
-					if (currentBidderInformation.next() != false) {
+					if (currentBidderInformation.next()) {
 						newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
 								currentBidderInformation.getString("users.country"),
 								currentBidderInformation.getInt("users.postalcode"),
@@ -2806,7 +2772,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
 
-					if (currentBidderInformation.next() != false) {
+					if (currentBidderInformation.next()) {
 						newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 								currentBidderInformation.getString("users.country"),
 								currentBidderInformation.getInt("users.postalcode"),
@@ -2903,7 +2869,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
 
-					if (currentBidderInformation.next() != false) {
+					if (currentBidderInformation.next()) {
 						newAddressCurrentbidder = new Address(currentBidderInformation.getString("users.fullname"),
 								currentBidderInformation.getString("users.country"),
 								currentBidderInformation.getInt("users.postalcode"),
@@ -2931,11 +2897,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 										+ currentBidder.getId() + " AND auctions.auction_id=" + endedAuctionId);
 
 						ResultSet allSellerRatings = pstmtSellerRatingsEndedAuction.executeQuery();
-						allSellerRatings.first();		//ggf. beforeFirst checken
 						ResultSet allBuyerRatings = pstmtBuyerEndedAuction.executeQuery();
-						allBuyerRatings.first();
 
-						if (allSellerRatings.next() != false) {
+						if (allSellerRatings.next()) {
 							String sellerText= null;
 							if(allSellerRatings.getString("ratings.text")!=null) {
 								sellerText=allSellerRatings.getString("ratings.text");
@@ -2945,12 +2909,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
 									allSellerRatings.getInt("ratings.receiver_id"),
-									allSellerRatings.getInt("ratings.order_id"), true, allBuyerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
+									allSellerRatings.getInt("ratings.order_id"), true, allSellerRatings.getTimestamp("ratings.rating_date").toLocalDateTime());
 						}
 
-						if (allBuyerRatings.next() != false) {
+						if (allBuyerRatings.next()) {
 							String buyerText=null;
-							if(allSellerRatings.getString("ratings.text")!=null) {
+							if(allBuyerRatings.getString("ratings.text")!=null) {
 								
 							}
 							newSellerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
