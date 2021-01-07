@@ -1381,7 +1381,7 @@ public class SQL {
 					return Response.BidTooLow;
 				} else if (wallettemp - bid < 0) {
 					return Response.InsufficientBalance;
-				} else if (auction.getCurrentBidder()==null || auction.getCurrentBidder().getId() ==0) {
+				} else if (currentBidTemp==0) {
 					//erstes Gebot für die Auktion
 					if (bid >= currentBidTemp && bid >= auction.getStartPrice()
 							&& wallettemp - bid >= 0) {
@@ -1404,7 +1404,7 @@ public class SQL {
 							return Response.Failure;
 						}
 					}
-				} else if (auction.getCurrentBidder().getId() != auction.getSeller().getId()) {
+				} else if (currentBidTemp>0) {
 					//bereits ein Gebot abgegeben
 					if (bid >= Double.parseDouble(SEPCommon.Constants.DOUBLEFORMAT.format(currentBidTemp+auction.getMinBid()).replace(",", ".")) && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
 							&& wallettemp - bid >= 0) {
@@ -1431,7 +1431,6 @@ public class SQL {
 						return Response.BidTooLow;
 					}
 				}
-
 				else {
 					return Response.Failure;
 				}

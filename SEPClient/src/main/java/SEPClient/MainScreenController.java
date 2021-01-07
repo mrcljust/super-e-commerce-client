@@ -742,6 +742,7 @@ public class MainScreenController {
 			    	MainScreen_LabelProductCategory.setText("Kategorie: " + selectedCategory);
 		    	}
 		    	MainScreen_WebViewProductDescription.getEngine().loadContent(MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
+		    	MainScreen_WebViewProductDescription.setDisable(true);
 		    	
 		    	HashMap<String, Object> requestMap = new HashMap<String, Object>();
 				requestMap.put("User", MainScreen_ListLastViewed.getSelectionModel().getSelectedItem().getSeller());
@@ -801,7 +802,7 @@ public class MainScreenController {
         	MainScreen_txtAverageRatingAuction.setText("");
         	MainScreen_txtRatingCountAuction.setText("");
         	MainScreen_WebViewAuctionDescription.getEngine().loadContent(MainScreen_ListAuctions.getSelectionModel().getSelectedItem().getDescription().replace(System.lineSeparator(), "<br/>")); //<br/> = neue Zeile in HTML
-        	
+        	MainScreen_WebViewAuctionDescription.setDisable(true);
         	String currentBidTextString = "";
         	if(radioCurrentAuctions.isSelected() || radioMyBids.isSelected())
         	{
@@ -1721,7 +1722,7 @@ public class MainScreenController {
     		}
     		else if(queryResponse.getResponseType() == Response.BidTooLow)
     		{
-    			FXMLHandler.ShowMessageBox("Ihr eingegebenes Gebot ist niedriger/gleich wie das aktuelle Höchstgebot, oder geringer als das Mindestgebot.",
+    			FXMLHandler.ShowMessageBox("Ihr eingegebenes Gebot ist zu niedrig.",
     					"Fehler", "Fehler", AlertType.ERROR, true,
     					false);
     			MainScreen_TextboxBidAmount.setText("");
