@@ -49,6 +49,8 @@ public class EditAccountController {
 	}
 
 	public void initialize() throws IOException {
+		EditAccount_ButtonDeleteAccount.setVisible(false);
+		
 		//Standardbild setzen
     	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
     	EditAccount_imgPicture.setImage(defaultImage);

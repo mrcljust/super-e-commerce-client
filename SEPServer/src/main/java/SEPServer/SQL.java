@@ -1355,15 +1355,35 @@ public class SQL {
 			e1.printStackTrace();
 			return Response.Failure;
 		}
+		
+		String getCurrentBid = "SELECT currentbid FROM auctions WHERE auction_id='" + auction.getId() + "'";
+		double currentBidTemp = 0;
+		
+		try {
+		Statement statement = connection.createStatement();
+		ResultSet bidSet = statement.executeQuery(getCurrentBid);
+		
+		
+		if(bidSet.next())
+		{
+			currentBidTemp = bidSet.getDouble("currentbid");
+		}
+		
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			return Response.Failure;
+		}
 
 		if (serverDate.isAfter(startDate) == true) {
 			if (serverDate.isBefore(endDate) == true) { // 1.Fall CurrentServerDate ist vor Enddatum (alles gut)
-				if (auction.getCurrentBid() >= bid || auction.getMinBid() > bid || auction.getStartPrice() > bid) {
+				if (currentBidTemp >= bid || auction.getStartPrice() > bid) {
 					return Response.BidTooLow;
 				} else if (wallettemp - bid < 0) {
 					return Response.InsufficientBalance;
 				} else if (auction.getCurrentBidder()==null || auction.getCurrentBidder().getId() ==0) {
-					if (bid >= auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
+					//erstes Gebot für die Auktion
+					if (bid >= currentBidTemp && bid >= auction.getStartPrice()
 							&& wallettemp - bid >= 0) {
 						try {
 							PreparedStatement pstmt = connection.prepareStatement(
@@ -1385,7 +1405,8 @@ public class SQL {
 						}
 					}
 				} else if (auction.getCurrentBidder().getId() != auction.getSeller().getId()) {
-					if (bid > auction.getCurrentBid() && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
+					//bereits ein Gebot abgegeben
+					if (bid >= Double.parseDouble(SEPCommon.Constants.DOUBLEFORMAT.format(currentBidTemp+auction.getMinBid()).replace(",", ".")) && bid >= auction.getMinBid() && bid >= auction.getStartPrice()
 							&& wallettemp - bid >= 0) {
 						try {
 							PreparedStatement pstmt = connection.prepareStatement(
@@ -1405,6 +1426,9 @@ public class SQL {
 							e.printStackTrace();
 							return Response.Failure;
 						}
+					}
+					else {
+						return Response.BidTooLow;
 					}
 				}
 
@@ -2080,7 +2104,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+ activeAuctionId + " AND auctions.currentbidder_id=" + currentBidderId ,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-					currentBidderInformation.first();
 
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
@@ -2170,7 +2193,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+ endedAuctionId + " AND auctions.currentbidder_id=" + currentBidderId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-					currentBidderInformation.first();
 
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
@@ -2385,7 +2407,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-					currentBidderInformation.first();
 
 					newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
 							currentBidderInformation.getString("users.country"),
@@ -2761,7 +2782,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+ activeAuctionId + " AND auctions.currentbidder_id=" + currentBidderId ,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-					currentBidderInformation.first();
 
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;
@@ -2858,7 +2878,6 @@ buyerText=allBuyerRatings.getString("ratings.text");
 									+ endedAuctionId + " AND auctions.currentbidder_id=" + currentBidderId,
 							ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
-					currentBidderInformation.first();
 
 					Address newAddressCurrentbidder = null;
 					Customer currentBidder = null;

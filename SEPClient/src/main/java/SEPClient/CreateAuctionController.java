@@ -158,6 +158,14 @@ public class CreateAuctionController {
         	//Startdatum und Startzeit in Date umwandeln. vorher noch prüfen ob die Startzeit im Format XX:XX ist
     		try {
     			String[] startTimeSplit = Auction_StartTime.getText().split(":");
+    			if(startTimeSplit[0].startsWith("0"))
+    			{
+    				startTimeSplit[0] = startTimeSplit[0].substring(1);
+    			}
+    			if(startTimeSplit[1].startsWith("0"))
+    			{
+    				startTimeSplit[1] = startTimeSplit[1].substring(1);
+    			}
             	int starthour = Integer.parseInt(startTimeSplit[0]);
             	int startminute = Integer.parseInt(startTimeSplit[1]);
             	startDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_StartDatePicker.getValue().atTime(starthour, startminute)).toLocalDateTime();
@@ -171,6 +179,14 @@ public class CreateAuctionController {
     	//Enddatum und Endzeit in Date umwandeln. vorher noch prüfen ob die Endzeit im Format XX:XX ist
     	try {
     		String[] endTimeSplit = Auction_EndTime.getText().split(":");
+			if(endTimeSplit[0].startsWith("0"))
+			{
+				endTimeSplit[0] = endTimeSplit[0].substring(1);
+			}
+			if(endTimeSplit[1].startsWith("0"))
+			{
+				endTimeSplit[1] = endTimeSplit[1].substring(1);
+			}
         	int endhour  = Integer.parseInt(endTimeSplit[0]);
         	int endminute  = Integer.parseInt(endTimeSplit[1]);
         	endDateAndTime = SEPCommon.Methods.convertLocalDateTimeToCET(Auction_EndDatePicker.getValue().atTime(endhour, endminute)).toLocalDateTime();
@@ -190,23 +206,31 @@ public class CreateAuctionController {
 		{
 			LocalDateTime serverDate = (LocalDateTime)queryResponse.getResponseMap().get("ServerDateTime");
 			
-			//HIER PRUEFEN (.isBefore() / .isAfter())
-			
-	    	//TESTAUSGABE
-	    	System.out.println(startDateAndTime);
-	    	System.out.println(endDateAndTime);
-			System.out.println(serverDate);
-			
 			if(startDateAndTime.isAfter(endDateAndTime))
 			{
 				//Startzeit nach Endzeit, Fehlermeldung ausgeben
 				FXMLHandler.ShowMessageBox("Der End-Zeitpunkt liegt vor dem Startzeitpunkt." , "Fehler", "Fehler", AlertType.ERROR, true, false);
 				return;
 			}
-			else if(startDateAndTime.isBefore(serverDate) || endDateAndTime.isBefore(serverDate))
+			else if(startDateAndTime.isBefore(serverDate))
 			{
-				//Start/Endzeit vor Serverzeit, Fehlermeldung
+				if(!Auction_radioStartNow.isSelected())
+				{
+					//Startzeit vor Serverzeit, Fehlermeldung
+					FXMLHandler.ShowMessageBox("Ihr Start-/ End-Zeitpunkt liegt in der Vergangenheit." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+					return;
+				}
+			}
+			else if(endDateAndTime.isBefore(serverDate))
+			{
+				//Endzeit vor Serverzeit, Fehlermeldung
 				FXMLHandler.ShowMessageBox("Ihr Start-/ End-Zeitpunkt liegt in der Vergangenheit." , "Fehler", "Fehler", AlertType.ERROR, true, false);
+				return;
+			}
+			else if(startDateAndTime.isEqual(endDateAndTime))
+			{
+				//Start/Endzeit gleich
+				FXMLHandler.ShowMessageBox("Ihr Start-/ End-Zeitpunkt ist identisch." , "Fehler", "Fehler", AlertType.ERROR, true, false);
 				return;
 			}
 		}
