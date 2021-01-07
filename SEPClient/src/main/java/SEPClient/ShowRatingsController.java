@@ -164,7 +164,7 @@ public class ShowRatingsController {
     	ServerResponse queryResponse = client.sendClientRequest(req);
     	
     	if (queryResponse != null && queryResponse.getResponseMap() != null && queryResponse.getResponseType() == Response.Success) {
-    		ShowRatings_txtAverageRating.setText(queryResponse.getResponseMap().get("Average").toString());
+    		ShowRatings_txtAverageRating.setText(SEPCommon.Constants.DOUBLEFORMAT.format(queryResponse.getResponseMap().get("Average")));
     		ShowRatings_txtRatingCount.setText(queryResponse.getResponseMap().get("Amount").toString());
     	}
     	else {
