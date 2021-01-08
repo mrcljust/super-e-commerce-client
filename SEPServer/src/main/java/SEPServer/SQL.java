@@ -3046,7 +3046,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		return null;
 	}
 
-	protected Response SendRating(Rating rating) {
+	protected Response sendRating(Rating rating) {
 		// Bewertung mit Sternen und Text zurückgeben
 		
 		// Wenn erfolgreich Response.Success zurückgeben

@@ -467,7 +467,7 @@ public class ServerThread implements Runnable {
 					Rating argRating = (Rating)requestMap.get("Rating");
 					
 					//SQL-Abfrage ausführen
-					Response responseType = sql.SendRating(argRating);
+					Response responseType = sql.sendRating(argRating);
 					ServerResponse response = new ServerResponse(responseType, null);
 					
 					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
