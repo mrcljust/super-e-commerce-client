@@ -82,12 +82,4 @@ public class Methods {
 		ZoneId zone = ZoneId.of("CET");
 		return localDateTimeToConvert.atZone(zone);
 	}
-	
-	//Methode zum Umwandeln eines java.time.LocalDateTime zu java.util.Date
-	//QUELLE: https://www.baeldung.com/java-date-to-localdate-and-localdatetime
-	//(September 25, 2020, baeldung) - abgeändert
-	public static Date convertToDate(LocalDateTime localDateTimeToConvert)
-	{
-		return Date.from(localDateTimeToConvert.atZone(ZoneId.of("CET")).toInstant());
-	}
 }
