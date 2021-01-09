@@ -52,8 +52,8 @@ public class CreateRatingController {
 	}
 
 	public void initialize() throws IOException {
-    	CreateRating_Stars.getItems().addAll(1, 2, 3, 4, 5);
-    	CreateRating_Stars.getSelectionModel().select(4);
+    	CreateRating_Stars.getItems().addAll(0, 1, 2, 3, 4, 5);
+    	CreateRating_Stars.getSelectionModel().select(0);
     	
     	//entweder Auktion oder Order zugewiesen
     	

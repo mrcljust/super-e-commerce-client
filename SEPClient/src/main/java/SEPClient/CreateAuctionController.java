@@ -274,13 +274,6 @@ public class CreateAuctionController {
 			return; 
 		}
 		
-		if(minBid < startingPrice) {
-			FXMLHandler.ShowMessageBox("Das Mindestgebot ist höher als Ihr Startpreis." , "Fehler", "Fehler", AlertType.ERROR, true, false);
-			return;
-		}
-		
-		
-		
 		Auction newAuction = new Auction(name, description, imageByteArray, minBid, startingPrice, shippingType, customer, startDateAndTime, endDateAndTime);
 		
 		HashMap<String, Object> requestMap = new HashMap<String, Object>();
