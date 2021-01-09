@@ -274,6 +274,7 @@ public class CreateAuctionController {
 			return; 
 		}
 		
+		
 		Auction newAuction = new Auction(name, description, imageByteArray, minBid, startingPrice, shippingType, customer, startDateAndTime, endDateAndTime);
 		
 		HashMap<String, Object> requestMap = new HashMap<String, Object>();
