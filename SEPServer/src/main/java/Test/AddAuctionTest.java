@@ -37,7 +37,7 @@ public class AddAuctionTest {
 	@Test
 	public void addAuctionTest1() throws SQLException
 	{
-		//Beim Sellerobjekt ist nur die ID wichtig bzw. wird beim Anlegen einer Auktion zur Hinterlegung in der DB benötigt
+		//Beim Sellerobjekt ist nur die ID wichtig bzw. wird beim Anlegen einer Auktion zur Hinterlegung in der DB benötigt.
 		Address sellerAddress = new Address("Name", "Land", 12345, "Essen", "Bspstr.", "14c");
 		Customer seller = new Customer(1, "Username", "email@email.de", "passwort", new byte[1], 100, sellerAddress);
 		
