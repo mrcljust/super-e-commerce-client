@@ -24,9 +24,9 @@ import SEPCommon.Rating;
 public class SQL {
 
 	private boolean isConnected;
-	private static Connection connection;			//Connection zum connecten mit DB
+	public static Connection connection;			//Connection zum connecten mit DB
 	
-	private boolean connect() {
+	public boolean connect() {
 		try {
 			connection = DriverManager.getConnection(Constants.SQLCONNECTIONSTRING, Constants.SQLUSER, null);
 			isConnected = true;
@@ -37,7 +37,7 @@ public class SQL {
 		}
 	}
 
-	private Boolean checkConnection() {
+	public Boolean checkConnection() {
 		if (!isConnected) {
 			connect();
 			if (!isConnected) {
@@ -1276,7 +1276,7 @@ public class SQL {
 		}
 	}
 
-	protected Response addAuction(Auction auction) {				//fertig
+	public Response addAuction(Auction auction) {				//fertig
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
