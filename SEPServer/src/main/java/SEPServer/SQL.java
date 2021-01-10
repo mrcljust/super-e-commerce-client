@@ -2401,7 +2401,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				Address newAddressCurrentBidder = null;
 				Customer currentBidder = null;
 
-				if (allOwnAuctions.getInt("auctions.currentbidder_id") != 0) {
+				if (allOwnAuctions.getInt("auctions.currentbidder_id") != 0) {		//0 bedeutet kein currentbidder vorhanden
 
 					PreparedStatement pstmtCurrentBidder = connection.prepareStatement(
 							"Select * FROM auctions JOIN users on users.id=auctions.currentbidder_id WHERE auctions.auction_id="
