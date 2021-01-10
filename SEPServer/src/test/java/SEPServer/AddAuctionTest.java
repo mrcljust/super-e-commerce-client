@@ -19,7 +19,7 @@ import org.junit.*;
 
 public class AddAuctionTest {
 
-	SQL sql;
+	SEPServer.SQL sql;
 	
 	@Before
 	public void beforeTest()
