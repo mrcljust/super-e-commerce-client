@@ -24,9 +24,9 @@ import SEPCommon.Rating;
 public class SQL {
 
 	private boolean isConnected;
-	public static Connection connection;			//Connection zum connecten mit DB
+	protected static Connection connection;			//Connection zum connecten mit DB
 	
-	public boolean connect() {
+	protected boolean connect() {
 		try {
 			connection = DriverManager.getConnection(Constants.SQLCONNECTIONSTRING, Constants.SQLUSER, null);
 			isConnected = true;
@@ -37,7 +37,7 @@ public class SQL {
 		}
 	}
 
-	public Boolean checkConnection() {
+	protected Boolean checkConnection() {
 		if (!isConnected) {
 			connect();
 			if (!isConnected) {
@@ -1015,7 +1015,7 @@ public class SQL {
 		}
 	}
 	
-	public Response addLastViewedProduct(int viewedProductId, User user) {
+	protected Response addLastViewedProduct(int viewedProductId, User user) {
 		//viewedProductId zu zuletzt betrachtete Produkt-IDs des Users user in der DB hinzufügen (max. 10 zuletzt betrachtete IDs).
 		
 		//Wenn erfolgreich hinzugefügt, Response.Success returnen
@@ -1276,7 +1276,7 @@ public class SQL {
 		}
 	}
 
-	public Response addAuction(Auction auction) {				//fertig
+	protected Response addAuction(Auction auction) {				//fertig
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
 		}
