@@ -37,7 +37,6 @@ public class MyPurchasesController {
 
 	public void initialize() throws IOException {
 		MyPurchases_ListOrders.setItems(loadAllOrders());
-		
 		//Werte an die Spalten der ListOrders zuweisen
     	ordersIdColumn.setCellValueFactory(new PropertyValueFactory<Order, Integer>("id"));
     	ordersProductnameColumn.setCellValueFactory(new PropertyValueFactory<Order, String>("productName"));
@@ -66,7 +65,7 @@ public class MyPurchasesController {
     	        }
     	    }
     	});
-        ordersRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Order, Rating>("sellerRating")); //evtl BuyerRating
+        ordersRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Order, Rating>("sellerRating")); 
         ordersRatingGivenColumn.setCellFactory(tc -> new TableCell<Order, Rating>() {
     	    @Override
     	    protected void updateItem(Rating sellerRating, boolean empty) {
@@ -124,7 +123,7 @@ public class MyPurchasesController {
     	        }
     	    }
     	});
-        auctionsRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Auction, Rating>("sellerRating")); //evtl BuyerRating
+        auctionsRatingGivenColumn.setCellValueFactory(new PropertyValueFactory<Auction, Rating>("sellerRating")); 
         auctionsRatingGivenColumn.setCellFactory(tc -> new TableCell<Auction, Rating>() {
     	    @Override
     	    protected void updateItem(Rating sellerRating, boolean empty) {
@@ -225,7 +224,7 @@ public class MyPurchasesController {
     
     
     @FXML
-    void MyPurchases_DeleteOrderButton_Click(ActionEvent event) throws IOException { //irgendwo kleiner fehler, aber läuft
+    void MyPurchases_DeleteOrderButton_Click(ActionEvent event) throws IOException { 
     	if (isDeletable == true) {
     		HashMap<String, Object> requestMap = new HashMap<String, Object>();
     		requestMap.put("Order", MyPurchases_ListOrders.getSelectionModel().getSelectedItem());

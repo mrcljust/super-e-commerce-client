@@ -40,8 +40,12 @@ public class ShowRatingsController {
 	}
 
 	public void initialize() throws IOException {
+		//erstmal leer initialisiert, später verarbeitet
 		ShowRatings_txtAverageRating.setText("");
 		ShowRatings_txtRatingCount.setText("");
+		//setCell, um festzulegen, wie alle Zellen innerhalb einzelnen TableColumns ausgefüllt werden sollen
+		//ProperyValueFactory, um einen Wert zu extrahieren und das unter Verwendung des gegebenen property-Namens,
+		//hier: "date". Den ziehen wir uns aus der Klasse Ratings aus SEPCommon
 		TableRatings_ColumnDate.setCellValueFactory(new PropertyValueFactory<Rating, LocalDateTime>("date"));
 		//Datumsformat
 		TableRatings_ColumnDate.setCellFactory(tc -> new TableCell<Rating, LocalDateTime>() {
@@ -62,18 +66,21 @@ public class ShowRatingsController {
 		ShowRatings_ListRatings.setItems(loadAllRatings());
 		loadAvgRating();
 		
+		//eigene Bewertungen
 		if(viewOwnRatings)
 		{
-			//eigene Bewertungen
+			//falls man Gewerbekunde ist
 			if(user instanceof Seller)
 			{
 		    	ShowRatings_txtSellerBuyerName.setText("Meine Bewertungen - " + ((Seller)user).getBusinessname() + " (Benutzer " + user.getUsername() + ") (ID " + user.getId() + ", Gewerbekunde)");
 			}
+			//falls man Privatkunde ist
 			else if(user instanceof Customer)
 			{
 		    	ShowRatings_txtSellerBuyerName.setText("Meine Bewertungen - " + user.getUsername() + " (ID " + user.getId() + ", Privatkunde)");
 			}
 			}
+		//Bewertungen zu Verkäufer
 		else
 		{
 			if(user instanceof Seller)

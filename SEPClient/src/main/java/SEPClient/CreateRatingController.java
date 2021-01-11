@@ -54,9 +54,7 @@ public class CreateRatingController {
 	public void initialize() throws IOException {
     	CreateRating_Stars.getItems().addAll(0, 1, 2, 3, 4, 5);
     	CreateRating_Stars.getSelectionModel().select(0);
-    	
-    	//entweder Auktion oder Order zugewiesen
-    	
+    	   	
     	//Standardbild setzen
     	Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
     	CreateRating_ImgProfilePicture.setImage(defaultImage);
@@ -66,6 +64,7 @@ public class CreateRatingController {
 		Image img = new Image(in);
 		CreateRating_ImgProfilePicture.setImage(img);
 		
+		//entweder Auktion oder Order zugewiesen
 		if(order!=null)
 		{
 			CreateRating_txtIDDate.setText("Bestell-ID " + order.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(order.getDate()));
@@ -74,6 +73,8 @@ public class CreateRatingController {
 		{
 			CreateRating_txtIDDate.setText("Auktion-ID " + auction.getId() + " vom " + SEPCommon.Constants.DATEFORMATDAYONLY.format(auction.getEnddate()));
 		}
+		
+		
 		
 		if(ratingIsBySeller)
 		{
@@ -110,7 +111,6 @@ public class CreateRatingController {
 
     @FXML
     void CreateRating_ButtonOK_Click(ActionEvent event) {
-    	//datum und name fehlt noch 
     	
     	Integer rating = CreateRating_Stars.getValue();
     	String report = CreateRating_Text.getText();
