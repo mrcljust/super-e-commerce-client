@@ -3,6 +3,7 @@ package SEPServer;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 
@@ -25,6 +26,7 @@ public class FetchFutureAuctionsTest {
 	public void beforeTest()
 	{
 		sql = new SQL();
+		//ein User mit der ID 1 muss vorab in der DB existieren
 	}
 	
 	@After
@@ -65,6 +67,10 @@ public class FetchFutureAuctionsTest {
 		assertEquals(1, futureAuctionFromDB.getSeller().getId());
 		assertEquals(futureAuctionFromDB.getStarttime().plusHours(7), futureAuctionFromDB.getEnddate());
 	
+		//Auktion wieder löschen
+		PreparedStatement deleteStatement = SQL.connection.prepareStatement("DELETE FROM auctions ORDER BY auction_id DESC LIMIT 1");
+		deleteStatement.execute();
+		
 		System.out.println("Zukünftige Auktionen abfragen - Test erfolgreich");
 	}
 }

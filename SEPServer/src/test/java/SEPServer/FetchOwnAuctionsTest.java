@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -89,6 +90,13 @@ SQL sql;
 		assertEquals(sellerFromDB.getId(), ownAuctionFromDB.getSeller().getId());
 		assertEquals(ownAuctionFromDB.getStarttime().plusHours(7), ownAuctionFromDB.getEnddate());
 	
+		//Auktion wieder löschen
+		PreparedStatement deleteStatement = SQL.connection.prepareStatement("DELETE FROM auctions ORDER BY auction_id DESC LIMIT 1");
+		deleteStatement.execute();
+		
+		//User wieder löschen
+		sql.deleteUser(sellerFromDB);
+		
 		System.out.println("Eigene Auktionen abfragen - Test erfolgreich");
 	}
 }

@@ -25,6 +25,7 @@ public class AddAuctionTest {
 	public void beforeTest()
 	{
 		sql = new SQL();
+		//ein User mit der ID 1 muss vorab in der DB existieren
 	}
 	
 	@After
@@ -68,6 +69,10 @@ public class AddAuctionTest {
 		assertEquals(0, fetchLastAuctionResult.getInt("emailsent"));
 		assertEquals((fetchLastAuctionResult.getTimestamp("starttime").toLocalDateTime()).plusHours(8), fetchLastAuctionResult.getTimestamp("enddate").toLocalDateTime());
 	
+		//Auktion wieder löschen
+		PreparedStatement deleteStatement = SQL.connection.prepareStatement("DELETE FROM auctions ORDER BY auction_id DESC LIMIT 1");
+		deleteStatement.execute();
+		
 		System.out.println("Auktion anlegen - Test erfolgreich");
 	}
 }

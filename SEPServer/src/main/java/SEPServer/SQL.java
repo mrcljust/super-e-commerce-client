@@ -2410,18 +2410,22 @@ buyerText=allBuyerRatings.getString("ratings.text");
 
 					ResultSet currentBidderInformation = pstmtCurrentBidder.executeQuery();
 
-					newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
-							currentBidderInformation.getString("users.country"),
-							currentBidderInformation.getInt("users.postalcode"),
-							currentBidderInformation.getString("users.city"),
-							currentBidderInformation.getString("users.street"),
-							currentBidderInformation.getString("users.number"));
-					currentBidder = new Customer(currentBidderInformation.getInt("users.id"),
-							currentBidderInformation.getString("users.username"),
-							currentBidderInformation.getString("users.email"),
-							currentBidderInformation.getString("users.password"),
-							currentBidderInformation.getBytes("users.image"),
-							currentBidderInformation.getDouble("users.wallet"), newAddressCurrentBidder);
+					currentBidderInformation.beforeFirst();
+
+					if (currentBidderInformation.next()) {
+						newAddressCurrentBidder = new Address(currentBidderInformation.getString("users.fullname"),
+								currentBidderInformation.getString("users.country"),
+								currentBidderInformation.getInt("users.postalcode"),
+								currentBidderInformation.getString("users.city"),
+								currentBidderInformation.getString("users.street"),
+								currentBidderInformation.getString("users.number"));
+						currentBidder = new Customer(currentBidderInformation.getInt("users.id"),
+								currentBidderInformation.getString("users.username"),
+								currentBidderInformation.getString("users.email"),
+								currentBidderInformation.getString("users.password"),
+								currentBidderInformation.getBytes("users.image"),
+								currentBidderInformation.getDouble("users.wallet"), newAddressCurrentBidder);
+					}
 				}
 
 				Rating newSellerRating = null;
