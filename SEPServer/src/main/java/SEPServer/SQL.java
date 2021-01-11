@@ -2922,7 +2922,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							if(allSellerRatings.getString("ratings.text")!=null) {
 								sellerText=allSellerRatings.getString("ratings.text");
 							}
-							newSellerRating = new Rating(allSellerRatings.getInt("ratings.id"),
+							newSellerRating = new Rating(allSellerRatings.getInt("ratings.rating_id"),
 									allSellerRatings.getInt("ratings.stars"),
 									sellerText,
 									allSellerRatings.getInt("ratings.sender_id"),
@@ -2935,7 +2935,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							if(allBuyerRatings.getString("ratings.text")!=null) {
 								
 							}
-							newSellerRating = new Rating(allBuyerRatings.getInt("ratings.id"),
+							newSellerRating = new Rating(allBuyerRatings.getInt("ratings.rating_id"),
 									allBuyerRatings.getInt("ratings.stars"), buyerText,
 									allBuyerRatings.getInt("ratings.sender_id"),
 									allBuyerRatings.getInt("ratings.receiver_id"),
