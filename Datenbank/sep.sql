@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 28. Dez 2020 um 20:10
+-- Erstellungszeit: 14. Jan 2021 um 20:42
 -- Server-Version: 10.4.14-MariaDB
 -- PHP-Version: 7.2.34
 
@@ -72,6 +72,20 @@ CREATE TABLE `categories` (
 -- --------------------------------------------------------
 
 --
+-- Tabellenstruktur für Tabelle `messages`
+--
+
+CREATE TABLE `messages` (
+  `message_id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `text` text NOT NULL,
+  `date` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Tabellenstruktur für Tabelle `orders`
 --
 
@@ -95,6 +109,7 @@ CREATE TABLE `products` (
   `seller_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `price` double NOT NULL,
+  `oldprice` double NOT NULL,
   `category_id` int(11) NOT NULL,
   `description` text NOT NULL,
   `insertdate` timestamp NOT NULL DEFAULT current_timestamp()
@@ -185,6 +200,12 @@ ALTER TABLE `categories`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indizes für die Tabelle `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`message_id`);
+
+--
 -- Indizes für die Tabelle `orders`
 --
 ALTER TABLE `orders`
@@ -229,6 +250,12 @@ ALTER TABLE `bids`
 --
 ALTER TABLE `categories`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT für Tabelle `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT für Tabelle `orders`
