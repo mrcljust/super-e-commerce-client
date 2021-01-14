@@ -12,6 +12,7 @@ import SEPCommon.Auction;
 import SEPCommon.AuctionType;
 import SEPCommon.ClientRequest;
 import SEPCommon.Customer;
+import SEPCommon.Message;
 import SEPCommon.Order;
 import SEPCommon.Product;
 import SEPCommon.Rating;
@@ -589,6 +590,89 @@ public class ServerThread implements Runnable {
 					LocalDateTime serverDateTime = LocalDateTime.now();
 					responseMap.put("ServerDateTime", serverDateTime);
 					ServerResponse response = new ServerResponse(Response.Success, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request SendMessage
+				//HASHMAP: "Message" - Message-Objekt
+				else if(requestType == Request.SendMessage)
+				{
+					Message argMessage = (Message)requestMap.get("Message");
+					
+					//SQL Abfrage ausführen
+					Response messageResponse = sql.sendMessage(argMessage);
+					ServerResponse response = new ServerResponse(messageResponse, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request FetchMessages
+				//HASHMAP: "User" - User-Objekt
+				else if(requestType == Request.FetchMessages)
+				{
+					User argUser = (User)requestMap.get("User");
+					Message[] messages = sql.fetchReceivedMessages(argUser);
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(messages==null)
+					{
+						//keine DB Verbindung oder sonstiger Fehler
+						responseType = Response.Failure;
+					}
+					else
+					{
+						responseType = Response.Success;
+						responseMap.put("Messages", messages);
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request UpdatePrice
+				//HASHMAP: "Product" - bisheriges Product, "NewPrice" - Double
+				else if(requestType == Request.SendMessage)
+				{
+					Product argProduct = (Product)requestMap.get("Product");
+					Double argNewPrice = (Double)requestMap.get("NewPrice");
+					
+					//SQL Abfrage ausführen
+					Response updatePriceResponse = sql.updatePrice(argProduct, argNewPrice);
+					ServerResponse response = new ServerResponse(updatePriceResponse, null);
+					
+					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
+					out.writeObject(response);
+				}
+				
+				//Request FetchProductsAlsoBought
+				//HASHMAP: "Product" - Product-Objekt
+				else if(requestType == Request.FetchProductsAlsoBought)
+				{
+					Product argProduct = (Product)requestMap.get("Product");
+					Product[] productsAlsoBought = sql.fetchProductsAlsoBought(argProduct);
+					
+					Response responseType;
+					HashMap<String, Object> responseMap = new HashMap<String, Object>();
+					
+					if(productsAlsoBought==null)
+					{
+						//keine DB Verbindung oder sonstiger Fehler
+						responseType = Response.Failure;
+					}
+					else
+					{
+						responseType = Response.Success;
+						responseMap.put("Messages", productsAlsoBought);
+					}
+					
+					ServerResponse response = new ServerResponse(responseType, responseMap);
 					
 					System.out.println("Sende ServerResponse - Client-ID " + this.clientID + " - " + response.getResponseType() + " - " + response.getResponseMap());
 					out.writeObject(response);

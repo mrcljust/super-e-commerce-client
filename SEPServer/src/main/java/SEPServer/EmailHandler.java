@@ -95,4 +95,9 @@ public class EmailHandler {
 		}
 		
 	}
+	
+	protected static Response sendNewMessageEmail(SEPCommon.Message message) {
+		//Neue Nachricht erhalten
+		return null;
+	}
 }

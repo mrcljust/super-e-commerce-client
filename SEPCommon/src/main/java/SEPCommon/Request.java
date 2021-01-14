@@ -23,5 +23,9 @@ public enum Request {
 	FetchRatings,			// 2 Typen, alle Bewertungen und Durchschnitt
 	FetchOrders,
 	FetchSales,
-	GetServerDateTime //aktuelle Zeit vom Server
+	GetServerDateTime, //aktuelle Zeit vom Server
+	SendMessage,
+	FetchMessages,
+	UpdatePrice,
+	FetchProductsAlsoBought
 }

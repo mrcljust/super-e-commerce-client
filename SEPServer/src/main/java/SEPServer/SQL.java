@@ -17,6 +17,7 @@ import SEPCommon.Auction;
 import SEPCommon.AuctionType;
 import SEPCommon.Constants;
 import SEPCommon.Customer;
+import SEPCommon.Message;
 import SEPCommon.Order;
 import SEPCommon.Product;
 import SEPCommon.Rating;
@@ -802,7 +803,7 @@ public class SQL {
 						AllProducts2.getBytes("users.image"), AllProducts2.getDouble("users.wallet"), newAddress,
 						AllProducts2.getString("users.companyname"));
 				allProducts[arrayCounter] = new Product(AllProducts2.getInt("products.id"),
-						AllProducts2.getString("products.title"), AllProducts2.getDouble("products.price"), newSeller,
+						AllProducts2.getString("products.title"), AllProducts2.getDouble("products.price"), AllProducts2.getDouble("products.oldprice"), newSeller,
 						AllProducts2.getString("categories.title"), AllProducts2.getString("products.description"));
 
 				arrayCounter++;
@@ -865,7 +866,7 @@ public class SQL {
 						AllProductsByCategory2.getBytes("users.image"), AllProductsByCategory2.getDouble("users.wallet"), newAddress,
 						AllProductsByCategory2.getString("users.companyname"));
 				allProductsSameCategory[arrayCounter] = new Product(AllProductsByCategory2.getInt("products.id"),
-						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), newSeller,
+						AllProductsByCategory2.getString("products.title"), AllProductsByCategory2.getDouble("products.price"), AllProductsByCategory2.getDouble("products.oldprice"), newSeller,
 						AllProductsByCategory2.getString("categories.title"), AllProductsByCategory2.getString("products.description"));
 				arrayCounter++;
 			}
@@ -925,7 +926,7 @@ public class SQL {
 						AllProductsByFullString2.getBytes("users.image"), AllProductsByFullString2.getDouble("users.wallet"), newAddress,
 						AllProductsByFullString2.getString("users.companyname"));
 				allProductsByString[arrayCounter] = new Product(AllProductsByFullString2.getInt("products.id"),
-						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), newSeller,
+						AllProductsByFullString2.getString("products.title"), AllProductsByFullString2.getDouble("products.price"), AllProductsByFullString2.getDouble("products.oldprice"), newSeller,
 						AllProductsByFullString2.getString("categories.title"), AllProductsByFullString2.getString("products.description"));
 				arrayCounter++;
 			}
@@ -991,7 +992,7 @@ public class SQL {
 								fetchProductsInfoResult.getString("users.companyname"));
 						
 						Product product = new Product(viewedId, fetchProductsInfoResult.getString("products.title"),
-								fetchProductsInfoResult.getDouble("products.price"), seller,
+								fetchProductsInfoResult.getDouble("products.price"), fetchProductsInfoResult.getDouble("products.oldprice"), seller,
 								fetchProductsInfoResult.getString("categories.title"),fetchProductsInfoResult.getString("products.description"));
 						lastViewedProducts[newArrayCounter] = product;
 					}
@@ -1120,14 +1121,15 @@ public class SQL {
 				}
 			}
 			//jetzt kann Produkt angelegt werden
-			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description) "
-					+ "VALUES (?, ?, ?, ?, ?)");
+			PreparedStatement insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, oldprice, category_id, description) "
+					+ "VALUES (?, ?, ?, ?, ?, ?)");
 		
 			insertProduct.setInt(1, seller.getId()); 
 			insertProduct.setString(2,  product.getName()); 
 			insertProduct.setDouble(3,  SEPCommon.Methods.round(product.getPrice(), 2));
-			insertProduct.setInt(4, categoryid);
-			insertProduct.setString(5, product.getDescription());
+			insertProduct.setDouble(4, SEPCommon.Methods.round(product.getOldPrice(), 2));
+			insertProduct.setInt(5, categoryid);
+			insertProduct.setString(6, product.getDescription());
 			insertProduct.execute();
 			return Response.Success;		
 			
@@ -1199,14 +1201,15 @@ public class SQL {
 				
 				//Produkt p anlegen
 				PreparedStatement insertProduct;
-				insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, category_id, description) "
-							+ "VALUES (?, ?, ?, ?, ?)");
+				insertProduct = connection.prepareStatement("INSERT INTO products(seller_id, title, price, oldprice, category_id, description) "
+							+ "VALUES (?, ?, ?, ?, ?, ?)");
 				
 				insertProduct.setInt(1, sellerid); //An Stelle des 1. ? setzen
 				insertProduct.setString(2,  p.getName()); // ...
 				insertProduct.setDouble(3,  SEPCommon.Methods.round(p.getPrice(), 2));
-				insertProduct.setInt(4, categoryid);
-				insertProduct.setString(5, p.getDescription());
+				insertProduct.setDouble(4,  SEPCommon.Methods.round(p.getOldPrice(), 2));
+				insertProduct.setInt(5, categoryid);
+				insertProduct.setString(6, p.getDescription());
 				insertProduct.execute();
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -1460,7 +1463,7 @@ public class SQL {
 		
 		int viewedAuctionId = auction.getId();
 		
-		//Aktuelle zuletzt angesehene Produkte holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
+		//Aktuelle zuletzt angesehene Auktionen holen, um zu entscheiden, ob eines ersetzt werden muss oder nur hinzugefügt werden muss
 		Auction[] currentSavedAuctions = fetchSavedAuctions(buyer);
 		
 		String newSavedAuctionsProductsString = "";
@@ -1468,10 +1471,10 @@ public class SQL {
 		{
 			if(currentSavedAuctions.length==50)
 			{
-				//Maximale Lünge (50), setze viewedProductId an den Anfang und ersetze die letzte Id
+				//Maximale Lünge (50), setze viewedAuctionId an den Anfang und ersetze die letzte Id
 				newSavedAuctionsProductsString += String.valueOf(viewedAuctionId);
 				
-				for(int i=0;i<9;i++)
+				for(int i=0;i<49;i++)
 				{
 					if(currentSavedAuctions[i]!=null)
 					{
@@ -1572,7 +1575,7 @@ public class SQL {
 							sellerInfo.getBytes("users.image"), sellerInfo.getDouble("users.wallet"), newAddress,
 							sellerInfo.getString("users.companyname"));
 					newProduct = new Product(allOrdersResultSet.getInt("products.id"), allOrdersResultSet.getString("products.title"),
-							allOrdersResultSet.getDouble("products.price"), newSeller, allOrdersResultSet.getString("categories.title"),
+							allOrdersResultSet.getDouble("products.price"), allOrdersResultSet.getDouble("products.oldprice"), newSeller, allOrdersResultSet.getString("categories.title"),
 							allOrdersResultSet.getString("products.description"));
 				}
 				
@@ -1668,7 +1671,7 @@ public class SQL {
 			while (allOrdersResultSet.next()) {
 
 				Product newProduct = new Product(allOrdersResultSet.getInt("products.id"),
-						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"),
+						allOrdersResultSet.getString("products.title"), allOrdersResultSet.getDouble("products.price"), allOrdersResultSet.getDouble("products.oldprice"),
 						(Seller)seller, allOrdersResultSet.getString("categories.title"),
 						allOrdersResultSet.getString("products.description"));
 
@@ -3427,6 +3430,57 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return Response.Failure;
 		}
 	}
+	
+	protected Response sendMessage(Message message)
+	{
+		//message in der DB speichern
+		//anschließend empfänger per email darüber benachrichtigen
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		
+		EmailHandler.sendNewMessageEmail(message);
+		
+		
+		
+		return null;
+	}
+	
+	protected Message[] fetchReceivedMessages(User user)
+	{
+		//alle messages mit receiver = user.id aus der db zurückgeben
+		if (!checkConnection()) {
+			return null;
+		}
+		
+		return null;
+	}
+	
+	protected Product[] fetchProductsAlsoBought(Product product)
+	{
+		//produkte ausgeben, die von käufern des Produkts product ebenfalls gekauft wurden
+		// 3 stk!
+		if (!checkConnection()) {
+			return null;
+		}
+		
+		return null;
+	}
+	
+	protected Response updatePrice(Product product, double newPrice)
+	{
+		//product.getPrice bei SQL in oldprice speichern
+		//newprice in price speichern
+		//prozentberechnung usw. wird clientseitig gemacht
+		
+		if (!checkConnection()) {
+			return Response.NoDBConnection;
+		}
+		
+		return null;
+	}
+	
+	
 
 	public static void main(String[]args) {
 		//SQL testSQLObject= new SQL();
