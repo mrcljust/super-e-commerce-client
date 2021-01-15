@@ -35,8 +35,11 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Info">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#MainScreen_InfoButtonMenuClick" text="Copyright" />
+                  <MenuItem mnemonicParsing="false" onAction="#MainScreen_InfoButtonMenuClick" text="Entwickler" />
                   <MenuItem mnemonicParsing="false" onAction="#MainScreen_CreditsButtonMenuClick" text="Credits/APIs" />
+                  <MenuItem mnemonicParsing="false" onAction="#MainScreen_GMapsFXMenuClick" text="GMapsFX" />
+                  <MenuItem mnemonicParsing="false" onAction="#MainScreen_MapsIconCollectionMenuClick" text="Maps Icons Collection" />
+                  <MenuItem mnemonicParsing="false" onAction="#MainScreen_FreeLogoDesignMenuClick" text="FreeLogoDesign" />
                </items></Menu>
         </menus>
       </MenuBar>

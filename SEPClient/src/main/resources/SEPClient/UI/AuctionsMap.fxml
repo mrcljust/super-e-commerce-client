@@ -10,14 +10,19 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="641.0" prefWidth="979.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.AuctionsMapController">
    <children>
       <Label layoutX="14.0" layoutY="14.0" text="Radius:" />
-      <TextField fx:id="AuctionMap_txtRadius" layoutX="59.0" layoutY="10.0" prefHeight="25.0" prefWidth="67.0" />
-      <Label layoutX="129.0" layoutY="14.0" text="km" />
-      <Button fx:id="AuctionsMap_ButtonShow" layoutX="156.0" layoutY="10.0" mnemonicParsing="false" onAction="#AuctionsMap_ButtonShow_Click" text="Auktionen zeigen" />
-      <Button fx:id="AuctionsMap_ButtonViewAuction" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#AuctionsMap_ButtonViewAuction_Click" text="Selektierte Auktion ansehen" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
-      <BorderPane layoutX="14.0" layoutY="44.0" prefHeight="306.0" prefWidth="572.0" style="-fx-background-color: #000;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="44.0">
+      <Label layoutX="129.0" layoutY="14.0" text="km" />      <BorderPane layoutX="14.0" layoutY="44.0" prefHeight="306.0" prefWidth="572.0" style="-fx-background-color: #000;" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="44.0">
          <center>
        			<GoogleMapView fx:id="mapView" layoutY="7.0" prefHeight="306" prefWidth="572.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
          </center></BorderPane>
+         <TextField fx:id="AuctionMap_txtRadius" layoutX="59.0" layoutY="10.0" prefHeight="25.0" prefWidth="67.0" text="25" />
+     <Button fx:id="AuctionsMap_ButtonShow" layoutX="156.0" layoutY="10.0" mnemonicParsing="false" onAction="#AuctionsMap_ButtonShow_Click" text="Auktionen zeigen" />
+      <Button fx:id="AuctionsMap_ButtonViewAuction" disable="true" layoutX="14.0" layoutY="361.0" mnemonicParsing="false" onAction="#AuctionsMap_ButtonViewAuction_Click" text="Selektierte Auktion ansehen" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
+
       <Button fx:id="AuctionsMap_ButtonReturn" layoutX="533.0" layoutY="361.0" mnemonicParsing="false" onAction="#AuctionsMap_ButtonReturn_Click" text="Zurück" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <Label layoutX="184.0" layoutY="597.0" prefHeight="35.0" prefWidth="629.0" text="Falls die Karte nicht lädt, starten Sie das Fenster bitte neu und/oder deaktivieren Sie Ihren Proxy/VPN." />
+      <Label fx:id="LabelAddedCount" layoutX="595.0" layoutY="14.0" text="Im Radius: 0" />
+      <Label fx:id="LabelNotInRadiusCount" layoutX="681.0" layoutY="14.0" text="Nicht im Radius: 0" />
+      <Label fx:id="LabelAddressNotFoundCount" layoutX="802.0" layoutY="14.0" text="Adresse nicht zuordenbar: 0" />
+      <Label layoutX="273.0" layoutY="14.0" text="(Auktionen an Ihrer Heimatadresse werden nicht gelistet)" />
    </children>
 </AnchorPane>
