@@ -27,4 +27,49 @@ public class Message implements Serializable {
 		message=_message;
 		date=_date;
 	}
+	
+	public void setDate(LocalDateTime _date)
+	{
+		date=_date;
+	}
+	
+	public void setSender(User _sender)
+	{
+		sender=_sender;
+	}
+	
+	public void setReceiver(User _receiver)
+	{
+		receiver=_receiver;
+	}
+	
+	public void setMessage(String _message)
+	{
+		message=_message;
+	}
+	
+	public int getId()
+	{
+		return id;
+	}
+	
+	public LocalDateTime getDate()
+	{
+		return date;
+	}
+	
+	public User getSender()
+	{
+		return sender;
+	}
+	
+	public User getReceiver()
+	{
+		return receiver;
+	}
+	
+	public String getMessage()
+	{
+		return message;
+	}
 }

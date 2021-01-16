@@ -19,8 +19,9 @@
       <Button id="Start_RegisterClick" fx:id="Start_RegisterButton" layoutX="302.0" layoutY="182.0" mnemonicParsing="false" onAction="#Start_RegisterClick" text="Registrieren" />
       <Hyperlink layoutX="14.0" layoutY="220.0" onAction="#MainScreen_InfoButtonMenuClick" text="Entwickler" />
       <Hyperlink layoutX="76.0" layoutY="220.0" onAction="#MainScreen_CreditsButtonMenuClick" text="Credits/APIs" />
-      <Hyperlink layoutX="149.0" layoutY="220.0" onAction="#MainScreen_GMapsFXMenuClick" text="GMapsFX" />
-      <Hyperlink layoutX="208.0" layoutY="220.0" onAction="#MainScreen_MapsIconCollectionMenuClick" text="Maps Icons Collection" />
-      <Hyperlink layoutX="333.0" layoutY="220.0" onAction="#MainScreen_FreeLogoDesignMenuClick" text="FreeLogoDesign" />
+      <Hyperlink layoutX="227.0" layoutY="220.0" onAction="#MainScreen_GMapsFXMenuClick" text="GMapsFX" />
+      <Hyperlink layoutX="286.0" layoutY="220.0" onAction="#MainScreen_MapsIconCollectionMenuClick" text="Maps Icons Collection" />
+      <Hyperlink layoutX="411.0" layoutY="220.0" onAction="#MainScreen_FreeLogoDesignMenuClick" text="FreeLogoDesign" />
+      <Hyperlink layoutX="149.0" layoutY="220.0" onAction="#MainScreen_GoogleMapsMenuClick" text="Google Maps" />
    </children>
 </AnchorPane>

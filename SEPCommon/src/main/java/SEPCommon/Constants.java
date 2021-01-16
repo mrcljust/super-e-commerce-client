@@ -28,4 +28,6 @@ public class Constants {
 	public final static DateTimeFormatter DATEFORMATDAYONLY = DateTimeFormatter.ofPattern("dd.MM.YYYY").withZone(CET);
 	
 	public final static String CURRENCY = "$";
+	
+	public final static String GOOGLE_APIKEY = "AIzaSyAw19D5oAD7yBKkzRlUPkcq1DdNzSn71r4";
 }

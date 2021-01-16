@@ -14,6 +14,7 @@ public class Product implements Serializable {
 	private String businessname; //wird benötigt, um den Verkäufer in den Katalog-TableViews im MainScreen anzuzeigen
 	private String category;
 	private String description;
+	private Double distance;
 	
 	
 	//Konstruktor mit ID (bestehende Produkte, die aus der DB gelesen werden)
@@ -29,6 +30,7 @@ public class Product implements Serializable {
 		category=_category;
 		description=_description;
 		businessname = _seller.getBusinessname();
+		distance=-1.0;
 	}
 
 	//Konstruktor ohne ID (neues Produkt)
@@ -43,9 +45,15 @@ public class Product implements Serializable {
 		category=_category;
 		description=_description;
 		businessname = _seller.getBusinessname();
+		distance=-1.0;
 	}
 	
 	//Getter Methoden
+	
+	public double getDistance()
+	{
+		return distance;
+	}
 	
 	public double getOldPrice()
 	{
@@ -103,6 +111,11 @@ public class Product implements Serializable {
 	}
 	
 	//Setter Methoden
+	
+	public void setDistance(double _distance)
+	{
+		distance=_distance;
+	}
 	
 	public void setId(int _id)
 	{

@@ -82,4 +82,22 @@ public class Methods {
 		ZoneId zone = ZoneId.of("CET");
 		return localDateTimeToConvert.atZone(zone);
 	}
+	
+	//Methode zum Berechnen der Distanz in Meter zwischen zwei LatLong
+	//QUELLE: GmapsFX API (com.dlsc.gmapsfx.javascript.object.LatLong.distanceFrom)
+	//umgeschrieben um mit der Google-eigenen API zu arbeiten (hat augenscheinlich keine Methode zum Distanz berechnen)
+	public static double getDistance(double lat1, double lng1, double lat2, double lng2)
+	{
+		double dLat = (lat2 - lat1) * Math.PI / 180;
+        double dLon = (lng2 - lng1) * Math.PI / 180;
+        final double EarthRadiusMeters = 6378137.0; // meters
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(lat1 * Math.PI / 180)
+                * Math.cos(lat2 * Math.PI / 180)
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+        double c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double d = EarthRadiusMeters * c;
+        return d;
+	}
 }

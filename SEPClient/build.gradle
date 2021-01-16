@@ -17,6 +17,7 @@ dependencies {
     compile project(':SEPCommon')
 	compile group: 'net.coobird', name: 'thumbnailator', version: '0.4.13'
 	compile group: 'com.dlsc', name: 'GMapsFX', version: '11.0.1'
+	implementation 'com.google.maps:google-maps-services:0.15.0'
 }
 
 javafx {
