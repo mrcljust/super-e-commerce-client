@@ -669,7 +669,7 @@ public class ServerThread implements Runnable {
 					else
 					{
 						responseType = Response.Success;
-						responseMap.put("Messages", productsAlsoBought);
+						responseMap.put("Products", productsAlsoBought);
 					}
 					
 					ServerResponse response = new ServerResponse(responseType, responseMap);

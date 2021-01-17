@@ -341,8 +341,8 @@ public class MainScreenController {
 		// loadLastViewedProducts(); wird in LoadAllProducts aufgerufen
 
 		// Alle Kategorien auswählen
-		
-		avoidCategoryChangedEvent=true;
+
+		avoidCategoryChangedEvent = true;
 		MainScreen_ChoiceBox_Category.getSelectionModel().select(0);
 	}
 
@@ -564,19 +564,16 @@ public class MainScreenController {
 			getUserLatLong();
 			try {
 				cdLatch.await(10, TimeUnit.SECONDS);
-				if(noLatLngFound)
-				{
+				if (noLatLngFound) {
 					FXMLHandler.ShowMessageBox(
 							"Ihre Adresse konnte nicht gefunden werden, vermutlich haben Sie eine ungültige Adresse angegeben. Zur Berechnung der Entfernung wird daher nun die Adresse der Universität genutzt. Bitte kontrollieren Sie Ihre Adresse im Fenster 'Konto bearbeiten' und Ihre Internetverbindung.",
 							"Adresse nicht gefunden", "Adresse nicht gefunden", AlertType.WARNING, false, false);
-					noLatLngFound=false;
-				}
-				else if(LatLngConnError)
-				{
+					noLatLngFound = false;
+				} else if (LatLngConnError) {
 					FXMLHandler.ShowMessageBox(
 							"Ihre Adresse konnte nicht gefunden werden, vermutlich konnte keine Verbindung zum Google Maps Server hergestellt werden, weshalb die Entfernungen nicht dargestellt werden. Bitte kontrollieren Sie Ihre Internetverbindung und Ihre Adresse im Fenster 'Konto bearbeiten'.",
 							"Adresse nicht gefunden", "Adresse nicht gefunden", AlertType.WARNING, false, false);
-					LatLngConnError=false;
+					LatLngConnError = false;
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
@@ -637,10 +634,9 @@ public class MainScreenController {
 			addDistanceAndShowInCatalog();
 		}
 	}
-	
-	private void addDistanceAndShowInCatalog()
-	{
-		if (fetchedObservableProducts!=null && !fetchedObservableProducts.isEmpty()) {
+
+	private void addDistanceAndShowInCatalog() {
+		if (fetchedObservableProducts != null && !fetchedObservableProducts.isEmpty()) {
 			// QUELLE: https://github.com/googlemaps/google-maps-services-java
 			String productAddress = fetchedObservableProducts.get(productCounter).getSeller().getAddress().getStreet()
 					+ " " + fetchedObservableProducts.get(productCounter).getSeller().getAddress().getNumber() + ", "
@@ -654,16 +650,18 @@ public class MainScreenController {
 							LatLng productLatLong = null;
 							// Produkt-Adresse, falls möglich, zu LatLong konvertieren
 							if (result.length == 0) {
-								System.out.println("Maps - Keine übereinstimmende Adresse zum Produkt " + fetchedObservableProducts.get(productCounter).getId()
+								System.out.println("Maps - Keine übereinstimmende Adresse zum Produkt "
+										+ fetchedObservableProducts.get(productCounter).getId()
 										+ " gefunden, ignoriere.");
 							} else if (result.length > 1) {
 								System.out.println("Maps - Mehrere übereinstimmende Adressen zum Produkt "
-										+ fetchedObservableProducts.get(productCounter).getId() + " gefunden, nutze den ersten Treffer.");
+										+ fetchedObservableProducts.get(productCounter).getId()
+										+ " gefunden, nutze den ersten Treffer.");
 								productLatLong = result[0].geometry.location;
 							} else {
 								productLatLong = result[0].geometry.location;
 							}
-							result=null;
+							result = null;
 
 							// Distanz berechnen
 							if (productLatLong == null) {
@@ -700,16 +698,12 @@ public class MainScreenController {
 								GeocodingApi.geocode(context, auctAddress).setCallback(this);
 							} else if (!alreadyLoadedLastViewed) {
 								MainScreen_Load_Catalog.setVisible(false);
-								if(isRefresh)
-								{
-									isRefresh=false;
-								}
-								else {
+								if (isRefresh) {
+									isRefresh = false;
+								} else {
 									loadLastViewedProducts();
 								}
-							}
-							else
-							{
+							} else {
 								MainScreen_Load_Catalog.setVisible(false);
 							}
 						}
@@ -743,46 +737,34 @@ public class MainScreenController {
 									GeocodingApi.geocode(context, auctAddress).setCallback(this);
 								} else if (!alreadyLoadedLastViewed) {
 									MainScreen_Load_Catalog.setVisible(false);
-									if(isRefresh)
-									{
-										isRefresh=false;
-									}
-									else {
+									if (isRefresh) {
+										isRefresh = false;
+									} else {
 										loadLastViewedProducts();
 									}
-								}
-								else
-								{
+								} else {
 									MainScreen_Load_Catalog.setVisible(false);
 								}
 							} else if (!alreadyLoadedLastViewed) {
 								MainScreen_Load_Catalog.setVisible(false);
-								if(isRefresh)
-								{
-									isRefresh=false;
-								}
-								else {
+								if (isRefresh) {
+									isRefresh = false;
+								} else {
 									loadLastViewedProducts();
 								}
-							}
-							else
-							{
+							} else {
 								MainScreen_Load_Catalog.setVisible(false);
 							}
 						}
 					});
 		} else if (!alreadyLoadedLastViewed) {
 			MainScreen_Load_Catalog.setVisible(false);
-			if(isRefresh)
-			{
-				isRefresh=false;
-			}
-			else {
+			if (isRefresh) {
+				isRefresh = false;
+			} else {
 				loadLastViewedProducts();
 			}
-		}
-		else
-		{
+		} else {
 			MainScreen_Load_Catalog.setVisible(false);
 		}
 	}
@@ -792,23 +774,22 @@ public class MainScreenController {
 			getUserLatLong();
 			try {
 				cdLatch.await(10, TimeUnit.SECONDS);
-				if(noLatLngFound)
-				{
+				if (noLatLngFound) {
 					FXMLHandler.ShowMessageBox(
 							"Ihre Adresse konnte nicht gefunden werden, vermutlich haben Sie eine ungültige Adresse angegeben. Zur Berechnung der Entfernung wird daher nun die Adresse der UDE genutzt. Bitte kontrollieren Sie Ihre Adresse im Fenster 'Konto bearbeiten' und Ihre Internetverbindung.",
 							"Adresse nicht gefunden", "Adresse nicht gefunden", AlertType.WARNING, false, false);
-					noLatLngFound=false;
-				}
-				else if(LatLngConnError)
-				{
+					noLatLngFound = false;
+				} else if (LatLngConnError) {
 					FXMLHandler.ShowMessageBox(
 							"Ihre Adresse konnte nicht gefunden werden, vermutlich konnte keine Verbindung zum Google Maps Server hergestellt werden. Bitte kontrollieren Sie Ihre Internetverbindung und Ihre Adresse im Fenster 'Konto bearbeiten'.",
 							"Adresse nicht gefunden", "Adresse nicht gefunden", AlertType.WARNING, false, false);
-					LatLngConnError=false;
+					LatLngConnError = false;
 				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
-				FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zu Google Maps hergestellt werden, weshalb die Entfernungen nicht dargestellt werden.", "Keine Verbindung", "Keine Verbindung", AlertType.ERROR, true, false);
+				FXMLHandler.ShowMessageBox(
+						"Es konnte keine Verbindung zu Google Maps hergestellt werden, weshalb die Entfernungen nicht dargestellt werden.",
+						"Keine Verbindung", "Keine Verbindung", AlertType.ERROR, true, false);
 				return;
 			}
 		}
@@ -835,7 +816,7 @@ public class MainScreenController {
 			fetchedObservableProducts.removeIf(n -> (n == null));
 		}
 
-		if (fetchedObservableProducts!=null && !fetchedObservableProducts.isEmpty()) {
+		if (fetchedObservableProducts != null && !fetchedObservableProducts.isEmpty()) {
 			// QUELLE: https://github.com/googlemaps/google-maps-services-java
 			String productAddress = fetchedObservableProducts.get(productCounter).getSeller().getAddress().getStreet()
 					+ " " + fetchedObservableProducts.get(productCounter).getSeller().getAddress().getNumber() + ", "
@@ -849,11 +830,13 @@ public class MainScreenController {
 							LatLng productLatLong = null;
 							// Produkt-Adresse, falls möglich, zu LatLong konvertieren
 							if (result.length == 0) {
-								System.out.println("Maps - Keine übereinstimmende Adresse zum Produkt " + fetchedObservableProducts.get(productCounter).getId()
+								System.out.println("Maps - Keine übereinstimmende Adresse zum Produkt "
+										+ fetchedObservableProducts.get(productCounter).getId()
 										+ " gefunden, ignoriere.");
 							} else if (result.length > 1) {
 								System.out.println("Maps - Mehrere übereinstimmende Adressen zum Produkt "
-										+ fetchedObservableProducts.get(productCounter).getId() + " gefunden, nutze den ersten Treffer.");
+										+ fetchedObservableProducts.get(productCounter).getId()
+										+ " gefunden, nutze den ersten Treffer.");
 								productLatLong = result[0].geometry.location;
 							} else {
 								productLatLong = result[0].geometry.location;
@@ -1089,8 +1072,8 @@ public class MainScreenController {
 	private void showUsersAlsoBought(boolean selectionInCatalog) {
 		// TODO DENIS
 
-		// selectionInCatalog = true --> Selektion im Katalog geändert
-		// selectionInCatalog = false --> Selektion in LastViewed geändert
+		// selectionInCatalog = true --> Selektion im Katalog gendert
+		// selectionInCatalog = false --> Selektion in LastViewed gendert
 		if (selectionInCatalog == true) {
 
 		} else {
@@ -1520,7 +1503,7 @@ public class MainScreenController {
 				if (currentSearchEvent) {
 					currentSearchEvent = false;
 					avoidCategoryChangedEvent = true;
-					isRefresh=true;
+					isRefresh = true;
 					LoadAllProducts();
 					return;
 				}
@@ -1567,8 +1550,8 @@ public class MainScreenController {
 					}
 
 					if (articlesInCategoryAndSearch != null) {
-						fetchedObservableProducts = FXCollections
-								.observableArrayList(articlesInCategoryAndSearch).sorted((o1, o2) -> {
+						fetchedObservableProducts = FXCollections.observableArrayList(articlesInCategoryAndSearch)
+								.sorted((o1, o2) -> {
 									if (o1.getId() == o2.getId())
 										return 0;
 									if (o1.getId() > o2.getId())
@@ -1579,9 +1562,7 @@ public class MainScreenController {
 						fetchedObservableProducts.removeIf(n -> (n == null));
 
 						addDistanceAndShowInCatalog();
-					}
-					else
-					{
+					} else {
 						MainScreen_Load_Catalog.setVisible(false);
 					}
 				}
@@ -1656,8 +1637,8 @@ public class MainScreenController {
 
 				// Artikel in Katalog anzeigen
 				if (articlesInSearchAndCategory != null) {
-					fetchedObservableProducts = FXCollections
-							.observableArrayList(articlesInSearchAndCategory).sorted((o1, o2) -> {
+					fetchedObservableProducts = FXCollections.observableArrayList(articlesInSearchAndCategory)
+							.sorted((o1, o2) -> {
 								if (o1.getId() == o2.getId())
 									return 0;
 								if (o1.getId() > o2.getId())
@@ -1668,9 +1649,7 @@ public class MainScreenController {
 					fetchedObservableProducts.removeIf(n -> (n == null));
 
 					addDistanceAndShowInCatalog();
-				}
-				else
-				{
+				} else {
 					MainScreen_Load_Catalog.setVisible(false);
 				}
 			}
@@ -1866,7 +1845,7 @@ public class MainScreenController {
 	private TableColumn<Auction, LocalDateTime> auctionsCatalogEndColumn;
 
 	@FXML
-	private TableView<Auction> MainScreen_ListAlsoBought;
+	private TableView<Product> MainScreen_ListAlsoBought;
 
 	@FXML
 	private TableColumn<Auction, Integer> lastboughtIdColumn;
@@ -2005,17 +1984,16 @@ public class MainScreenController {
 
 	@FXML
 	void MainScreen_CreditsButtonMenuClick(ActionEvent event) {
-		FXMLHandler.ShowMessageBox(
-				"net.coobird.thumbnailator - 0.4.13" + System.lineSeparator()
-						+ "com.dlsc.GMapsFX - 11.0.1, https://github.com/dlsc-software-consulting-gmbh/GMapsFX"
-						+ System.lineSeparator() + "com.google.maps:google-maps-services - 0.15.0, https://github.com/googlemaps/google-maps-services-java"
-						+ System.lineSeparator() + "org.slf4j:slf4j-simple - 1.7.25"
-						+ System.lineSeparator() + "JavaFX - 15.0.1" + System.lineSeparator() + "JUnit - 4"
-						+ System.lineSeparator() + "mysql.mysql-connector-java - 8.0.22" + System.lineSeparator()
-						+ "com.sun.mail.javax.mail - 1.6.2" + System.lineSeparator()
-						+ "Maps Icons Collection, https://mapicons.mapsmarker.com" + System.lineSeparator()
-						+ "FreeLogoDesign, https://de.freelogodesign.org",
-				"Super-E-commerce-Platform", "Super-E-commerce-Platform", AlertType.INFORMATION, true, false);
+		FXMLHandler.ShowMessageBox("net.coobird.thumbnailator - 0.4.13" + System.lineSeparator()
+				+ "com.dlsc.GMapsFX - 11.0.1, https://github.com/dlsc-software-consulting-gmbh/GMapsFX"
+				+ System.lineSeparator()
+				+ "com.google.maps:google-maps-services - 0.15.0, https://github.com/googlemaps/google-maps-services-java"
+				+ System.lineSeparator() + "org.slf4j:slf4j-simple - 1.7.25" + System.lineSeparator()
+				+ "JavaFX - 15.0.1" + System.lineSeparator() + "JUnit - 4" + System.lineSeparator()
+				+ "mysql.mysql-connector-java - 8.0.22" + System.lineSeparator() + "com.sun.mail.javax.mail - 1.6.2"
+				+ System.lineSeparator() + "Maps Icons Collection, https://mapicons.mapsmarker.com"
+				+ System.lineSeparator() + "FreeLogoDesign, https://de.freelogodesign.org", "Super-E-commerce-Platform",
+				"Super-E-commerce-Platform", AlertType.INFORMATION, true, false);
 	}
 
 	@FXML
@@ -2032,7 +2010,7 @@ public class MainScreenController {
 	void MainScreen_FreeLogoDesignMenuClick(ActionEvent event) throws IOException, URISyntaxException {
 		java.awt.Desktop.getDesktop().browse(new URI("https://de.freelogodesign.org"));
 	}
-	
+
 	@FXML
 	void MainScreen_GoogleMapsMenuClick(ActionEvent event) throws IOException, URISyntaxException {
 		java.awt.Desktop.getDesktop().browse(new URI("https://github.com/googlemaps/google-maps-services-java"));
@@ -2139,7 +2117,7 @@ public class MainScreenController {
 	@FXML
 	void MainScreen_ButtonRefresh_Click(ActionEvent event) {
 		// Ansicht aktualisieren - aufrufbar mit MainScreen_ButtonRefresh.fire();
-		isRefresh=true;
+		isRefresh = true;
 		refreshUserDetails();
 		if (tabPane.getSelectionModel().getSelectedItem() == tabArticles) {
 			refreshViewArticles();
@@ -2349,7 +2327,7 @@ public class MainScreenController {
 			MainScreen_btnSearchOK.fire();
 		}
 	}
-	
+
 	@FXML
 	void txtBid_keyPressed(KeyEvent event) {
 		// Taste wird gedrückt
