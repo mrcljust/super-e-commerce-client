@@ -3484,8 +3484,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				}
 				int currentProductId=alsoBoughtProducts.getInt("products.id");
 				
-				List<Integer> alreadyIncludedProducts= new ArrayList<>();
-				if(currentProductId==product.getId()&& alreadyIncludedProducts.contains(currentProductId)==true) {
+				List <Integer> alreadyIncludedProducts= new ArrayList<>();
+				if(currentProductId==product.getId() || alreadyIncludedProducts.contains(currentProductId)==true) {
 					continue;
 				}
 				alreadyIncludedProducts.add(alsoBoughtProducts.getInt("products.id"));
