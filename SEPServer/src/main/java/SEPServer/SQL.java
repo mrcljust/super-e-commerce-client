@@ -3460,6 +3460,59 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	{
 		//produkte ausgeben, die von käufern des Produkts product ebenfalls gekauft wurden
 		// 3 stk!
+		// product hat Seller 
+		// User kauft Produkt product, von product will ich weitere Produkte haben, die User sowohl product gekauft haben als auch andere Produkte
+		try {
+			PreparedStatement sqlQuery= connection.prepareStatement("Select * FROM products JOIN orders ON products.id=orders.product_id JOIN users ON orders.buyerid=users.buyer_id WHERE products.id="+ product.getId(), ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_SENSITIVE);
+			ResultSet alsoBoughtProducts=sqlQuery.executeQuery();
+			int sqlcounter=0;
+			while(alsoBoughtProducts.next()) {
+				sqlcounter++;
+			}
+			if(sqlcounter<=0) {
+				return null;
+			}
+			alsoBoughtProducts.beforeFirst();
+			int arraycounter=0;
+			
+			Product[] boughtProducts= new Product[sqlcounter];
+			while(alsoBoughtProducts.next()) {
+				//Product[] hat id, name, price, seller, businessname, category, description,
+				//zwischenspeichern von product id, von jeweiligen product infos
+				if(arraycounter>=3) {
+					break;
+				}
+				int currentProductId=alsoBoughtProducts.getInt("products.id");
+				
+				if(currentProductId==product.getId()) {
+					continue;
+				}
+				PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId);
+				ResultSet allSellerInformation = pstmtSellerInformation.executeQuery();
+				allSellerInformation.first();
+
+				Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
+						allSellerInformation.getString("users.country"),
+						allSellerInformation.getInt("users.postalcode"), allSellerInformation.getString("users.city"),
+						allSellerInformation.getString("users.street"), allSellerInformation.getString("users.number"));
+				Seller newSeller = new Seller(allSellerInformation.getInt("users.id"),
+						allSellerInformation.getString("users.username"), allSellerInformation.getString("users.email"),
+						allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
+						allSellerInformation.getDouble("users.wallet"), newAddress, allSellerInformation.getString("users.companyname"));
+				boughtProducts[arraycounter] = new Product(allSellerInformation.getInt("products.id"),
+						allSellerInformation.getString("products.title"), allSellerInformation.getDouble("products.price"),
+						allSellerInformation.getDouble("products.oldprice"), newSeller,
+						allSellerInformation.getString("categories.title"),
+						allSellerInformation.getString("products.description"));				
+				arraycounter++;
+		
+			}
+			return boughtProducts;
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		if (!checkConnection()) {
 			return null;
 		}
@@ -3472,9 +3525,26 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		//product.getPrice bei SQL in oldprice speichern
 		//newprice in price speichern
 		//prozentberechnung usw. wird clientseitig gemacht
-		
 		if (!checkConnection()) {
 			return Response.NoDBConnection;
+		}
+		
+		if(newPrice < 0) {
+			return Response.Failure;
+		}
+		else if(newPrice > product.getPrice() || newPrice < product.getPrice()) {
+			
+			try {
+				PreparedStatement updateQuery= connection.prepareStatement("UPDATE products SET price=?, oldprice=? WHERE id= "+ product.getId());
+				updateQuery.setDouble(2, product.getPrice());
+				updateQuery.setDouble(1, newPrice);
+				updateQuery.execute();
+				return Response.Success;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		
 		return null;
@@ -3488,7 +3558,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		//        Month.JULY, 29, 19, 30, 00);
 		//LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
 		//        Month.JULY, 30, 19, 30, 00);
-		//ustomer denis= new Customer(77, null, null, null, null, 0, null);
+		//Customer denis= new Customer(77, null, null, null, null, 0, null);
+		//Address test= new Address(null, null, 0, null, null, null);
+		//Seller denisSeller= new Seller(6, null, null, null, null, 0, test, null);
+		//Product überGebenesProdukt
 		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), denis, 20.55,aDateTime,aDateTime2));
 		//Customer denis= new Customer(77, null, null, null, null, 0, null);
 		//	testSQLObject.fetchAuctions(AuctionType.Ended);

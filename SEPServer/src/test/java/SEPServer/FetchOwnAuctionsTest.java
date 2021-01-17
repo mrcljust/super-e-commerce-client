@@ -47,7 +47,7 @@ SQL sql;
 		//Customer-Objekt erstellen
 		Address sellerAddress = new Address("Name", "Land", 12345, "Essen", "Bspstr.", "14c");
 		String emailString = "emailownauctionstest@email.de";
-		Customer seller = new Customer("UsernameOwnAuctionsTest", emailString, SEPCommon.Methods.getMd5Encryption("passwort"), new byte[1], 100, sellerAddress);		//Passwort encrypten um  auch vergleichen zu können
+		Customer seller = new Customer("UsernameOwnAuctionsTest", emailString, SEPCommon.Methods.getMd5Encryption("passwort"), new byte[1], 100, sellerAddress);		//Passwort encrypten um  auch vergleichen zu können, Verkäufer muss Customer sein
 		
 		//User anlegen und prüfen
 		Response registerUserResponse = sql.registerUser(seller);																										//den zuvor erstellten Seller registrieren
@@ -57,6 +57,7 @@ SQL sql;
 		
 		//User aus DB holen, um ID zu erhalten und prüfen
 		User sellerFromDB = sql.getUserDataByEmail(emailString);
+		
 		assertEquals("UsernameOwnAuctionsTest", sellerFromDB.getUsername());
 		assertEquals(emailString, sellerFromDB.getEmail());
 		assertEquals(SEPCommon.Methods.getMd5Encryption("passwort"), sellerFromDB.getPassword());
@@ -90,13 +91,13 @@ SQL sql;
 		assertEquals(sellerFromDB.getId(), ownAuctionFromDB.getSeller().getId());
 		assertEquals(ownAuctionFromDB.getStarttime().plusHours(7), ownAuctionFromDB.getEnddate());
 	
+		
 		//Auktion wieder löschen
 		PreparedStatement deleteStatement = SQL.connection.prepareStatement("DELETE FROM auctions ORDER BY auction_id DESC LIMIT 1");
 		deleteStatement.execute();
 		
 		//User wieder löschen
 		sql.deleteUser(sellerFromDB);
-		
 		System.out.println("Eigene Auktionen abfragen - Test erfolgreich");
 	}
 }
