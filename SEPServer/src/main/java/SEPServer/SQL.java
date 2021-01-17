@@ -3462,65 +3462,55 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		// 3 stk!
 		// product hat Seller 
 		// User kauft Produkt product, von product will ich weitere Produkte haben, die User sowohl product gekauft haben als auch andere Produkte
-		try {
-			PreparedStatement sqlQuery= connection.prepareStatement("Select * FROM products JOIN orders ON products.id=orders.product_id JOIN users ON orders.buyerid=users.buyer_id WHERE products.id="+ product.getId(), ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_SENSITIVE);
-			ResultSet alsoBoughtProducts=sqlQuery.executeQuery();
-			int sqlcounter=0;
-			while(alsoBoughtProducts.next()) {
-				sqlcounter++;
-			}
-			if(sqlcounter<=0) {
-				return null;
-			}
-			alsoBoughtProducts.beforeFirst();
-			int arraycounter=0;
-			
-			Product[] boughtProducts= new Product[sqlcounter];
-			while(alsoBoughtProducts.next()) {
-				//Product[] hat id, name, price, seller, businessname, category, description,
-				//zwischenspeichern von product id, von jeweiligen product infos
-				if(arraycounter>=3) {
-					break;
-				}
-				int currentProductId=alsoBoughtProducts.getInt("products.id");
-				
-				List <Integer> alreadyIncludedProducts= new ArrayList<>();
-				if(currentProductId==product.getId() || alreadyIncludedProducts.contains(currentProductId)==true) {
-					continue;
-				}
-				alreadyIncludedProducts.add(alsoBoughtProducts.getInt("products.id"));
-				
-				PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId);
-				ResultSet allSellerInformation = pstmtSellerInformation.executeQuery();
-				allSellerInformation.first();
-
-				Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
-						allSellerInformation.getString("users.country"),
-						allSellerInformation.getInt("users.postalcode"), allSellerInformation.getString("users.city"),
-						allSellerInformation.getString("users.street"), allSellerInformation.getString("users.number"));
-				Seller newSeller = new Seller(allSellerInformation.getInt("users.id"),
-						allSellerInformation.getString("users.username"), allSellerInformation.getString("users.email"),
-						allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
-						allSellerInformation.getDouble("users.wallet"), newAddress, allSellerInformation.getString("users.companyname"));
-				boughtProducts[arraycounter] = new Product(allSellerInformation.getInt("products.id"),
-						allSellerInformation.getString("products.title"), allSellerInformation.getDouble("products.price"),
-						allSellerInformation.getDouble("products.oldprice"), newSeller,
-						allSellerInformation.getString("categories.title"),
-						allSellerInformation.getString("products.description"));				
-				arraycounter++;
-		
-			}
-			return boughtProducts;
-		}catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		if (!checkConnection()) {
 			return null;
 		}
 		
-		return null;
+		try {
+			PreparedStatement sqlQuery = connection.prepareStatement(
+					"SELECT DISTINCT products.id FROM products JOIN orders ON products.id=orders.product_id JOIN categories ON products.category_id=categories.id WHERE orders.buyer_id IN (SELECT orders.buyer_id FROM products JOIN orders ON products.id=orders.product_id WHERE products.id="
+							+ product.getId()
+							+ " AND orders.product_id!="+ product.getId()+" ORDER BY orders.order_id DESC LIMIT 3", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+			ResultSet productIds=sqlQuery.executeQuery();
+			
+			int sqlcounter=0;
+			while(productIds.next()) {
+				sqlcounter++;
+			}
+			productIds.beforeFirst();
+			Product[] Products= new Product[sqlcounter];
+			
+			int arraycounter=0;
+			while(productIds.next()) {
+	
+			int currentProductId= productIds.getInt("products.id");
+				
+			PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId);
+			ResultSet allSellerInformation = pstmtSellerInformation.executeQuery();
+			allSellerInformation.first();
+
+			Address newAddress = new Address(allSellerInformation.getString("users.fullname"),
+					allSellerInformation.getString("users.country"),
+					allSellerInformation.getInt("users.postalcode"), allSellerInformation.getString("users.city"),
+					allSellerInformation.getString("users.street"), allSellerInformation.getString("users.number"));
+			Seller newSeller = new Seller(allSellerInformation.getInt("users.id"),
+					allSellerInformation.getString("users.username"), allSellerInformation.getString("users.email"),
+					allSellerInformation.getString("users.password"), allSellerInformation.getBytes("users.image"),
+					allSellerInformation.getDouble("users.wallet"), newAddress, allSellerInformation.getString("users.companyname"));
+			Products[arraycounter] = new Product(allSellerInformation.getInt("products.id"),
+					allSellerInformation.getString("products.title"), allSellerInformation.getDouble("products.price"),
+					allSellerInformation.getDouble("products.oldprice"), newSeller,
+					allSellerInformation.getString("categories.title"),
+					allSellerInformation.getString("products.description"));				
+			arraycounter++;
+			}
+			return Products;
+		}catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	protected Response updatePrice(Product product, double newPrice)
@@ -3546,10 +3536,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+				return Response.Failure;
 			}
 			
 		}
-		
 		return null;
 	}
 	
