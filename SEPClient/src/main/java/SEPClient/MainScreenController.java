@@ -638,7 +638,7 @@ public class MainScreenController {
 	
 	private void addDistanceAndShowInCatalog()
 	{
-		if (fetchedObservableProducts != null) {
+		if (fetchedObservableProducts!=null && !fetchedObservableProducts.isEmpty()) {
 			// QUELLE: https://github.com/googlemaps/google-maps-services-java
 			String productAddress = fetchedObservableProducts.get(productCounter).getSeller().getAddress().getStreet()
 					+ " " + fetchedObservableProducts.get(productCounter).getSeller().getAddress().getNumber() + ", "
@@ -837,7 +837,7 @@ public class MainScreenController {
 			fetchedObservableProducts.removeIf(n -> (n == null));
 		}
 
-		if (fetchedObservableProducts != null) {
+		if (fetchedObservableProducts!=null && !fetchedObservableProducts.isEmpty()) {
 			// QUELLE: https://github.com/googlemaps/google-maps-services-java
 			String productAddress = fetchedObservableProducts.get(productCounter).getSeller().getAddress().getStreet()
 					+ " " + fetchedObservableProducts.get(productCounter).getSeller().getAddress().getNumber() + ", "
