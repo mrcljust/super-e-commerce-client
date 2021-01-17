@@ -341,6 +341,8 @@ public class MainScreenController {
 		// loadLastViewedProducts(); wird in LoadAllProducts aufgerufen
 
 		// Alle Kategorien auswählen
+		
+		avoidCategoryChangedEvent=true;
 		MainScreen_ChoiceBox_Category.getSelectionModel().select(0);
 	}
 
@@ -661,6 +663,7 @@ public class MainScreenController {
 							} else {
 								productLatLong = result[0].geometry.location;
 							}
+							result=null;
 
 							// Distanz berechnen
 							if (productLatLong == null) {
@@ -693,11 +696,6 @@ public class MainScreenController {
 												.getCity()
 										+ ", " + fetchedObservableProducts.get(productCounter).getSeller().getAddress()
 												.getCountry();
-								
-								if(fetchedObservableProducts.get(productCounter).getId()==17)
-								{
-									System.out.println(auctAddress);
-								}
 
 								GeocodingApi.geocode(context, auctAddress).setCallback(this);
 							} else if (!alreadyLoadedLastViewed) {
