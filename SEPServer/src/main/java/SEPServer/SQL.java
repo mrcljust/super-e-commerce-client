@@ -3484,9 +3484,12 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				}
 				int currentProductId=alsoBoughtProducts.getInt("products.id");
 				
-				if(currentProductId==product.getId()) {
+				List<Integer> alreadyIncludedProducts= new ArrayList<>();
+				if(currentProductId==product.getId()&& alreadyIncludedProducts.contains(currentProductId)==true) {
 					continue;
 				}
+				alreadyIncludedProducts.add(alsoBoughtProducts.getInt("products.id"));
+				
 				PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId);
 				ResultSet allSellerInformation = pstmtSellerInformation.executeQuery();
 				allSellerInformation.first();
