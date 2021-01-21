@@ -263,6 +263,22 @@ public class MainScreenController {
 				}
 			}
 		});
+		
+		lastboughtIdColumn.setCellValueFactory(new PropertyValueFactory<Product, Integer>("id"));
+		lastBoughtProductColumn.setCellValueFactory(new PropertyValueFactory<Product, String>("name"));
+		lastboughtPriceColumn.setCellValueFactory(new PropertyValueFactory<Product, Double>("price"));
+		// Anzeigewert für Preis anpassen
+		lastboughtPriceColumn.setCellFactory(tc -> new TableCell<Product, Double>() {
+			@Override
+			protected void updateItem(Double price, boolean empty) {
+				super.updateItem(price, empty);
+				if (empty || price == null) {
+					setText(null);
+				} else {
+					setText(Constants.DOUBLEFORMAT.format(price) + Constants.CURRENCY);
+				}
+			}
+		});
 
 		// ToggleGroups
 		ToggleGroup radioViewAuctionsGroup = new ToggleGroup();
@@ -1070,14 +1086,47 @@ public class MainScreenController {
 	}
 
 	private void showUsersAlsoBought(boolean selectionInCatalog) {
-		// TODO DENIS
-
-		// selectionInCatalog = true --> Selektion im Katalog gendert
-		// selectionInCatalog = false --> Selektion in LastViewed gendert
+		// selectionInCatalog = true --> Selektion im Katalog geändert
+		// selectionInCatalog = false --> Selektion in LastViewed geändert
+		if(MainScreen_ListAlsoBought.getItems()!=null)
+		{
+			MainScreen_ListAlsoBought.getItems().clear();
+		}
+		
 		if (selectionInCatalog == true) {
+			if (MainScreen_ListCatalog.getSelectionModel().getSelectedItem() != null) {
+				HashMap<String, Object> requestMap = new HashMap<String, Object>();
+				requestMap.put("Product", MainScreen_ListCatalog.getSelectionModel().getSelectedItem());
 
+				ClientRequest req = new ClientRequest(Request.FetchProductsAlsoBought, requestMap);
+				Client client = Client.getClient();
+				ServerResponse queryResponse = client.sendClientRequest(req);
+
+				if (queryResponse.getResponseType() != null && queryResponse.getResponseType() == Response.Success) {
+					Product[] productsAlsoBought = (Product[])queryResponse.getResponseMap().get("Products");
+					ObservableList<Product> obsProductsAlsoBoughtList = FXCollections.observableArrayList(productsAlsoBought);
+					obsProductsAlsoBoughtList.removeIf(n -> (n == null));
+					MainScreen_ListAlsoBought.setItems(obsProductsAlsoBoughtList);
+				}
+				//wenn Response nicht Success ist nicht weiter beachten, da "Kunden kauften auch" nicht zwingend notwendig ist
+			}
 		} else {
+			if (MainScreen_ListLastViewed.getSelectionModel().getSelectedItem() != null) {
+				HashMap<String, Object> requestMap = new HashMap<String, Object>();
+				requestMap.put("Product", MainScreen_ListLastViewed.getSelectionModel().getSelectedItem());
 
+				ClientRequest req = new ClientRequest(Request.FetchProductsAlsoBought, requestMap);
+				Client client = Client.getClient();
+				ServerResponse queryResponse = client.sendClientRequest(req);
+
+				if (queryResponse.getResponseType() != null && queryResponse.getResponseType() == Response.Success) {
+					Product[] productsAlsoBought = (Product[])queryResponse.getResponseMap().get("Products");
+					ObservableList<Product> obsProductsAlsoBoughtList = FXCollections.observableArrayList(productsAlsoBought);
+					obsProductsAlsoBoughtList.removeIf(n -> (n == null));
+					MainScreen_ListAlsoBought.setItems(obsProductsAlsoBoughtList);
+				}
+				//wenn Response nicht Success ist nicht weiter beachten, da "Kunden kauften auch" nicht zwingend notwendig ist
+			}
 		}
 	}
 
@@ -1696,6 +1745,8 @@ public class MainScreenController {
 			}
 		}
 	}
+	
+
 
 	@FXML
 	private ChoiceBox<String> MainScreen_ChoiceBox_Category;
@@ -1848,13 +1899,13 @@ public class MainScreenController {
 	private TableView<Product> MainScreen_ListAlsoBought;
 
 	@FXML
-	private TableColumn<Auction, Integer> lastboughtIdColumn;
+	private TableColumn<Product, Integer> lastboughtIdColumn;
 
 	@FXML
-	private TableColumn<Auction, String> lastBoughtProductColumn;
+	private TableColumn<Product, String> lastBoughtProductColumn;
 
 	@FXML
-	private TableColumn<Auction, Double> lastBoughtPriceColumn;
+	private TableColumn<Product, Double> lastboughtPriceColumn;
 
 	@FXML
 	private RadioButton radioAllAuctions;

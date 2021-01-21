@@ -3469,9 +3469,10 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		
 		try {
 			PreparedStatement sqlQuery = connection.prepareStatement(
-					"SELECT DISTINCT products.id FROM products JOIN orders ON products.id=orders.product_id JOIN categories ON products.category_id=categories.id WHERE orders.buyer_id IN (SELECT orders.buyer_id FROM products JOIN orders ON products.id=orders.product_id WHERE products.id="
-							+ product.getId()
-							+ " AND orders.product_id!="+ product.getId()+" ORDER BY orders.order_id DESC LIMIT 3", ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
+					"SELECT DISTINCT products.id FROM products JOIN orders ON products.id=orders.product_id JOIN categories ON products.category_id=categories.id WHERE orders.buyer_id IN (SELECT orders.buyer_id FROM orders JOIN products ON products.id=orders.product_id WHERE products.id="
+							+ product.getId() + ") AND orders.product_id!= " + product.getId()
+							+ " ORDER BY orders.order_id DESC LIMIT 3",
+					ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet productIds=sqlQuery.executeQuery();
 			
 			int sqlcounter=0;
@@ -3486,7 +3487,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	
 			int currentProductId= productIds.getInt("products.id");
 				
-			PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId);
+			PreparedStatement pstmtSellerInformation= connection.prepareStatement("Select * FROM products JOIN users on products.seller_id=users.id JOIN categories ON products.category_id=categories.id WHERE products.id= "+ currentProductId, ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_UPDATABLE);
 			ResultSet allSellerInformation = pstmtSellerInformation.executeQuery();
 			allSellerInformation.first();
 
@@ -3509,6 +3510,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		}catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
@@ -3539,6 +3541,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				return Response.Failure;
 			}
 			
+		}else if(product.getPrice()==newPrice) {
+			return Response.Success;
 		}
 		return null;
 	}
@@ -3546,14 +3550,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	
 
 	public static void main(String[]args) {
-		//SQL testSQLObject= new SQL();
+		SQL testSQLObject= new SQL();
 		//LocalDateTime aDateTime = LocalDateTime.of(2018, 
 		//        Month.JULY, 29, 19, 30, 00);
 		//LocalDateTime aDateTime2 = LocalDateTime.of(2019, 
 		//        Month.JULY, 30, 19, 30, 00);
 		//Customer denis= new Customer(77, null, null, null, null, 0, null);
-		//Address test= new Address(null, null, 0, null, null, null);
-		//Seller denisSeller= new Seller(6, null, null, null, null, 0, test, null);
+		Address te22st= new Address(null, null, 0, null, null, null);
+		Seller denisSeller= new Seller(3, null, null, null, null, 0, te22st, null);
 		//Product überGebenesProdukt
 		//testSQLObject.addAuction(new Auction(200, "Hallo Beispiel", "Beispielhafte Beschreibung", new byte[1], 20.55, 20.00, ShippingType.PickUp, new Customer(100, "name", "", "", null, 20, null), denis, 20.55,aDateTime,aDateTime2));
 		//Customer denis= new Customer(77, null, null, null, null, 0, null);
@@ -3562,5 +3566,9 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		//testSQLObject.fetchAuctions(AuctionType.Future);
 		//testSQLObject.fetchPurchasedAuctions(denis);
 		//EmailHandler.sendAuctionEndedEmail(null);
+		
+		Product test= new Product(1, null, 0, 0.0, denisSeller, null, null);
+		testSQLObject.fetchProductsAlsoBought(test);
+		
 	}
 }
