@@ -98,6 +98,23 @@ public class EmailHandler {
 	
 	protected static Response sendNewMessageEmail(SEPCommon.Message message) {
 		//Neue Nachricht erhalten
-		return null;
+		
+		setProperties();
+        
+		try {
+	        Message msg = new MimeMessage(session);
+	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
+	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(message.getReceiver().getEmail()));
+			msg.setSubject("Neue Nachricht");
+	        msg.setText("Sie haben eine neue Nachricht erhalten. Loggen Sie sich jetzt ein, um den Inhalt dieser Nachricht abzurufen!");
+
+	        Transport.send(msg);
+			
+			return Response.Success;
+		} catch (MessagingException e) {
+			e.printStackTrace();
+			return Response.Failure;
+		}
+		
 	}
 }
