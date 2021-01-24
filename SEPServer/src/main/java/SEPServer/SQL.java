@@ -3439,21 +3439,82 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			return Response.NoDBConnection;
 		}
 		
+		try {
+			// Message mit Sender, Empfänger, Text und Datum in die Datenbank eintragen
+		PreparedStatement insertMessage = connection.prepareStatement("INSERT INTO messages(message_id, sender_id, receiver_id, text) "
+				+ "VALUES (?, ?, ?, ?)");
+		
+		insertMessage.setInt(1, message.getId());
+		insertMessage.setObject(2, message.getSender());
+		insertMessage.setObject(3, message.getReceiver());
+		insertMessage.setString(4, message.getMessage());
+		insertMessage.execute();
 		EmailHandler.sendNewMessageEmail(message);
+		return Response.Success;	
 		
 		
+		} catch (SQLException e) {
+			//es ist ein Fehler aufgetreten:
+			e.printStackTrace();
+			return Response.Failure;
+		}
 		
-		return null;
 	}
 	
-	protected Message[] fetchReceivedMessages(User user)
+	protected Message[] fetchReceivedMessages (User user)
 	{
 		//alle messages mit receiver = user.id aus der db zurückgeben
 		if (!checkConnection()) {
 			return null;
 		}
 		
-		return null;
+		try {
+			// Alle Messages übergeben, bei denen die Empfänger Id = dem übergeben user.id ist
+			PreparedStatement fetchMessages = connection.prepareStatement("SELECT * FROM messages WHERE receiver_id=" + user.getId());
+
+			ResultSet fetchMessagesResult = fetchMessages.executeQuery();
+			
+			List<Message> messageList = new ArrayList<Message>();
+			while (fetchMessagesResult.next())
+			{
+				
+				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users JOIN messages WHERE id='" + user.getId() + "'");
+				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+				
+				// Neues Seller Objekt übergeben
+				Seller sender = null;
+				if(fetchUserDataResult.next())
+				{
+					Address sellerAddress = new Address(fetchUserDataResult.getString("users.fullname"),
+							fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
+							fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
+							fetchUserDataResult.getString("users.number"));
+					sender = new Seller(fetchUserDataResult.getInt("users.id"), fetchUserDataResult.getString("users.username"),
+							fetchUserDataResult.getString("users.email"), fetchUserDataResult.getString("users.password"),
+							fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), sellerAddress,
+							fetchUserDataResult.getString("users.companyname"));
+				}
+				
+					messageList.add(new Message(fetchMessagesResult.getInt("message_id"), sender, user, fetchMessagesResult.getString("text"), fetchMessagesResult.getTimestamp("messages.date").toLocalDateTime()));
+				}
+		
+			// Liste hat keine Inhalte
+			if(messageList.size()<=0)
+			{
+				return null;
+			}
+			//Liste in Array umwandeln test
+			// Arraygröße = Listengröße
+			Message[] messages = new Message[messageList.size()];
+			messageList.toArray(messages);
+			
+			// Array mit Messages zurückgeben
+			return messages;
+		} catch (SQLException e) {
+			//es ist ein Fehler aufgetreten:
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	protected Product[] fetchProductsAlsoBought(Product product)
