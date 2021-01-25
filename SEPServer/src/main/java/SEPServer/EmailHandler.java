@@ -74,8 +74,8 @@ public class EmailHandler {
 		}
 	}
 	
-	protected static Response sendAuctionEndedBuyerNoBidderEmail(Auction auction) {
-		//Kein Gebot auf die Auktion
+	protected static Response sendAuctionEndedBuyerNoBidderEmail(Auction auction) { 
+		//Kein Gebot auf die Auktion 
 		
 		setProperties();
 	        

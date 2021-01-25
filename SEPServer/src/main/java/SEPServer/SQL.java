@@ -2711,7 +2711,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	}
 
 	protected Auction[] fetchAuctionsByString(String searchstring, AuctionType auctionType) {
-		// Auktionen mit searchString im Titel/Name zurückgeben
+		// Auktionen mit searchString im Titel/Name zurückgeben 
 
 		// je nach AuctionType die aktuell laufenden, beendeten oder zukünftigen anzeigen
 		// Auktionen mit dem searchstring zurückgeben
