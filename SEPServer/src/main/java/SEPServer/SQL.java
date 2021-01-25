@@ -3445,8 +3445,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				+ "VALUES (?, ?, ?, ?)");
 		
 		insertMessage.setInt(1, message.getId());
-		insertMessage.setObject(2, message.getSender());
-		insertMessage.setObject(3, message.getReceiver());
+		insertMessage.setInt(2, message.getSender().getId());
+		insertMessage.setInt(3, message.getReceiver().getId());
 		insertMessage.setString(4, message.getMessage());
 		insertMessage.execute();
 		EmailHandler.sendNewMessageEmail(message);
@@ -3478,25 +3478,43 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			while (fetchMessagesResult.next())
 			{
 				
-				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users JOIN messages WHERE id='" + user.getId() + "'");
-				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
+				PreparedStatement fetchUserData = connection.prepareStatement("SELECT * FROM users JOIN messages ON users.id = messages.sender_id WHERE messages.message_id" + fetchMessagesResult.getInt("messages.message_id"));
+				ResultSet fetchUserDataResult = fetchUserData.executeQuery();
 				
-				// Neues Seller Objekt übergeben
-				Seller sender = null;
-				if(fetchUserDataResult.next())
-				{
-					Address sellerAddress = new Address(fetchUserDataResult.getString("users.fullname"),
+				String company = fetchUserDataResult.getString("users.companyname");
+				
+				// Neues User Objekt übergeben
+				User sender = null;
+				
+				if(fetchUserDataResult.next()) {
+					
+					if(company == null) {
+						
+						Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
+								fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
+								fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
+								fetchUserDataResult.getString("users.number"));
+						sender = new Customer(fetchUserDataResult.getInt("users.id"), fetchUserDataResult.getString("users.username"),
+								fetchUserDataResult.getString("users.email"), fetchUserDataResult.getString("users.password"),
+								fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), senderAddress);
+					}
+				
+					
+					else {
+						
+					Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 							fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
 							fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
 							fetchUserDataResult.getString("users.number"));
 					sender = new Seller(fetchUserDataResult.getInt("users.id"), fetchUserDataResult.getString("users.username"),
 							fetchUserDataResult.getString("users.email"), fetchUserDataResult.getString("users.password"),
-							fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), sellerAddress,
+							fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), senderAddress,
 							fetchUserDataResult.getString("users.companyname"));
 				}
 				
 					messageList.add(new Message(fetchMessagesResult.getInt("message_id"), sender, user, fetchMessagesResult.getString("text"), fetchMessagesResult.getTimestamp("messages.date").toLocalDateTime()));
 				}
+			}
 		
 			// Liste hat keine Inhalte
 			if(messageList.size()<=0)
