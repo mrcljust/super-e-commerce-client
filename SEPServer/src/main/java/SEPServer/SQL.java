@@ -3445,8 +3445,8 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				+ "VALUES (?, ?, ?, ?)");
 		
 		insertMessage.setInt(1, message.getId());
-		insertMessage.setObject(2, message.getSender());
-		insertMessage.setObject(3, message.getReceiver());
+		insertMessage.setInt(2, message.getSender().getId());
+		insertMessage.setInt(3, message.getReceiver().getId());
 		insertMessage.setString(4, message.getMessage());
 		insertMessage.execute();
 		EmailHandler.sendNewMessageEmail(message);
