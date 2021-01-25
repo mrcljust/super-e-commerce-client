@@ -3481,14 +3481,14 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				PreparedStatement fetchUserData = connection.prepareStatement("SELECT * FROM users JOIN messages ON users.id = messages.sender_id WHERE messages.message_id" + fetchMessagesResult.getInt("messages.message_id"));
 				ResultSet fetchUserDataResult = fetchUserData.executeQuery();
 				
-				String company = fetchUserDataResult.getString("users.companyname");
-				
 				// Neues User Objekt übergeben
 				User sender = null;
 				
 				if(fetchUserDataResult.next()) {
 					
-					if(company == null) {
+					String company = fetchUserDataResult.getString("users.companyname");
+					
+					if(company == null || company == "") {
 						
 						Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 								fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
