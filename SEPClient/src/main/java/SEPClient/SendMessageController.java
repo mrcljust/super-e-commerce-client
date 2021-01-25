@@ -1,6 +1,8 @@
 package SEPClient;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import SEPCommon.User;
 import javafx.event.ActionEvent;
@@ -8,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
@@ -27,7 +30,15 @@ public class SendMessageController {
 	}
 	
 	public void initialize() throws IOException {
+		Image defaultImage = new Image(getClass().getResource("/SEPClient/UI/no-image.jpg").toString());
+    	SendMessage_ImgProfilePicture.setImage(defaultImage);
+    	
+    	//Bild setzen
+    	InputStream in = new ByteArrayInputStream(receiver.getPicture());
+		Image img = new Image(in);
+		SendMessage_ImgProfilePicture.setImage(img);
 		
+		SendMessage_txtReceiverName.setText("Nachricht an " + receiver.getUsername());
 	}
 	
 	@FXML
@@ -47,7 +58,7 @@ public class SendMessageController {
 
     @FXML
     void SendMessage_ButtonOK_Click(ActionEvent event) {
-
+    	
     }
 
     @FXML
