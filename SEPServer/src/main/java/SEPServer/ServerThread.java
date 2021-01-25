@@ -638,7 +638,7 @@ public class ServerThread implements Runnable {
 				
 				//Request UpdatePrice
 				//HASHMAP: "Product" - bisheriges Product, "NewPrice" - Double
-				else if(requestType == Request.SendMessage)
+				else if(requestType == Request.UpdatePrice)
 				{
 					Product argProduct = (Product)requestMap.get("Product");
 					Double argNewPrice = (Double)requestMap.get("NewPrice");
