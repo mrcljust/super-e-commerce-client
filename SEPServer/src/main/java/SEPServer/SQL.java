@@ -3478,20 +3478,20 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			while (fetchMessagesResult.next())
 			{
 				
-				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users JOIN messages WHERE id='" + user.getId() + "'");
+				PreparedStatement fetchCustomerData = connection.prepareStatement("SELECT * FROM users JOIN messages ON user.id = messages.sender_id WHERE messages.message_id" + fetchMessagesResult.getInt("messages.message_id"));
 				ResultSet fetchUserDataResult = fetchCustomerData.executeQuery();
 				
 				// Neues Seller Objekt übergeben
-				Seller sender = null;
+				User sender = null;
 				if(fetchUserDataResult.next())
 				{
-					Address sellerAddress = new Address(fetchUserDataResult.getString("users.fullname"),
+					Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 							fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
 							fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
 							fetchUserDataResult.getString("users.number"));
 					sender = new Seller(fetchUserDataResult.getInt("users.id"), fetchUserDataResult.getString("users.username"),
 							fetchUserDataResult.getString("users.email"), fetchUserDataResult.getString("users.password"),
-							fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), sellerAddress,
+							fetchUserDataResult.getBytes("users.image"), fetchUserDataResult.getDouble("users.wallet"), senderAddress,
 							fetchUserDataResult.getString("users.companyname"));
 				}
 				
