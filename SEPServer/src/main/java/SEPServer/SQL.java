@@ -3514,6 +3514,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 				
 					messageList.add(new Message(fetchMessagesResult.getInt("message_id"), sender, user, fetchMessagesResult.getString("text"), fetchMessagesResult.getTimestamp("messages.date").toLocalDateTime()));
 				}
+			}
 		
 			// Liste hat keine Inhalte
 			if(messageList.size()<=0)
