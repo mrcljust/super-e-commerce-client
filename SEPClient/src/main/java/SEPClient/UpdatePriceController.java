@@ -73,6 +73,12 @@ public class UpdatePriceController {
 			return; 
 		}
     	
+    	if (newPrice <= 0) {
+    		FXMLHandler.ShowMessageBox("Bitte geben Sie einen Preis ein, der mehr als 0$ beträgt", "Fehler", "Fehler", AlertType.ERROR, true, false);			
+			NewPrice_txtNewPrice.setText("");
+			return; 
+    	}
+    		
 
     	HashMap <String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("Product", product);
@@ -82,9 +88,30 @@ public class UpdatePriceController {
     	Client client  = Client.getClient();
     	ServerResponse queryResponse = client.sendClientRequest(req);
     	
-    	FXMLHandler.ShowMessageBox("Ihre Preisanpassung wurde erfolgreich angenommen.","Preis verändert", "Preis verändert", AlertType.INFORMATION, true, false);
-	    FXMLHandler.OpenSceneInStage((Stage) NewPrice_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
-    	
+ 		    
+	    if (queryResponse.getResponseType() == Response.NoDBConnection) {
+			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, der Preis konnte nicht geändert werden.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+	    
+		else if(queryResponse.getResponseType() == Response.Failure)
+		{
+			FXMLHandler.ShowMessageBox("Bei der Änderungen des Preises ist ein unbekannter Fehler aufgetreten.",
+					"Fehler", "Fehler", AlertType.ERROR, true,
+					false);
+			return;
+		}
+		
+
+		else if(queryResponse.getResponseType() == Response.Success)
+		{
+			FXMLHandler.ShowMessageBox("Ihre Preisanpassung wurde erfolgreich angenommen.",
+					"Preis verändert", "Stornierung erfolgreich", AlertType.CONFIRMATION, true,
+					false);
+			FXMLHandler.OpenSceneInStage((Stage) NewPrice_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
+		}
     }
 
     @FXML
