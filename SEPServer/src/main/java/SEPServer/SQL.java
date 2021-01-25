@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
+
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ShippingType;
@@ -3478,7 +3481,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			while (fetchMessagesResult.next())
 			{
 				
-				PreparedStatement fetchUserData = connection.prepareStatement("SELECT * FROM users JOIN messages ON users.id = messages.sender_id WHERE messages.message_id" + fetchMessagesResult.getInt("messages.message_id"));
+				PreparedStatement fetchUserData = connection.prepareStatement("SELECT * FROM users JOIN messages ON users.id = messages.sender_id WHERE messages.message_id=" + fetchMessagesResult.getInt("messages.message_id"));
 				ResultSet fetchUserDataResult = fetchUserData.executeQuery();
 				
 				// Neues User Objekt übergeben
@@ -3531,6 +3534,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		} catch (SQLException e) {
 			//es ist ein Fehler aufgetreten:
 			e.printStackTrace();
+			System.out.println(e.getMessage());
 			return null;
 		}
 	}
