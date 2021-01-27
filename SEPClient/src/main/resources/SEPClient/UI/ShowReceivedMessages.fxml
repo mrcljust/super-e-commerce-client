@@ -18,6 +18,6 @@
       <Button fx:id="ShowMessages_AnswerButton" disable="true" layoutX="14.0" layoutY="272.0" mnemonicParsing="false" onAction="#ShowMessages_AnswerButton_Click" text="Antworten" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
       <Button fx:id="ShowMessages_RefreshButton" layoutX="443.0" layoutY="272.0" mnemonicParsing="false" onAction="#ShowMessages_RefreshButton_Click" text="Aktualisieren" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="73.0" />
       <Button fx:id="ShowMessages_ReturnButton" layoutX="533.0" layoutY="272.0" mnemonicParsing="false" onAction="#ShowMessages_ReturnButton_Click" text="Zurück" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-      <TextArea fx:id="TextAreaMessage" editable="false" layoutX="14.0" layoutY="198.0" prefHeight="152.0" prefWidth="612.0" AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="198.0" />
+      <TextArea fx:id="TextAreaMessage" editable="false" layoutX="14.0" layoutY="198.0" prefHeight="152.0" prefWidth="612.0" promptText="Nachricht eingeben..." AnchorPane.bottomAnchor="46.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="12.0" AnchorPane.topAnchor="198.0" />
    </children>
 </AnchorPane>
