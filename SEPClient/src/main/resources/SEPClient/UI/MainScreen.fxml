@@ -168,7 +168,7 @@
             </TabPane>
           <AnchorPane fx:id="AnchorPaneArticleDetails" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <AnchorPane fx:id="AnchorPaneArticleDetails" prefHeight="200.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane fx:id="AnchorPaneArticleDetails" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label alignment="CENTER" layoutX="6.0" layoutY="6.0" prefHeight="17.0" prefWidth="421.0" text="Produktdetails" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="3.0">
                            <font>
@@ -188,7 +188,7 @@
                         <Label fx:id="MainScreen_LabelProductSeller" layoutX="14.0" layoutY="77.0" text="Verkäufer:" />
                         <Label fx:id="MainScreen_LabelProductCategory" layoutX="14.0" layoutY="124.0" text="Kategorie:" />
                         <Button fx:id="MainScreen_ButtonBuyProduct" layoutX="339.0" layoutY="120.0" mnemonicParsing="false" onAction="#MainScreen_BuyProductClick" text="Jetzt kaufen" AnchorPane.rightAnchor="11.0" />
-                        <WebView fx:id="MainScreen_WebViewProductDescription" layoutX="405.0" layoutY="150.0" prefHeight="155.0" prefWidth="405.0" AnchorPane.bottomAnchor="130.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="150.0" />
+                        <WebView fx:id="MainScreen_WebViewProductDescription" layoutX="405.0" layoutY="150.0" prefHeight="161.0" prefWidth="405.0" AnchorPane.bottomAnchor="124.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="150.0" />
                         <Label fx:id="MainScreen_txtRatingCount" layoutX="217.0" layoutY="96.0" text="(Anzahl: XX)" />
                         <Label fx:id="MainScreen_txtAverageRating" layoutX="14.0" layoutY="96.0" text="Durchschnittliche Bewertung: X.XX">
                            <font>
@@ -203,12 +203,12 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Label>
-                        <Label fx:id="MainScreen_LabelAlsoBought" alignment="CENTER" layoutX="13.0" layoutY="311.0" prefHeight="17.0" prefWidth="405.0" text="Kunden kauften auch" AnchorPane.bottomAnchor="107.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="12.0">
+                        <Label fx:id="MainScreen_LabelAlsoBought" alignment="CENTER" layoutX="13.0" layoutY="315.0" prefHeight="17.0" prefWidth="405.0" text="Kunden kauften auch" AnchorPane.bottomAnchor="103.0" AnchorPane.leftAnchor="13.0" AnchorPane.rightAnchor="12.0">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Label>
-                        <TableView fx:id="MainScreen_ListAlsoBought" layoutX="15.0" layoutY="328.0" prefHeight="92.0" prefWidth="405.0" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="10.0">
+                        <TableView fx:id="MainScreen_ListAlsoBought" layoutX="15.0" layoutY="328.0" prefHeight="101.0" prefWidth="405.0" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="10.0">
                           <columns>
                             <TableColumn fx:id="lastboughtIdColumn" editable="false" prefWidth="48.0" text="ID" />
                             <TableColumn fx:id="lastBoughtProductColumn" editable="false" prefWidth="225.0" text="Produkt" />
@@ -217,7 +217,7 @@
                         </TableView>
                      </children>
                   </AnchorPane>
-                  <AnchorPane fx:id="AnchorPaneAuctionDetails" prefHeight="200.0" prefWidth="430.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <AnchorPane fx:id="AnchorPaneAuctionDetails" prefHeight="200.0" prefWidth="430.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <children>
                         <Label alignment="CENTER" layoutX="6.0" layoutY="6.0" prefHeight="17.0" prefWidth="421.0" text="Auktionsdetails" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="3.0">
                            <font>

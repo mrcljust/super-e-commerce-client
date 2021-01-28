@@ -8,20 +8,20 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="217.0" prefWidth="469.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.SendMessageController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="179.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="SEPClient.SendMessageController">
    <children>
-      <Label fx:id="SendMessage_txtReceiverName" layoutX="62.0" layoutY="24.0" prefHeight="17.0" prefWidth="404.0" text="Nachricht an (NAME)" textAlignment="CENTER">
+      <Label fx:id="SendMessage_txtReceiverName" layoutX="48.0" layoutY="7.0" prefHeight="17.0" prefWidth="393.0" text="Nachricht an (NAME)" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Label>
-      <ImageView fx:id="SendMessage_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="24.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
+      <ImageView fx:id="SendMessage_ImgProfilePicture" fitHeight="32.0" fitWidth="32.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true" style="-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 10, 0, 0, 0);">
          <image>
             <Image url="@no-image.jpg" />
          </image>
       </ImageView>
-      <TextArea fx:id="SendMessage_txtMessage" layoutX="24.0" layoutY="77.0" prefHeight="89.0" prefWidth="433.0" />
-      <Button fx:id="SendMessage_ButtonOK" layoutX="285.0" layoutY="178.0" mnemonicParsing="false" onAction="#SendMessage_ButtonOK_Click" text="Nachricht senden" />
-      <Button fx:id="SendMessage_ButtonReturn" layoutX="402.0" layoutY="178.0" mnemonicParsing="false" onAction="#SendMessage_ButtonReturn_Click" text="Zurück" />
+      <TextArea fx:id="SendMessage_txtMessage" layoutX="8.0" layoutY="48.0" prefHeight="89.0" prefWidth="433.0" />
+      <Button fx:id="SendMessage_ButtonOK" layoutX="271.0" layoutY="144.0" mnemonicParsing="false" onAction="#SendMessage_ButtonOK_Click" text="Nachricht senden" />
+      <Button fx:id="SendMessage_ButtonReturn" layoutX="388.0" layoutY="144.0" mnemonicParsing="false" onAction="#SendMessage_ButtonReturn_Click" text="Zurück" />
    </children>
 </AnchorPane>

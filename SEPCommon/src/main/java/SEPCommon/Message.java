@@ -7,6 +7,7 @@ public class Message implements Serializable {
 
 	private int id;
 	private User sender;
+	private String senderName;
 	private User receiver;
 	private String message;
 	private LocalDateTime date;
@@ -15,6 +16,7 @@ public class Message implements Serializable {
 	{
 		//wird beim Erstellen (clientseitig) aufgerufen
 		sender=_sender;
+		senderName=_sender.getAddress().getFullname() + " (ID " + _sender.getId() + ")";
 		receiver=_receiver;
 		message=_message;
 	}
@@ -23,9 +25,15 @@ public class Message implements Serializable {
 	{
 		id=_id;
 		sender=_sender;
+		senderName=_sender.getAddress().getFullname() + " (ID " + _sender.getId() + ")";
 		receiver=_receiver;
 		message=_message;
 		date=_date;
+	}
+	
+	public String getSenderName()
+	{
+		return senderName;
 	}
 	
 	public void setDate(LocalDateTime _date)
