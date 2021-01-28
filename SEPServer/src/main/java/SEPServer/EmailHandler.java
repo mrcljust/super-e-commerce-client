@@ -106,7 +106,7 @@ public class EmailHandler {
 	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
 	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(message.getReceiver().getEmail()));
 			msg.setSubject("Neue Nachricht");
-	        msg.setText("Sie haben eine neue Nachricht erhalten. Loggen Sie sich jetzt ein, um den Inhalt dieser Nachricht abzurufen!");
+	        msg.setText("Sie haben eine neue Nachricht von '" + message.getSender().getAddress().getFullname() + "' erhalten. Loggen Sie sich jetzt ein, um den Inhalt dieser Nachricht abzurufen!");
 
 	        Transport.send(msg);
 			

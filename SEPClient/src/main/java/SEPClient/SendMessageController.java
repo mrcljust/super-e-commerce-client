@@ -45,7 +45,7 @@ public class SendMessageController {
 		Image img = new Image(in);
 		SendMessage_ImgProfilePicture.setImage(img);
 		
-		SendMessage_txtReceiverName.setText("Nachricht an " + receiver.getUsername());
+		SendMessage_txtReceiverName.setText("Nachricht an " + receiver.getAddress().getFullname() + " (Benutzer "+ receiver.getUsername() + ", ID " + receiver.getId() + ")");
 	}
 	
 	@FXML

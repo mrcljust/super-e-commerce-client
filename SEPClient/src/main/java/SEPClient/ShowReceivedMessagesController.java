@@ -89,9 +89,11 @@ public class ShowReceivedMessagesController {
 					TextAreaMessage.setText(TableMessages.getSelectionModel().getSelectedItem().getMessage());
 				} else {
 					ShowMessages_AnswerButton.setDisable(true);
+					TextAreaMessage.setText("");
 				}
 			} else {
 				ShowMessages_AnswerButton.setDisable(true);
+				TextAreaMessage.setText("");
 			}
 		});
 		
@@ -135,8 +137,9 @@ public class ShowReceivedMessagesController {
 
     @FXML
     void ShowMessages_RefreshButton_Click(ActionEvent event) {
-    	loadMessages();
+		TableMessages.setItems(loadMessages());
     	ShowMessages_AnswerButton.setDisable(true);
+		TextAreaMessage.setText("");
     }
 
     @FXML
