@@ -68,14 +68,12 @@ public class SendMessageController {
     	
     	String message = SendMessage_txtMessage.getText();
     	
-    	if (message == null) {
+    	if (message.isEmpty()) {
     		FXMLHandler.ShowMessageBox("Sie haben noch keine Nachricht verfasst.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
 			return;
     	}
     	
     	Message newMessage = new Message(sender, receiver, message);
-    	
-    	//unterscheidung ob buyer oder seller? ggf. noch abfangen
     	
     	HashMap <String, Object> requestMap = new HashMap<String, Object>();
     	requestMap.put("Message", newMessage);
@@ -100,7 +98,7 @@ public class SendMessageController {
     	
     	else if (queryResponse.getResponseType() == Response.Success) {
 			FXMLHandler.ShowMessageBox("Ihre Nachricht wurde erfolgreich übermittelt.",
-					"Bewertung gespeichert", "Bewertung gespeichert", AlertType.INFORMATION, true, false);
+					"Nachricht gesendet", "Nachricht gesendet", AlertType.INFORMATION, true, false);
 
 	        FXMLHandler.OpenSceneInStage((Stage) SendMessage_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 

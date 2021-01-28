@@ -108,7 +108,7 @@ public class UpdatePriceController {
 		else if(queryResponse.getResponseType() == Response.Success)
 		{
 			FXMLHandler.ShowMessageBox("Ihre Preisanpassung wurde erfolgreich angenommen.",
-					"Preis verändert", "Stornierung erfolgreich", AlertType.CONFIRMATION, true,
+					"Preis verändert", "Preisanpassung erfolgreich", AlertType.CONFIRMATION, true,
 					false);
 			FXMLHandler.OpenSceneInStage((Stage) NewPrice_ButtonReturn.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
 		}

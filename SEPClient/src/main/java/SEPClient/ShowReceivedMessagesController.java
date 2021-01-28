@@ -47,12 +47,12 @@ public class ShowReceivedMessagesController {
     	    }
     	});
 		
-		TableMessages_ColumnBy.setCellValueFactory(new PropertyValueFactory<Message, String>("sender"));
+		TableMessages_ColumnBy.setCellValueFactory(new PropertyValueFactory<Message, String>("senderName"));
 		TableMessages_ColumnMessage.setCellValueFactory(new PropertyValueFactory<Message, String>("message"));
 		
 		TableMessages.setItems(loadMessages());
 		
-		answerListener();
+		showMessageListener();
 	}
 	
 	private ObservableList<Message> loadMessages()
@@ -80,13 +80,13 @@ public class ShowReceivedMessagesController {
 		return null;
 	}
 	
-	private void answerListener() {
+	private void showMessageListener() {
 		
 		TableMessages.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if (newSelection != null) {
 				if (TableMessages.getSelectionModel().getSelectedItem().getMessage() != null) {
 					ShowMessages_AnswerButton.setDisable(false);
-					TextAreaMessage.setEditable(true);
+					TextAreaMessage.setText(TableMessages.getSelectionModel().getSelectedItem().getMessage());
 				} else {
 					ShowMessages_AnswerButton.setDisable(true);
 				}
@@ -125,46 +125,12 @@ public class ShowReceivedMessagesController {
 
     @FXML
     void ShowMessages_AnswerButton_Click(ActionEvent event) {
-    	String message = TextAreaMessage.getText();
-    	
-    	if (message == null) {
-    		FXMLHandler.ShowMessageBox("Sie haben noch keine Nachricht verfasst.", "Fehler", "Fehler", AlertType.ERROR, true, false);			
-			return;
+    	if (TableMessages.getSelectionModel().getSelectedItem() != null) {
+    		SendMessageController.setSender(user);
+    		SendMessageController.setReceiver(TableMessages.getSelectionModel().getSelectedItem().getSender());
+    		FXMLHandler.OpenSceneInStage((Stage) ShowMessages_AnswerButton.getScene().getWindow(), "SendMessage",
+    				"Nachricht senden", false, true);
     	}
-    	
-//    	Message newMessage = new Message(user, receiver, message);
-//    	
-//    	
-//    	HashMap <String, Object> requestMap = new HashMap<String, Object>();
-//    	requestMap.put("Message", newMessage);
-//    	
-//    	
-//    	
-//    	ClientRequest req = new ClientRequest(Request.SendMessage, requestMap);
-//    	Client client = Client.getClient();
-//    	ServerResponse queryResponse = client.sendClientRequest(req);
-//    	
-//    	if(queryResponse.getResponseType() == Response.NoDBConnection) {
-//			FXMLHandler.ShowMessageBox("Es konnte keine Verbindung zur Datenbank hergestellt werden, Ihre Nachricht wurde daher nicht abgeschickt.",
-//					"Fehler", "Fehler", AlertType.ERROR, true, false);
-//			return;
-//		}
-//
-//    	else if (queryResponse.getResponseType() == Response.Failure) {
-//    		FXMLHandler.ShowMessageBox("Es ist ein Fehler beim Verarbeiten Ihrer Anfrage aufgetreten, Ihre Nachricht wurde daher nicht abgeschickt.",
-//					"Fehler", "Fehler", AlertType.ERROR, true, false);
-//			return;
-//		}
-//    	
-//    	else if (queryResponse.getResponseType() == Response.Success) {
-//			FXMLHandler.ShowMessageBox("Ihre Nachricht wurde erfolgreich übermittelt.",
-//					"Nachricht abgeschickt", "Nachricht abgeschickt", AlertType.INFORMATION, true, false);
-//
-//	        FXMLHandler.OpenSceneInStage((Stage) ShowMessages_ReturnButton.getScene().getWindow(), "MainScreen", "Super-E-commerce-Platform", true, true);
-//
-//    	
-//    }
-    	
     }
 
     @FXML
