@@ -3491,7 +3491,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					
 					String company = fetchUserDataResult.getString("users.companyname");
 					
-					if(company == null || company == "") {
+					if(company == null || company.isEmpty()) {
 						
 						Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 								fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
