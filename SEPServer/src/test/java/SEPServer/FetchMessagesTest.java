@@ -9,25 +9,15 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
 import SEPCommon.Address;
-import SEPCommon.Auction;
 import SEPCommon.Customer;
 import SEPCommon.Message;
 import SEPCommon.Response;
-import SEPCommon.ShippingType;
 import SEPCommon.User;
 
 
