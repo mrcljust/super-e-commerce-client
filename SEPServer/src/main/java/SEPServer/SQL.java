@@ -3449,6 +3449,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 		insertMessage.setInt(3, message.getReceiver().getId());
 		insertMessage.setString(4, message.getMessage());
 		insertMessage.execute();
+		// Bestätigungsmail abschicken
 		EmailHandler.sendNewMessageEmail(message);
 		return Response.Success;	
 		
@@ -3478,6 +3479,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 			while (fetchMessagesResult.next())
 			{
 				
+				// User zur Message bestimmen
 				PreparedStatement fetchUserData = connection.prepareStatement("SELECT * FROM users JOIN messages ON users.id = messages.sender_id WHERE messages.message_id=" + fetchMessagesResult.getInt("messages.message_id"));
 				ResultSet fetchUserDataResult = fetchUserData.executeQuery();
 				
@@ -3490,6 +3492,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					
 					if(company == null || company.isEmpty()) {
 						
+						// Privatkunde
 						Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 								fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
 								fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
@@ -3502,6 +3505,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 					
 					else {
 						
+					// Gewerbekunde
 					Address senderAddress = new Address(fetchUserDataResult.getString("users.fullname"),
 							fetchUserDataResult.getString("users.country"), fetchUserDataResult.getInt("users.postalcode"),
 							fetchUserDataResult.getString("users.city"), fetchUserDataResult.getString("users.street"),
@@ -3512,6 +3516,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 							fetchUserDataResult.getString("users.companyname"));
 				}
 				
+					// Message in Liste speichern
 					messageList.add(new Message(fetchMessagesResult.getInt("message_id"), sender, user, fetchMessagesResult.getString("text"), fetchMessagesResult.getTimestamp("messages.date").toLocalDateTime()));
 				}
 			}
