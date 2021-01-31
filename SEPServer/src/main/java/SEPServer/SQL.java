@@ -8,9 +8,6 @@ import java.sql.Statement;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.mysql.cj.protocol.x.SyncFlushDeflaterOutputStream;
-
 import SEPCommon.Response;
 import SEPCommon.Seller;
 import SEPCommon.ShippingType;

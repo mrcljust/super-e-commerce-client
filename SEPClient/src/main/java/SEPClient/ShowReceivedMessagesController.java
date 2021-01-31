@@ -6,9 +6,7 @@ import java.util.HashMap;
 
 import SEPCommon.ClientRequest;
 import SEPCommon.Message;
-import SEPCommon.Rating;
 import SEPCommon.Request;
-import SEPCommon.Response;
 import SEPCommon.ServerResponse;
 import SEPCommon.User;
 import javafx.collections.FXCollections;
@@ -20,7 +18,6 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
