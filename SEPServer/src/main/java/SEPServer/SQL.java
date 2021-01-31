@@ -3464,7 +3464,7 @@ buyerText=allBuyerRatings.getString("ratings.text");
 	
 	protected Message[] fetchReceivedMessages (User user)  
 	{
-		//alle messages mit receiver = user.id aus der db zurückgeben
+		//alle messages mit receiver = user.id aus der db zurückgeben 
 		if (!checkConnection()) {
 			return null;
 		}
