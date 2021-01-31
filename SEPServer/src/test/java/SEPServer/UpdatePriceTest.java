@@ -73,6 +73,6 @@ SQL sql;
 		deleteStatement.execute();
 		
 		System.out.println("Preis aktualisieren - Test erfolgreich");
-	}
+	} 
 	
 }
