@@ -77,7 +77,11 @@ public class ShowReceivedMessagesController {
 		return null;
 	}
 	
+
 	private void showMessageListener() {
+		// Listener mit Hilfe folgender Quelle geschrieben:
+		// https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+		// Antwort von James_D, Oct 17 '14 at 14:11
 		
 		TableMessages.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
 			if (newSelection != null) {

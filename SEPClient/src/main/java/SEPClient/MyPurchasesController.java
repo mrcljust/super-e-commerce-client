@@ -309,7 +309,12 @@ public class MyPurchasesController {
     	return null;
     }
     
+	
+
     private void rateSellerListener() { 
+    	// Listener mit Hilfe folgender Quelle geschrieben:
+    	// https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	// Antwort von James_D, Oct 17 '14 at 14:11
     	
     	MyPurchases_ListOrders.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
     		if(newSelection != null) {
@@ -337,7 +342,12 @@ public class MyPurchasesController {
     	
     }
     
+
+
     private void cancelOrderListener() {
+    	// Listener mit Hilfe folgender Quelle geschrieben:
+    	// https://stackoverflow.com/questions/26424769/javafx8-how-to-create-listener-for-selection-of-row-in-tableview
+    	// Antwort von James_D, Oct 17 '14 at 14:11
   
     	LocalDateTime now = SEPCommon.Methods.convertLocalDateTimeToCET(LocalDateTime.now()).toLocalDateTime();
     	
