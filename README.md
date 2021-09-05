@@ -1,2 +1,4 @@
 # Super E-Commerce Client
-Desktop shopping application, backend and frontend in Java. Includes fixed price offers, live auctions, user and wallet management, rating system. Google Maps API used to display live auctions nearby, data is stored in a SQL DB. Student project at University of Duisburg-Essen.
+Desktop shopping application. Includes fixed price offers, live auctions, user and wallet management, rating system, .... 
+Frontend Java with JavaFX, backend Java as console application. Data is stored in a MySQL DB, Google Maps API used to display live auctions nearby.
+Student project at University of Duisburg-Essen.
