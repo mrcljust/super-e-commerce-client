@@ -22,7 +22,7 @@ public class EmailHandler {
 		properties.put("mail.smtp.starttls.enable", "true");
         session = Session.getInstance(properties, new javax.mail.Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication("sepgruppeb@gmail.com", "wisem2020");
+                return new PasswordAuthentication("XXXXXXXXXXXXXXXXXXX", "XXXXXXXXXXXXXXXXXXXXXXXXXXX");
             }
         });
 	}
@@ -34,7 +34,7 @@ public class EmailHandler {
 		
         try {
 	        Message msg = new MimeMessage(session);
-	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
+	        msg.setFrom(new InternetAddress("XXXXXXXXXXXXXXXXXXX"));;
 	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(auction.getSeller().getEmail()));
 	        
 			msg.setSubject("Ihre Auktion '" + auction.getTitle() + "' wurde abgeschlossen");
@@ -60,7 +60,7 @@ public class EmailHandler {
         
 		try {
 	        Message msg = new MimeMessage(session);
-	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
+	        msg.setFrom(new InternetAddress("XXXXXXXXXXXXXXXXXXX"));;
 	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(auction.getSeller().getEmail()));
 			msg.setSubject("Ihre Auktion '" + auction.getTitle() + "' wurde abgebrochen");
 	        msg.setText("Ihre Auktion '" + auction.getTitle() + "' (ID " + auction.getId() + ") wurde beendet. Da der Käufer (" + auction.getCurrentBidder().getAddress().getFullname() + ", E-Mail: " + auction.getCurrentBidder().getEmail() + ") kein Guthaben mehr hat, wurde die Auktion abgebrochen. Das Höchstgebot und der Bieter wurden zurückgesetzt.");
@@ -81,7 +81,7 @@ public class EmailHandler {
 	        
 		try {
 	        Message msg = new MimeMessage(session);
-	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
+	        msg.setFrom(new InternetAddress("XXXXXXXXXXXXXXXXXXX"));;
 	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(auction.getSeller().getEmail()));
 			msg.setSubject("Ihre Auktion '" + auction.getTitle() + "' wurde ohne Bieter beendet");
 	        msg.setText("Ihre Auktion '" + auction.getTitle() + "' (ID " + auction.getId() + ") wurde beendet. Leider gab es keine Gebote.");
@@ -103,7 +103,7 @@ public class EmailHandler {
         
 		try {
 	        Message msg = new MimeMessage(session);
-	        msg.setFrom(new InternetAddress("sepgruppeb@gmail.com"));;
+	        msg.setFrom(new InternetAddress("XXXXXXXXXXXXXXXXXXX"));;
 	        msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(message.getReceiver().getEmail()));
 			msg.setSubject("Neue Nachricht");
 	        msg.setText("Sie haben eine neue Nachricht von '" + message.getSender().getAddress().getFullname() + "' erhalten. Loggen Sie sich jetzt ein, um den Inhalt dieser Nachricht abzurufen!");
